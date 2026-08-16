@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,
+        initial-scale=1.0"
+    >
+
+    <title>THOR Admin</title>
+
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="admin-page">
+
+
+    <!-- LOGIN -->
+
+    <section
+        id="adminLogin"
+        class="admin-card"
+    >
+
+        <h1>
+            THOR ADMIN
+        </h1>
+
+        <p>
+            Đăng nhập quản trị
+        </p>
+
+
+        <input
+            id="adminEmail"
+            type="email"
+            placeholder="Email admin"
+        >
+
+
+        <input
+            id="adminPassword"
+            type="password"
+            placeholder="Mật khẩu"
+        >
+
+
+        <button
+            id="adminLoginButton"
+        >
+            Đăng nhập
+        </button>
+
+
+        <div
+            id="adminLoginMessage"
+            class="login-message"
+        ></div>
+
+    </section>
+
+
+    <!-- ADMIN PANEL -->
+
+    <section
+        id="adminPanel"
+        class="admin-card hidden"
+    >
+
+        <div class="admin-title">
+
+            <h1>
+                Quản lý nhân viên
+            </h1>
+
+
+            <button
+                id="adminLogout"
+            >
+                Đăng xuất
+            </button>
+
+        </div>
+
+
+        <!-- ADD -->
+
+        <div class="admin-form">
+
+            <h2>
+                Thêm / sửa nhân viên
+            </h2>
+
+
+            <input
+                id="employeeId"
+                placeholder="Mã nhân viên"
+            >
+
+
+            <input
+                id="employeeName"
+                placeholder="Tên nhân viên"
+            >
+
+
+            <select
+                id="employeeRole"
+            >
+
+                <option value="user">
+                    User
+                </option>
+
+                <option value="admin">
+                    Admin
+                </option>
+
+            </select>
+
+
+            <label>
+                Ngày bắt đầu
+            </label>
+
+            <input
+                id="startDate"
+                type="datetime-local"
+            >
+
+
+            <label>
+                Ngày hết hạn
+            </label>
+
+            <input
+                id="endDate"
+                type="datetime-local"
+            >
+
+
+            <select
+                id="employeeColor"
+            >
+
+                <option value="yellow">
+                    Vàng
+                </option>
+
+                <option value="green">
+                    Xanh
+                </option>
+
+            </select>
+
+
+            <div>
+
+                <button
+                    id="saveUser"
+                >
+                    Lưu nhân viên
+                </button>
+
+
+                <button
+                    id="clearForm"
+                >
+                    Xóa form
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- LIST -->
+
+        <div>
+
+            <h2>
+                Danh sách
+            </h2>
+
+
+            <div
+                id="usersList"
+            >
+                Đang tải...
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script
+    type="module"
+    src="admin.js"
+></script>
+
+</body>
+
+</html>
