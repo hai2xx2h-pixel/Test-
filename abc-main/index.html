@@ -14,25 +14,24 @@
 
     <link rel="apple-touch-icon" href="icon.png">
 
-    <title>员工码</title>
+    <title>二维码通行</title>
 
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            touch-action: none; /* Khoá vuốt/cuộn màn hình */
+            touch-action: none; /* Khóa vuốt/cuộn màn hình */
         }
 
-        input {
-            touch-action: auto;
-        }
-
-        html {
+        html,
+        body {
             width: 100%;
             height: 100%;
             overflow: hidden;
             background-color: #2f3347;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body {
@@ -63,100 +62,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
-        /* Không dùng thanh top status bar màu trắng nữa */
+        /* 💥 ĐÃ BỎ THANH TOP-STATUS-BAR MÀU TRẮNG ĐỂ NỀN TRÀN VIỀN TỪ ĐỈNH 💥 */
         .top-status-bar {
             display: none;
         }
 
-        /* ==================== MÀN HÌNH ĐĂNG NHẬP ==================== */
-        #login-screen {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            padding: 20px;
-        }
-
-        .login-box {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 30px 20px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 320px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            text-align: center;
-        }
-
-        .login-title {
-            font-size: 20px;
-            font-weight: 500;
-            color: #F5D57F;
-            margin-bottom: 24px;
-        }
-
-        .input-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 13px;
-            color: #E6DCBD;
-            margin-bottom: 6px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #555;
-            background: rgba(255, 255, 255, 0.9);
-            color: #000;
-            font-size: 15px;
-            outline: none;
-            -webkit-user-select: text;
-            user-select: text;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: #f2c75b;
-            color: #2f3347;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.2s;
-        }
-
-        .login-btn:active {
-            background: #dca738;
-        }
-
-        /* ==================== MÀN HÌNH CHÍNH (THẺ QR) ==================== */
-        #main-screen {
-            width: 100%;
-            display: none; 
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-        }
-
-        /* Tiêu đề Mã/Tên nhân viên sát đỉnh màn hình */
+        /* Tên nhân viên căn chỉnh chuẩn khoảng cách từ tai thỏ xuống */
         .header {
-            margin-top: 55px; /* Tỉ lệ khoảng cách từ tai thỏ xuống */
+            margin-top: 55px;
             font-size: 18px;
             color: #E2CE9C;
             font-weight: 400;
@@ -164,7 +79,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* Khung thẻ chính (Tỷ lệ width ~73.5%) */
+        /* Khung thẻ chính tỷ lệ width 73.5% */
         .card {
             margin-top: 22px;
             width: 73.5%;
@@ -175,7 +90,7 @@
         }
 
         .card-header {
-            background-color: #38a754; /* Mặc định xanh lá */
+            background-color: #38a754;
             padding: 16px 8px;
             text-align: center;
             color: #ffffff;
@@ -198,10 +113,15 @@
             z-index: 10;
         }
 
-        .circle1 { left: -6px; }
-        .circle2 { right: -6px; }
+        .circle1 {
+            left: -6px;
+        }
 
-        /* Thân thẻ trắng */
+        .circle2 {
+            right: -6px;
+        }
+
+        /* Thân thẻ màu trắng */
         .card-body {
             background-color: #ffffff;
             padding: 18px 16px 16px 16px;
@@ -225,7 +145,7 @@
             width: 100%;
         }
 
-        /* Mã QR vuông 220px */
+        /* Mã QR chuẩn kích thước 220px */
         #qrcode {
             width: 220px;
             height: 220px;
@@ -247,7 +167,6 @@
             display: block !important;
         }
 
-        /* Hàng chứa 2 nút hành động dưới mã QR */
         .refresh {
             margin-top: 14px;
             width: 100%;
@@ -255,10 +174,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px; /* Khoảng cách giữa 2 nút */
+            gap: 20px;
         }
 
-        .action-btn {
+        .refresh-title {
             cursor: pointer;
             font-size: 12px;
             color: #666666;
@@ -295,9 +214,17 @@
         }
 
         @keyframes pulse-green {
-            0% { opacity: 1; }
-            50% { opacity: 0.25; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.25;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
 
         /* Đoạn văn lưu ý bên dưới */
@@ -315,164 +242,171 @@
 
 <body>
 
-    <!-- 1. MÀN HÌNH ĐĂNG NHẬP -->
-    <div id="login-screen">
-        <div class="login-box">
-            <div class="login-title">员工通行码登录</div>
-            <div class="input-group">
-                <label for="empId">工号 (Mã NV):</label>
-                <input type="text" id="empId" placeholder="VD: V23070428" />
-            </div>
-            <div class="input-group">
-                <label for="empName">姓名 (Họ tên):</label>
-                <input type="text" id="empName" placeholder="VD: Bùi Đức Việt" />
-            </div>
-            <button class="login-btn" onclick="handleLogin()">登录 (Đăng nhập)</button>
-        </div>
+    <div class="top-status-bar"></div>
+
+    <div class="header">
+        V25111639(Nguyễn Văn Hải)
     </div>
 
-    <!-- 2. MÀN HÌNH CHÍNH HIỂN THỊ MÃ QR -->
-    <div id="main-screen">
-        <div class="header" id="userInfoHeader">
-            --(--)
+    <div class="card">
+
+        <div class="card-header" id="cardHeader">
+
+            <span id="headerText">
+                将二维码对准扫描器刷码进场
+            </span>
+
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+
         </div>
 
-        <div class="card">
-            <div class="card-header" id="cardHeader">
-                <span id="headerText">
-                    将二维码对准扫描器刷码进场
+        <div class="card-body">
+
+            <div class="time" id="currentTime">
+                --
+            </div>
+
+            <div id="qrcode"></div>
+
+            <div class="refresh">
+                <span class="refresh-title">申请离场</span>
+                <span
+                    onclick="generateQRCode(event)"
+                    class="refresh-title">
+                    刷新二维码
                 </span>
-                <div class="circle1"></div>
-                <div class="circle2"></div>
             </div>
 
-            <div class="card-body">
-                <div class="time" id="currentTime">--</div>
+            <div class="status-box">
 
-                <div id="qrcode"></div>
-
-                <div class="refresh">
-                    <span class="action-btn">申请离场</span>
-                    <span onclick="generateQRCode(event)" class="action-btn">刷新二维码</span>
+                <div class="status-label">
+                    已生效
                 </div>
 
-                <div class="status-box">
-                    <div class="status-label">已生效</div>
-                    <div class="status-timer" id="statusTimer">00:00:00</div>
+                <div
+                    class="status-timer"
+                    id="statusTimer">
+                    00:00:00
                 </div>
+
             </div>
+
         </div>
 
-        <div class="note">
-            尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
-        </div>
+    </div>
+
+    <div class="note">
+        尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
     </div>
 
 
     <script>
-        /* CHẶN SỰ KIỆN VUỐT / CUỘN HOÀN TOÀN */
+
+        /* Chặn kéo/cuộn trang */
         document.addEventListener('touchmove', function(e) {
-            if (e.target.tagName !== 'INPUT') {
-                e.preventDefault();
-            }
+            e.preventDefault();
         }, { passive: false });
 
-        /* LOCALSTORAGE KEYS */
-        const USER_STORAGE_KEY = "qr_employee_user";
+        /* =====================================================
+           CẤU HÌNH
+        ===================================================== */
+
+        const employeeId = "V25111639";
+        const employeeName = "Nguyễn Văn Hải";
+
+
+        /* =====================================================
+           KEY LƯU TRỮ
+        ===================================================== */
+
         const TIMER_STORAGE_KEY = "qr_access_start_time";
         const COLOR_STORAGE_KEY = "qr_access_color";
 
-        let currentEmployeeId = "";
-        let currentEmployeeName = "";
 
-        /* ĐĂNG NHẬP / KIỂM TRA MẠNG */
-        function checkAuth() {
-            if (!navigator.onLine) {
-                forceLogout();
-                return;
-            }
+        /* =====================================================
+           HÀM PAD
+        ===================================================== */
 
-            const savedUser = localStorage.getItem(USER_STORAGE_KEY);
-            if (savedUser) {
-                const userData = JSON.parse(savedUser);
-                currentEmployeeId = userData.id;
-                currentEmployeeName = userData.name;
-
-                document.getElementById("login-screen").style.display = "none";
-                document.getElementById("main-screen").style.display = "flex";
-
-                document.getElementById("userInfoHeader").textContent = 
-                    `${currentEmployeeId}(${currentEmployeeName})`;
-
-                initApp();
-            } else {
-                document.getElementById("login-screen").style.display = "flex";
-                document.getElementById("main-screen").style.display = "none";
-            }
-        }
-
-        function handleLogin() {
-            if (!navigator.onLine) {
-                alert("Vui lòng bật mạng (Wi-Fi/4G) để đăng nhập!");
-                return;
-            }
-
-            const idInput = document.getElementById("empId").value.trim();
-            const nameInput = document.getElementById("empName").value.trim();
-
-            if (!idInput || !nameInput) {
-                alert("Vui lòng nhập đầy đủ Mã nhân viên và Họ tên!");
-                return;
-            }
-
-            const userData = { id: idInput, name: nameInput };
-            localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
-
-            checkAuth();
-        }
-
-        function forceLogout() {
-            localStorage.removeItem(USER_STORAGE_KEY);
-            document.getElementById("login-screen").style.display = "flex";
-            document.getElementById("main-screen").style.display = "none";
-        }
-
-        window.addEventListener("offline", function () {
-            forceLogout();
-        });
-
-        /* HÀM ĐỒNG HỒ */
         function pad(num) {
             return num < 10 ? "0" + num : String(num);
         }
 
-        let savedColor = localStorage.getItem(COLOR_STORAGE_KEY);
-        // Mặc định ban đầu là màu XANH (green)
+
+        /* =====================================================
+           KHÔI PHỤC TRẠNG THÁI MÀU (Mặc định xanh lá)
+        ===================================================== */
+
+        let savedColor =
+            localStorage.getItem(COLOR_STORAGE_KEY);
+
         let isGreen = savedColor ? savedColor === "green" : true;
 
-        const cardHeader = document.getElementById("cardHeader");
-        const headerText = document.getElementById("headerText");
+
+        const cardHeader =
+            document.getElementById("cardHeader");
+
+        const headerText =
+            document.getElementById("headerText");
+
 
         function applyHeaderColor() {
+
             if (isGreen) {
-                cardHeader.style.backgroundColor = "#38a754";
-                headerText.textContent = "将二维码对准扫描器刷码进场";
+
+                cardHeader.style.backgroundColor =
+                    "#38a754";
+
+                headerText.textContent =
+                    "将二维码对准扫描器刷码进场";
+
             } else {
-                cardHeader.style.backgroundColor = "#f2c75b";
-                headerText.textContent = "将二维码对准扫描器刷码出场";
+
+                cardHeader.style.backgroundColor =
+                    "#f2c75b";
+
+                headerText.textContent =
+                    "将二维码对准扫描器刷码出场";
             }
         }
 
-        let startTime = localStorage.getItem(TIMER_STORAGE_KEY);
+
+        /* =====================================================
+           KHÔI PHỤC THỜI ĐIỂM BẮT ĐẦU TIMER
+        ===================================================== */
+
+        let startTime =
+            localStorage.getItem(TIMER_STORAGE_KEY);
+
+
         if (!startTime) {
+
             startTime = Date.now();
-            localStorage.setItem(TIMER_STORAGE_KEY, String(startTime));
+
+            localStorage.setItem(
+                TIMER_STORAGE_KEY,
+                String(startTime)
+            );
+
         } else {
+
             startTime = Number(startTime);
+
         }
 
+
+        /* =====================================================
+           CẬP NHẬT ĐỒNG HỒ
+        ===================================================== */
+
         function updateAllTimers() {
+
             const now = new Date();
+
+
+            /* -----------------------------------------------
+               Thời gian hiện tại phía trên QR
+            ------------------------------------------------ */
 
             const formattedTime =
                 `${now.getFullYear()}-` +
@@ -482,111 +416,281 @@
                 `${pad(now.getMinutes())}:` +
                 `${pad(now.getSeconds())}`;
 
-            document.getElementById("currentTime").textContent = formattedTime;
 
-            const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
-            const hours = Math.floor(elapsedSeconds / 3600);
-            const minutes = Math.floor((elapsedSeconds % 3600) / 60);
-            const seconds = elapsedSeconds % 60;
+            document.getElementById(
+                "currentTime"
+            ).textContent = formattedTime;
 
-            document.getElementById("statusTimer").textContent =
-                `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+            /* -----------------------------------------------
+               Tính thời gian đã chạy
+            ------------------------------------------------ */
+
+            const elapsedSeconds =
+                Math.max(
+                    0,
+                    Math.floor(
+                        (Date.now() - startTime) / 1000
+                    )
+                );
+
+
+            /* -----------------------------------------------
+               HH:MM:SS
+            ------------------------------------------------ */
+
+            const hours =
+                Math.floor(
+                    elapsedSeconds / 3600
+                );
+
+
+            const minutes =
+                Math.floor(
+                    (elapsedSeconds % 3600) / 60
+                );
+
+
+            const seconds =
+                elapsedSeconds % 60;
+
+
+            document.getElementById(
+                "statusTimer"
+            ).textContent =
+                `${pad(hours)}:` +
+                `${pad(minutes)}:` +
+                `${pad(seconds)}`;
         }
 
+
+        /* =====================================================
+           RESET TIMER
+        ===================================================== */
+
         function resetTimer() {
+
             startTime = Date.now();
-            localStorage.setItem(TIMER_STORAGE_KEY, String(startTime));
-            document.getElementById("statusTimer").textContent = "00:00:00";
+
+
+            localStorage.setItem(
+                TIMER_STORAGE_KEY,
+                String(startTime)
+            );
+
+
+            document.getElementById(
+                "statusTimer"
+            ).textContent = "00:00:00";
+
+
             updateAllTimers();
         }
 
+
+        /* =====================================================
+           ĐỔI MÀU + RESET TIMER
+        ===================================================== */
+
         function toggleHeaderColor() {
+
             isGreen = !isGreen;
-            localStorage.setItem(COLOR_STORAGE_KEY, isGreen ? "green" : "yellow");
+
+            localStorage.setItem(
+                COLOR_STORAGE_KEY,
+                isGreen ? "green" : "yellow"
+            );
+
             applyHeaderColor();
+
             resetTimer();
         }
 
-        /* TẠO MÃ QR */
+
+        /* =====================================================
+           TẠO QR
+        ===================================================== */
+
         function generateQRCode(event) {
-            if (event && event.currentTarget) {
+
+            if (
+                event &&
+                event.currentTarget
+            ) {
+
                 event.currentTarget.blur();
             }
 
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, "0");
-            const day = String(now.getDate()).padStart(2, "0");
-            const hours = String(now.getHours()).padStart(2, "0");
-            const minutes = String(now.getMinutes()).padStart(2, "0");
-            const seconds = String(now.getSeconds()).padStart(2, "0");
 
-            const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-            const uniqueToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+            const now = new Date();
+
+
+            const year =
+                now.getFullYear();
+
+            const month =
+                String(
+                    now.getMonth() + 1
+                ).padStart(2, "0");
+
+            const day =
+                String(
+                    now.getDate()
+                ).padStart(2, "0");
+
+            const hours =
+                String(
+                    now.getHours()
+                ).padStart(2, "0");
+
+            const minutes =
+                String(
+                    now.getMinutes()
+                ).padStart(2, "0");
+
+            const seconds =
+                String(
+                    now.getSeconds()
+                ).padStart(2, "0");
+
+
+            const formattedTime =
+                `${year}-${month}-${day} ` +
+                `${hours}:${minutes}:${seconds}`;
+
+
+            const uniqueToken =
+                Math.random()
+                    .toString(36)
+                    .substring(2) +
+                Date.now().toString(36);
+
 
             const accessData =
                 `https://YOUR-AUTHORIZED-DOMAIN/access` +
-                `?id=${encodeURIComponent(currentEmployeeId)}` +
-                `&name=${encodeURIComponent(currentEmployeeName)}` +
+                `?id=${encodeURIComponent(employeeId)}` +
+                `&name=${encodeURIComponent(employeeName)}` +
                 `&time=${encodeURIComponent(formattedTime)}` +
                 `&token=${encodeURIComponent(uniqueToken)}`;
 
-            const qrcodeElement = document.getElementById("qrcode");
+
+            const qrcodeElement =
+                document.getElementById("qrcode");
+
+
             qrcodeElement.innerHTML = "";
 
+
             new QRCode(qrcodeElement, {
+
                 text: accessData,
+
                 width: 220,
+
                 height: 220,
+
                 colorDark: "#000000",
+
                 colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
+
+                correctLevel:
+                    QRCode.CorrectLevel.M
             });
         }
 
-        /* NHẤN GIỮ 5 GIÂY ĐỂ CHUYỂN ĐỔI MÀU / TRẠNG THÁI (MÔ PHỎNG NỔI VÀO / RA) */
+
+        /* =====================================================
+           NHẤN GIỮ 5 GIÂY ĐỂ ĐỔI MÀU
+        ===================================================== */
+
         let pressTimer = null;
+
         const HOLD_DURATION = 5000;
 
+
         function startPress(e) {
-            if (e.target.closest(".card") || e.target.closest("#login-screen") || e.target.tagName === 'INPUT') {
+
+            if (
+                e.target.closest(".card") ||
+                e.target.closest(".top-status-bar")
+            ) {
+
                 return;
             }
+
+
             clearTimeout(pressTimer);
-            pressTimer = setTimeout(() => {
-                toggleHeaderColor();
-            }, HOLD_DURATION);
+
+
+            pressTimer =
+                setTimeout(() => {
+
+                    toggleHeaderColor();
+
+                }, HOLD_DURATION);
         }
 
+
         function cancelPress() {
+
             if (pressTimer) {
+
                 clearTimeout(pressTimer);
+
                 pressTimer = null;
             }
         }
 
-        document.addEventListener("touchstart", startPress, { passive: true });
-        document.addEventListener("touchend", cancelPress);
-        document.addEventListener("touchcancel", cancelPress);
-        document.addEventListener("mousedown", startPress);
-        document.addEventListener("mouseup", cancelPress);
-        document.addEventListener("mouseleave", cancelPress);
 
-        /* KHỞI CHẠY */
-        let timerInterval = null;
+        document.addEventListener(
+            "touchstart",
+            startPress,
+            { passive: true }
+        );
 
-        function initApp() {
-            applyHeaderColor();
-            updateAllTimers();
-            generateQRCode();
+        document.addEventListener(
+            "touchend",
+            cancelPress
+        );
 
-            if (!timerInterval) {
-                timerInterval = setInterval(updateAllTimers, 1000);
-            }
-        }
+        document.addEventListener(
+            "touchcancel",
+            cancelPress
+        );
 
-        checkAuth();
+        document.addEventListener(
+            "mousedown",
+            startPress
+        );
+
+        document.addEventListener(
+            "mouseup",
+            cancelPress
+        );
+
+        document.addEventListener(
+            "mouseleave",
+            cancelPress
+        );
+
+
+        /* =====================================================
+           KHỞI CHẠY
+        ===================================================== */
+
+        applyHeaderColor();
+
+        updateAllTimers();
+
+        generateQRCode();
+
+        setInterval(
+            updateAllTimers,
+            1000
+        );
 
     </script>
+
 </body>
+
 </html>
