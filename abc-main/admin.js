@@ -5,354 +5,461 @@ import {
 
 
 import {
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged
+    signInAnonymously
 } from
-    "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
 
 import {
-    collection,
-    getDocs,
-    getDoc,
     doc,
-    setDoc,
+    getDoc,
     updateDoc,
-    deleteDoc,
+    onSnapshot,
     serverTimestamp
 } from
-    "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 
-/* ======================================
+/* =====================================================
    DOM
-====================================== */
+===================================================== */
 
-const adminLogin =
+const loginScreen =
     document.getElementById(
-        "adminLogin"
+        "loginScreen"
     );
 
 
-const adminPanel =
+const appScreen =
     document.getElementById(
-        "adminPanel"
+        "appScreen"
     );
 
 
-const adminEmail =
+const employeeCodeInput =
     document.getElementById(
-        "adminEmail"
+        "employeeCodeInput"
     );
 
 
-const adminPassword =
+const loginButton =
     document.getElementById(
-        "adminPassword"
+        "loginButton"
     );
 
 
-const adminLoginButton =
+const loginMessage =
     document.getElementById(
-        "adminLoginButton"
+        "loginMessage"
     );
 
 
-const adminLoginMessage =
+const employeeHeader =
     document.getElementById(
-        "adminLoginMessage"
+        "employeeHeader"
     );
 
 
-const adminLogout =
+const accountStatus =
     document.getElementById(
-        "adminLogout"
+        "accountStatus"
     );
 
 
-const employeeIdInput =
+const cardHeader =
     document.getElementById(
-        "employeeId"
+        "cardHeader"
     );
 
 
-const employeeNameInput =
+const headerText =
     document.getElementById(
-        "employeeName"
+        "headerText"
     );
 
 
-const employeeRoleInput =
+const currentTime =
     document.getElementById(
-        "employeeRole"
+        "currentTime"
     );
 
 
-const startDateInput =
+const statusTimer =
     document.getElementById(
-        "startDate"
+        "statusTimer"
     );
 
 
-const endDateInput =
+const qrcode =
     document.getElementById(
-        "endDate"
+        "qrcode"
     );
 
 
-const employeeColorInput =
+const refreshButton =
     document.getElementById(
-        "employeeColor"
+        "refreshButton"
     );
 
 
-const saveUserButton =
+const logoutButton =
     document.getElementById(
-        "saveUser"
+        "logoutButton"
     );
 
 
-const clearFormButton =
-    document.getElementById(
-        "clearForm"
+/* =====================================================
+   SESSION
+===================================================== */
+
+const SESSION_KEY =
+    "thor_session_id";
+
+
+const EMPLOYEE_KEY =
+    "thor_employee_id";
+
+
+let employeeId =
+    localStorage.getItem(
+        EMPLOYEE_KEY
     );
 
 
-const usersList =
-    document.getElementById(
-        "usersList"
+let sessionId =
+    localStorage.getItem(
+        SESSION_KEY
     );
 
 
-/* ======================================
-   ADMIN LOGIN
-====================================== */
-
-adminLoginButton.addEventListener(
-    "click",
-    async () => {
-
-        const email =
-            adminEmail.value.trim();
+let unsubscribeUser =
+    null;
 
 
-        const password =
-            adminPassword.value;
+let clockInterval =
+    null;
 
 
-        if (
-            !email ||
-            !password
-        ) {
-
-            adminLoginMessage.textContent =
-                "Vui lòng nhập email và mật khẩu.";
-
-            return;
-        }
+let durationInterval =
+    null;
 
 
-        adminLoginButton.disabled =
-            true;
+let authReady =
+    null;
 
 
-        try {
+/* =====================================================
+   DEVICE SESSION ID
+===================================================== */
 
-            await signInWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
+function createSessionId() {
 
-
-            adminLoginMessage.textContent =
-                "";
-
-        } catch (error) {
-
-            console.error(error);
-
-            adminLoginMessage.textContent =
-                "Email hoặc mật khẩu không đúng.";
-
-        } finally {
-
-            adminLoginButton.disabled =
-                false;
-        }
-
-    }
-);
-
-
-/* ======================================
-   AUTH CHECK
-====================================== */
-
-onAuthStateChanged(
-    auth,
-    async user => {
-
-        if (!user) {
-
-            showAdminLogin();
-
-            return;
-        }
-
-
-        /*
-         * Kiểm tra UID có nằm trong
-         * collection admins hay không.
-         */
-
-        const adminRef =
-            doc(
-                db,
-                "admins",
-                user.uid
-            );
-
-
-        const adminSnapshot =
-            await getDoc(
-                adminRef
-            );
-
-
-        if (
-            !adminSnapshot.exists()
-        ) {
-
-            await signOut(
-                auth
-            );
-
-
-            adminLoginMessage.textContent =
-                "Tài khoản này không có quyền Admin.";
-
-            return;
-        }
-
-
-        showAdminPanel();
-
-
-        loadUsers();
-
-    }
-);
-
-
-/* ======================================
-   SHOW LOGIN
-====================================== */
-
-function showAdminLogin() {
-
-    adminLogin.classList.remove(
-        "hidden"
-    );
-
-
-    adminPanel.classList.add(
-        "hidden"
+    return (
+        crypto.randomUUID() +
+        "-" +
+        Date.now().toString(36)
     );
 }
 
 
-/* ======================================
-   SHOW PANEL
-====================================== */
+/* =====================================================
+   DATE
+===================================================== */
 
-function showAdminPanel() {
+function normalizeDate(value) {
 
-    adminLogin.classList.add(
-        "hidden"
-    );
+    if (!value) {
+        return null;
+    }
 
 
-    adminPanel.classList.remove(
-        "hidden"
-    );
+    if (
+        typeof value.toDate ===
+        "function"
+    ) {
+
+        return value.toDate();
+
+    }
+
+
+    if (value instanceof Date) {
+
+        return value;
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return null;
+
+    }
+
+
+    return date;
 }
 
 
-/* ======================================
-   LOGOUT
-====================================== */
+/* =====================================================
+   CHECK DATE
+===================================================== */
 
-adminLogout.addEventListener(
-    "click",
-    () => {
+function checkDateRange(user) {
 
-        signOut(
-            auth
+    const now =
+        new Date();
+
+
+    const start =
+        normalizeDate(
+            user.startDate
         );
 
+
+    const end =
+        normalizeDate(
+            user.endDate
+        );
+
+
+    if (
+        start &&
+        now < start
+    ) {
+
+        return {
+            ok: false,
+            message:
+                "Tài khoản chưa đến thời gian sử dụng."
+        };
+
     }
-);
 
 
-/* ======================================
-   SAVE USER
-====================================== */
+    if (
+        end &&
+        now > end
+    ) {
 
-saveUserButton.addEventListener(
-    "click",
-    saveUser
-);
+        return {
+            ok: false,
+            message:
+                "Tài khoản đã hết hạn."
+        };
+
+    }
 
 
-async function saveUser() {
+    return {
+        ok: true
+    };
+}
 
-    const id =
-        employeeIdInput.value
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+async function login() {
+
+    const code =
+        employeeCodeInput.value
             .trim()
             .toUpperCase();
 
 
-    const name =
-        employeeNameInput.value
-            .trim();
+    if (!code) {
 
-
-    const role =
-        employeeRoleInput.value;
-
-
-    const color =
-        employeeColorInput.value;
-
-
-    if (
-        !id ||
-        !name
-    ) {
-
-        alert(
-            "Vui lòng nhập mã nhân viên và tên."
+        showLoginError(
+            "请输入员工编号"
         );
 
         return;
     }
 
 
-    /*
-     * Kiểm tra ký tự ID.
-     */
+    loginButton.disabled =
+        true;
+
+
+    loginMessage.textContent =
+        "正在验证...";
+
+
+    try {
+
+        await ensureAnonymousSession();
+
+
+        const userRef =
+            doc(
+                db,
+                "users",
+                code
+            );
+
+
+        const snapshot =
+            await getDoc(
+                userRef
+            );
+
+
+        if (
+            !snapshot.exists()
+        ) {
+
+            throw new Error(
+                "Mã nhân viên không tồn tại."
+            );
+
+        }
+
+
+        const user =
+            snapshot.data();
+
+
+        if (
+            user.active !== true
+        ) {
+
+            throw new Error(
+                "Tài khoản đã bị vô hiệu hóa."
+            );
+
+        }
+
+
+        const dateCheck =
+            checkDateRange(
+                user
+            );
+
+
+        if (
+            !dateCheck.ok
+        ) {
+
+            throw new Error(
+                dateCheck.message
+            );
+
+        }
+
+
+        /*
+         * Mỗi lần đăng nhập tạo
+         * session ID mới.
+         *
+         * Nếu thiết bị khác đăng nhập
+         * bằng cùng mã, session cũ
+         * sẽ không còn hợp lệ.
+         */
+
+        const newSession =
+            createSessionId();
+
+
+        await updateDoc(
+            userRef,
+            {
+
+                activeSession:
+                    newSession,
+
+                lastLogin:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        employeeId =
+            code;
+
+
+        sessionId =
+            newSession;
+
+
+        localStorage.setItem(
+            EMPLOYEE_KEY,
+            employeeId
+        );
+
+
+        localStorage.setItem(
+            SESSION_KEY,
+            sessionId
+        );
+
+
+        openApp();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showLoginError(
+            error.message ||
+            "Không thể đăng nhập."
+        );
+
+    } finally {
+
+        loginButton.disabled =
+            false;
+
+    }
+}
+
+
+/* =====================================================
+   OPEN APP
+===================================================== */
+
+async function openApp() {
+
+    loginScreen.classList.add(
+        "hidden"
+    );
+
+
+    appScreen.classList.remove(
+        "hidden"
+    );
+
+
+    await loadUser();
+
+
+    startClock();
+
+}
+
+
+/* =====================================================
+   LOAD USER
+===================================================== */
+
+async function loadUser() {
 
     if (
-        !/^[A-Z0-9_-]+$/.test(
-            id
-        )
+        !employeeId ||
+        !sessionId
     ) {
 
-        alert(
-            "Mã nhân viên chỉ được dùng A-Z, 0-9, _ hoặc -."
-        );
+        logout();
 
         return;
     }
@@ -362,647 +469,563 @@ async function saveUser() {
         doc(
             db,
             "users",
-            id
+            employeeId
         );
 
 
-    const oldSnapshot =
-        await getDoc(
-            userRef
-        );
+    /*
+     * realtime listener
+     *
+     * Admin thay đổi dữ liệu
+     * → app nhận thay đổi.
+     */
+
+    unsubscribeUser =
+        onSnapshot(
+            userRef,
+            snapshot => {
+
+                if (
+                    !snapshot.exists()
+                ) {
+
+                    logout();
+
+                    return;
+                }
 
 
-    const oldData =
-        oldSnapshot.exists()
-            ? oldSnapshot.data()
-            : {};
+                const user =
+                    snapshot.data();
 
 
-    const data = {
+                /*
+                 * Kiểm tra session
+                 */
 
-        employeeId:
-            id,
+                if (
+                    user.activeSession !==
+                    sessionId
+                ) {
 
-        name:
-            name,
+                    alert(
+                        "Phiên đăng nhập đã được sử dụng trên thiết bị khác."
+                    );
 
-        role:
-            role,
+                    logout();
 
-        active:
-            oldData.active ??
-            true,
-
-        color:
-            color,
-
-        startDate:
-            startDateInput.value
-                ? new Date(
-                    startDateInput.value
-                )
-                : null,
-
-        endDate:
-            endDateInput.value
-                ? new Date(
-                    endDateInput.value
-                )
-                : null,
-
-        /*
-         * Không reset session khi sửa
-         * thông tin bình thường.
-         */
-
-        activeSession:
-            oldData.activeSession ??
-            null,
-
-        timerStart:
-            oldData.timerStart ??
-            serverTimestamp(),
-
-        createdAt:
-            oldData.createdAt ??
-            serverTimestamp(),
-
-        updatedAt:
-            serverTimestamp()
-    };
+                    return;
+                }
 
 
-    await setDoc(
-        userRef,
-        data,
-        {
-            merge:
-                true
-        }
-    );
+                /*
+                 * Kiểm tra active
+                 */
+
+                if (
+                    user.active !== true
+                ) {
+
+                    alert(
+                        "Tài khoản đã bị khóa."
+                    );
+
+                    logout();
+
+                    return;
+                }
 
 
-    alert(
-        "Đã lưu nhân viên."
-    );
+                /*
+                 * Kiểm tra thời gian
+                 */
+
+                const dateCheck =
+                    checkDateRange(
+                        user
+                    );
 
 
-    clearForm();
+                if (
+                    !dateCheck.ok
+                ) {
 
+                    alert(
+                        dateCheck.message
+                    );
 
-    loadUsers();
-}
+                    logout();
 
+                    return;
+                }
 
-/* ======================================
-   LOAD USERS
-====================================== */
-
-async function loadUsers() {
-
-    usersList.innerHTML =
-        "Đang tải...";
-
-
-    try {
-
-        const snapshot =
-            await getDocs(
-                collection(
-                    db,
-                    "users"
-                )
-            );
-
-
-        usersList.innerHTML =
-            "";
-
-
-        if (
-            snapshot.empty
-        ) {
-
-            usersList.innerHTML =
-                "<p>Chưa có nhân viên.</p>";
-
-            return;
-        }
-
-
-        snapshot.forEach(
-            userDoc => {
 
                 renderUser(
-                    userDoc.id,
-                    userDoc.data()
+                    user
+                );
+
+            },
+            error => {
+
+                console.error(
+                    error
                 );
 
             }
         );
-
-    } catch (error) {
-
-        console.error(
-            error
-        );
-
-
-        usersList.innerHTML =
-            "<p>Không thể tải danh sách.</p>";
-    }
 }
 
 
-/* ======================================
-   RENDER
-====================================== */
+/* =====================================================
+   RENDER USER
+===================================================== */
 
-function renderUser(
-    id,
-    user
-) {
+function renderUser(user) {
 
-    const row =
-        document.createElement(
-            "div"
-        );
+    employeeHeader.textContent =
+        `${user.employeeId || employeeId}` +
+        `(${user.name || ""})`;
 
 
-    row.className =
-        "user-row";
+    accountStatus.textContent =
+        user.active
+            ? "Active"
+            : "Inactive";
 
 
-    const info =
-        document.createElement(
-            "div"
-        );
+    /*
+     * Màu được lưu trên server.
+     */
 
-
-    info.className =
-        "user-info";
-
-
-    const name =
-        document.createElement(
-            "div"
-        );
-
-
-    name.className =
-        "user-name";
-
-
-    name.textContent =
-        user.name ||
-        "";
-
-
-    const details =
-        document.createElement(
-            "div"
-        );
-
-
-    details.className =
-        "user-details";
-
-
-    details.textContent =
-        [
-            `Mã: ${id}`,
-
-            `Quyền: ${user.role || "user"}`,
-
-            `Trạng thái: ${
-                user.active
-                    ? "🟢 Active"
-                    : "🔴 Inactive"
-            }`,
-
-            `Thiết bị: ${
-                user.activeSession
-                    ? "🟢 Đang sử dụng"
-                    : "⚪ Chưa đăng nhập"
-            }`
-
-        ].join(
-            "\n"
-        );
-
-
-    info.appendChild(
-        name
+    applyColor(
+        user.color === "green"
     );
 
 
-    info.appendChild(
-        details
-    );
-
-
-    const actions =
-        document.createElement(
-            "div"
-        );
-
-
-    actions.className =
-        "user-actions";
-
-
-    /* EDIT */
-
-    const edit =
-        createButton(
-            "Sửa",
-            "button-gray"
-        );
-
-
-    edit.onclick =
-        () => {
-
-            fillForm(
-                id,
-                user
-            );
-
-        };
-
-
-    /* LOCK */
-
-    const toggle =
-        createButton(
-            user.active
-                ? "Khóa"
-                : "Mở khóa",
-
-            user.active
-                ? "button-red"
-                : "button-green"
-        );
-
-
-    toggle.onclick =
-        () => {
-
-            toggleUser(
-                id,
-                user.active
-            );
-
-        };
-
-
-    /* RESET */
-
-    const reset =
-        createButton(
-            "Reset thiết bị",
-            "button-gray"
-        );
-
-
-    reset.onclick =
-        () => {
-
-            resetDevice(
-                id
-            );
-
-        };
-
-
-    /* DELETE */
-
-    const remove =
-        createButton(
-            "Xóa",
-            "button-red"
-        );
-
-
-    remove.onclick =
-        () => {
-
-            deleteUser(
-                id
-            );
-
-        };
-
-
-    actions.appendChild(
-        edit
-    );
-
-
-    actions.appendChild(
-        toggle
-    );
-
-
-    actions.appendChild(
-        reset
-    );
-
-
-    actions.appendChild(
-        remove
-    );
-
-
-    row.appendChild(
-        info
-    );
-
-
-    row.appendChild(
-        actions
-    );
-
-
-    usersList.appendChild(
-        row
-    );
-}
-
-
-/* ======================================
-   BUTTON
-====================================== */
-
-function createButton(
-    text,
-    className
-) {
-
-    const button =
-        document.createElement(
-            "button"
-        );
-
-
-    button.textContent =
-        text;
-
-
-    button.className =
-        className;
-
-
-    return button;
-}
-
-
-/* ======================================
-   FILL FORM
-====================================== */
-
-function fillForm(
-    id,
-    user
-) {
-
-    employeeIdInput.value =
-        id;
-
-
-    employeeIdInput.disabled =
-        true;
-
-
-    employeeNameInput.value =
-        user.name || "";
-
-
-    employeeRoleInput.value =
-        user.role ||
-        "user";
-
-
-    employeeColorInput.value =
-        user.color ||
-        "yellow";
-
-
-    startDateInput.value =
-        convertDate(
-            user.startDate
-        );
-
-
-    endDateInput.value =
-        convertDate(
-            user.endDate
-        );
-}
-
-
-/* ======================================
-   DATE
-====================================== */
-
-function convertDate(
-    value
-) {
-
-    if (!value) {
-
-        return "";
-    }
-
-
-    let date;
-
+    /*
+     * Timer
+     */
 
     if (
-        typeof value.toDate ===
-        "function"
+        user.timerStart
     ) {
 
-        date =
-            value.toDate();
+        startTimer(
+            normalizeDate(
+                user.timerStart
+            )
+        );
+
+    }
+
+
+    /*
+     * QR demo
+     */
+
+    generateDemoQR(
+        user.employeeId ||
+        employeeId,
+        user.name || ""
+    );
+}
+
+
+/* =====================================================
+   COLOR
+===================================================== */
+
+function applyColor(isGreen) {
+
+    if (isGreen) {
+
+        cardHeader.style.backgroundColor =
+            "#38a754";
+
+
+        headerText.textContent =
+            "DEMO - GREEN STATE";
 
     } else {
 
-        date =
-            new Date(value);
+        cardHeader.style.backgroundColor =
+            "#f2c75b";
+
+
+        headerText.textContent =
+            "DEMO - YELLOW STATE";
     }
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "";
-    }
-
-
-    const local =
-        new Date(
-            date.getTime() -
-            date.getTimezoneOffset()
-            * 60000
-        );
-
-
-    return local
-        .toISOString()
-        .slice(
-            0,
-            16
-        );
 }
 
 
-/* ======================================
-   TOGGLE ACTIVE
-====================================== */
+/* =====================================================
+   CLOCK
+===================================================== */
 
-async function toggleUser(
-    id,
-    current
-) {
+function startClock() {
 
-    await updateDoc(
-        doc(
-            db,
-            "users",
-            id
-        ),
-        {
+    if (
+        clockInterval
+    ) {
 
-            active:
-                !current,
+        clearInterval(
+            clockInterval
+        );
 
-            updatedAt:
-                serverTimestamp()
+    }
 
-        }
+
+    function update() {
+
+        const now =
+            new Date();
+
+
+        currentTime.textContent =
+            `${now.getFullYear()}-` +
+            `${String(
+                now.getMonth() + 1
+            ).padStart(2, "0")}-` +
+            `${String(
+                now.getDate()
+            ).padStart(2, "0")} ` +
+            `${String(
+                now.getHours()
+            ).padStart(2, "0")}:` +
+            `${String(
+                now.getMinutes()
+            ).padStart(2, "0")}:` +
+            `${String(
+                now.getSeconds()
+            ).padStart(2, "0")}`;
+    }
+
+
+    update();
+
+
+    clockInterval = setInterval(
+        update,
+        1000
     );
-
-
-    loadUsers();
 }
 
 
-/* ======================================
-   RESET DEVICE
-====================================== */
+/* =====================================================
+   TIMER
+===================================================== */
 
-async function resetDevice(
-    id
-) {
+function startTimer(start) {
 
-    if (
-        !confirm(
-            "Bạn chắc chắn muốn reset thiết bị của nhân viên này?"
-        )
-    ) {
-
+    if (!start) {
+        statusTimer.textContent = "00:00:00";
         return;
     }
 
 
-    await updateDoc(
-        doc(
-            db,
-            "users",
-            id
-        ),
-        {
-
-            activeSession:
-                null,
-
-            updatedAt:
-                serverTimestamp()
-
-        }
-    );
-
-
-    alert(
-        "Đã reset thiết bị."
-    );
-
-
-    loadUsers();
-}
-
-
-/* ======================================
-   DELETE
-====================================== */
-
-async function deleteUser(
-    id
-) {
-
-    if (
-        !confirm(
-            "Bạn chắc chắn muốn xóa nhân viên này?"
-        )
-    ) {
-
-        return;
+    if (durationInterval) {
+        clearInterval(durationInterval);
     }
 
 
-    await deleteDoc(
-        doc(
-            db,
-            "users",
-            id
-        )
+    function updateTimer() {
+
+        const elapsed =
+            Math.max(
+                0,
+                Math.floor(
+                    (
+                        Date.now() -
+                        start.getTime()
+                    ) / 1000
+                )
+            );
+
+
+        const h =
+            Math.floor(
+                elapsed / 3600
+            );
+
+
+        const m =
+            Math.floor(
+                (elapsed % 3600) / 60
+            );
+
+
+        const s =
+            elapsed % 60;
+
+
+        statusTimer.textContent =
+            `${pad(h)}:` +
+            `${pad(m)}:` +
+            `${pad(s)}`;
+    }
+
+
+    updateTimer();
+
+
+    durationInterval = setInterval(
+        updateTimer,
+        1000
     );
-
-
-    loadUsers();
 }
 
 
-/* ======================================
-   CLEAR
-====================================== */
+function pad(value) {
 
-clearFormButton.addEventListener(
+    return String(value)
+        .padStart(2, "0");
+}
+
+
+/* =====================================================
+   QR DEMO
+===================================================== */
+
+function generateDemoQR(
+    employeeId,
+    name
+) {
+
+    const data =
+        JSON.stringify({
+
+            type: "THOR-DEMO",
+
+            employeeId:
+                employeeId,
+
+            name:
+                name,
+
+            timestamp:
+                Date.now()
+
+        });
+
+
+    qrcode.innerHTML = "";
+
+
+    /*
+     * QR demo bằng dịch vụ tạo ảnh.
+     *
+     * Không dùng làm mã xác thực
+     * ra/vào thực tế.
+     */
+
+    const img =
+        document.createElement(
+            "img"
+        );
+
+
+    img.alt =
+        "THOR Demo QR";
+
+
+    img.src =
+        "https://api.qrserver.com/v1/create-qr-code/" +
+        "?size=220x220&data=" +
+        encodeURIComponent(
+            data
+        );
+
+
+    qrcode.appendChild(
+        img
+    );
+}
+
+
+refreshButton.addEventListener(
     "click",
-    clearForm
+    async () => {
+
+        if (!employeeId) {
+            return;
+        }
+
+
+        const ref =
+            doc(
+                db,
+                "users",
+                employeeId
+            );
+
+
+        const snapshot =
+            await getDoc(
+                ref
+            );
+
+
+        if (
+            snapshot.exists()
+        ) {
+
+            const user =
+                snapshot.data();
+
+
+            generateDemoQR(
+                user.employeeId ||
+                employeeId,
+                user.name || ""
+            );
+
+        }
+
+    }
 );
 
 
-function clearForm() {
+/* =====================================================
+   LOGOUT
+===================================================== */
 
-    employeeIdInput.value =
+async function logout() {
+
+    if (
+        unsubscribeUser
+    ) {
+
+        unsubscribeUser();
+
+        unsubscribeUser =
+            null;
+    }
+
+
+    if (clockInterval) {
+        clearInterval(clockInterval);
+        clockInterval = null;
+    }
+
+
+    if (durationInterval) {
+        clearInterval(durationInterval);
+        durationInterval = null;
+    }
+
+
+    employeeId = null;
+    sessionId = null;
+
+
+    localStorage.removeItem(
+        EMPLOYEE_KEY
+    );
+
+
+    localStorage.removeItem(
+        SESSION_KEY
+    );
+
+
+    appScreen.classList.add(
+        "hidden"
+    );
+
+
+    loginScreen.classList.remove(
+        "hidden"
+    );
+
+
+    employeeCodeInput.value =
         "";
 
 
-    employeeIdInput.disabled =
-        false;
-
-
-    employeeNameInput.value =
-        "";
-
-
-    employeeRoleInput.value =
-        "user";
-
-
-    employeeColorInput.value =
-        "yellow";
-
-
-    startDateInput.value =
-        "";
-
-
-    endDateInput.value =
+    loginMessage.textContent =
         "";
 }
+
+
+logoutButton.addEventListener(
+    "click",
+    logout
+);
+
+
+/* =====================================================
+   LOGIN ERROR
+===================================================== */
+
+function showLoginError(
+    message
+) {
+
+    loginMessage.textContent =
+        message;
+}
+
+
+/* =====================================================
+   LOGIN BUTTON
+===================================================== */
+
+loginButton.addEventListener(
+    "click",
+    login
+);
+
+
+employeeCodeInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            login();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   AUTHENTICATION
+===================================================== */
+
+async function ensureAnonymousSession() {
+
+    if (auth.currentUser) {
+        return auth.currentUser;
+    }
+
+
+    if (!authReady) {
+        authReady = signInAnonymously(auth)
+            .then(result => result.user)
+            .catch(error => {
+                authReady = null;
+                throw error;
+            });
+    }
+
+
+    return authReady;
+}
+
+
+ensureAnonymousSession()
+    .then(() => {
+        if (employeeId && sessionId) {
+            openApp();
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        showLoginError(
+            "Không thể kết nối. Hãy bật Anonymous Authentication trong Firebase."
+        );
+    });
