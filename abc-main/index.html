@@ -6,7 +6,6 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
-    <!-- Xoá cache hoàn toàn -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -68,80 +67,79 @@
             flex-direction: column;
             align-items: center;
 
-            /* Tự động né Tai thỏ / Đảo động trên các dòng iPhone */
-            padding-top: max(48px, env(safe-area-inset-top));
+            /* Căn chuẩn khoảng cách từ đỉnh màn hình iPhone xuống */
+            padding-top: max(50px, env(safe-area-inset-top));
         }
 
-        .top-status-bar {
-            display: none !important;
-        }
-
-        /* Tiêu đề Mã & Tên Nhân Viên */
+        /* Tên Nhân Viên Phía Trên */
         .header {
             margin-top: 10px;
             font-size: 18px;
-            color: #E2CE9C;
-            font-weight: 400;
+            color: #e2ce9c;
+            font-weight: 300;
             text-align: center;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
-        /* Khung Thẻ QR */
+        /* Thẻ QR Chính */
         .card {
-            margin-top: 25px;
-            width: 78%;
-            max-width: 320px;
-            border-radius: 12px;
+            margin-top: 22px;
+            width: 80%;
+            max-width: 325px;
+            border-radius: 10px;
             position: relative;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
         }
 
+        /* Header Thẻ */
         .card-header {
-            background-color: #38a754;
-            padding: 16px 8px;
+            background-color: #f2c75b; /* Màu vàng chuẩn ảnh gốc */
+            padding: 15px 10px;
             text-align: center;
             color: #ffffff;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 300;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
             position: relative;
             transition: background-color 0.3s ease;
         }
 
+        /* Vết khuyết hình tròn 2 bên */
         .circle1,
         .circle2 {
             position: absolute;
             background-color: #2f3347;
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            bottom: -7px;
+            bottom: -6px;
             z-index: 10;
         }
 
-        .circle1 { left: -7px; }
-        .circle2 { right: -7px; }
+        .circle1 { left: -6px; }
+        .circle2 { right: -6px; }
 
-        /* Thân thẻ màu trắng */
+        /* Thân Thẻ Trắng */
         .card-body {
             background-color: #ffffff;
-            padding: 20px 16px 18px 16px;
+            padding: 16px 16px 18px 16px;
             text-align: center;
             color: #000;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
 
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
+        /* Dòng Thời Gian Trên Mã QR */
         .time {
-            font-size: 15px;
-            font-weight: 400;
-            color: #111111;
-            margin-bottom: 14px;
+            font-size: 14.5px;
+            font-weight: 300;
+            color: #222222;
+            margin-bottom: 12px;
             letter-spacing: 0.2px;
             line-height: 1.2;
             width: 100%;
@@ -149,10 +147,10 @@
 
         /* Mã QR */
         #qrcode {
-            width: 210px;
-            height: 210px;
-            min-width: 210px;
-            min-height: 210px;
+            width: 230px;
+            height: 230px;
+            min-width: 230px;
+            min-height: 230px;
             margin: 0 auto;
 
             display: flex;
@@ -164,50 +162,47 @@
 
         #qrcode img,
         #qrcode canvas {
-            width: 210px !important;
-            height: 210px !important;
+            width: 230px !important;
+            height: 230px !important;
             display: block !important;
         }
 
+        /* Nút 刷新二维码 Ở Chính Giữa */
         .refresh {
-            margin-top: 16px;
+            margin-top: 14px;
             width: 100%;
-
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 24px;
         }
 
         .refresh-title {
             cursor: pointer;
-            font-size: 13px;
-            color: #666666;
+            font-size: 12px;
+            color: #888888;
             font-weight: 300;
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Trạng Thái & Đồng Hồ Đếm */
         .status-box {
-            margin-top: 16px;
-
+            margin-top: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-
-            color: #38a754;
+            color: #4cd964; /* Màu xanh nhạt chuẩn ảnh gốc */
         }
 
         .status-label {
-            font-size: 17px;
-            font-weight: 400;
+            font-size: 16px;
+            font-weight: 300;
             letter-spacing: 0.5px;
-
             animation: pulse-green 1.2s infinite ease-in-out;
         }
 
         .status-timer {
             font-size: 20px;
-            font-weight: 400;
+            font-weight: 300;
             margin-top: 2px;
             letter-spacing: 0.5px;
             font-variant-numeric: tabular-nums;
@@ -215,19 +210,20 @@
 
         @keyframes pulse-green {
             0% { opacity: 1; }
-            50% { opacity: 0.25; }
+            50% { opacity: 0.3; }
             100% { opacity: 1; }
         }
 
-        /* Đoạn ghi chú phía dưới */
+        /* Đoạn Văn Ghi Chú Phía Dưới */
         .note {
-            margin: 30px 10% 0 10%;
-            font-size: 13px;
+            margin: 26px 10% 0 10%;
+            font-size: 12.5px;
             font-weight: 300;
-            color: #E2CE9C;
-            line-height: 1.6;
+            color: #e2ce9c;
+            line-height: 1.55;
             text-align: center;
             letter-spacing: 0.2px;
+            opacity: 0.9;
         }
     </style>
 </head>
@@ -241,7 +237,7 @@
     <div class="card">
         <div class="card-header" id="cardHeader">
             <span id="headerText">
-                将二维码对准扫描器刷码进场
+                将二维码对准扫描器刷码出场
             </span>
             <div class="circle1"></div>
             <div class="circle2"></div>
@@ -253,7 +249,6 @@
             <div id="qrcode"></div>
 
             <div class="refresh">
-                <span class="refresh-title">申请离场</span>
                 <span onclick="generateQRCode(event)" class="refresh-title">刷新二维码</span>
             </div>
 
@@ -269,6 +264,7 @@
     </div>
 
     <script>
+        /* Chặn kéo cuộn màn hình */
         document.addEventListener('touchmove', function(e) {
             e.preventDefault();
         }, { passive: false });
@@ -284,7 +280,8 @@
         }
 
         let savedColor = localStorage.getItem(COLOR_STORAGE_KEY);
-        let isGreen = savedColor ? savedColor === "green" : true;
+        // Mặc định vàng (出场) theo ảnh mới
+        let isGreen = savedColor ? savedColor === "green" : false;
 
         const cardHeader = document.getElementById("cardHeader");
         const headerText = document.getElementById("headerText");
@@ -310,12 +307,8 @@
         function updateAllTimers() {
             const now = new Date();
             const formattedTime =
-                `${now.getFullYear()}-` +
-                `${now.getMonth() + 1}-` +
-                `${now.getDate()} ` +
-                `${pad(now.getHours())}:` +
-                `${pad(now.getMinutes())}:` +
-                `${pad(now.getSeconds())}`;
+                `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ` +
+                `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 
             document.getElementById("currentTime").textContent = formattedTime;
 
@@ -358,8 +351,8 @@
 
             new QRCode(qrcodeElement, {
                 text: accessData,
-                width: 210,
-                height: 210,
+                width: 230,
+                height: 230,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.M
