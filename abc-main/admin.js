@@ -5,16 +5,21 @@ import {
 
 
 import {
-    signInAnonymously
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
 } from
     "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
 
 import {
+    collection,
+    getDocs,
     doc,
     getDoc,
+    setDoc,
     updateDoc,
-    onSnapshot,
+    deleteDoc,
     serverTimestamp
 } from
     "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
@@ -24,862 +29,219 @@ import {
    DOM
 ===================================================== */
 
-const loginScreen =
+const adminLogin =
     document.getElementById(
-        "loginScreen"
+        "adminLogin"
     );
 
 
-const appScreen =
+const adminPanel =
     document.getElementById(
-        "appScreen"
+        "adminPanel"
     );
 
 
-const employeeCodeInput =
+const email =
     document.getElementById(
-        "employeeCodeInput"
+        "adminEmail"
+    );
+
+
+const password =
+    document.getElementById(
+        "adminPassword"
     );
 
 
 const loginButton =
     document.getElementById(
-        "loginButton"
+        "adminLoginButton"
     );
 
 
 const loginMessage =
     document.getElementById(
-        "loginMessage"
-    );
-
-
-const employeeHeader =
-    document.getElementById(
-        "employeeHeader"
-    );
-
-
-const accountStatus =
-    document.getElementById(
-        "accountStatus"
-    );
-
-
-const cardHeader =
-    document.getElementById(
-        "cardHeader"
-    );
-
-
-const headerText =
-    document.getElementById(
-        "headerText"
-    );
-
-
-const currentTime =
-    document.getElementById(
-        "currentTime"
-    );
-
-
-const statusTimer =
-    document.getElementById(
-        "statusTimer"
-    );
-
-
-const qrcode =
-    document.getElementById(
-        "qrcode"
-    );
-
-
-const refreshButton =
-    document.getElementById(
-        "refreshButton"
+        "adminLoginMessage"
     );
 
 
 const logoutButton =
     document.getElementById(
-        "logoutButton"
+        "adminLogout"
     );
 
 
-/* =====================================================
-   SESSION
-===================================================== */
-
-const SESSION_KEY =
-    "thor_session_id";
-
-
-const EMPLOYEE_KEY =
-    "thor_employee_id";
-
-
-let employeeId =
-    localStorage.getItem(
-        EMPLOYEE_KEY
+const employeeId =
+    document.getElementById(
+        "employeeId"
     );
 
 
-let sessionId =
-    localStorage.getItem(
-        SESSION_KEY
+const employeeName =
+    document.getElementById(
+        "employeeName"
     );
 
 
-let unsubscribeUser =
-    null;
-
-
-let clockInterval =
-    null;
-
-
-let durationInterval =
-    null;
-
-
-let authReady =
-    null;
-
-
-/* =====================================================
-   DEVICE SESSION ID
-===================================================== */
-
-function createSessionId() {
-
-    return (
-        crypto.randomUUID() +
-        "-" +
-        Date.now().toString(36)
+const employeeRole =
+    document.getElementById(
+        "employeeRole"
     );
-}
 
 
-/* =====================================================
-   DATE
-===================================================== */
-
-function normalizeDate(value) {
-
-    if (!value) {
-        return null;
-    }
+const startDate =
+    document.getElementById(
+        "startDate"
+    );
 
 
-    if (
-        typeof value.toDate ===
-        "function"
-    ) {
-
-        return value.toDate();
-
-    }
+const endDate =
+    document.getElementById(
+        "endDate"
+    );
 
 
-    if (value instanceof Date) {
-
-        return value;
-
-    }
-
-
-    const date =
-        new Date(value);
+const employeeColor =
+    document.getElementById(
+        "employeeColor"
+    );
 
 
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return null;
-
-    }
+const saveButton =
+    document.getElementById(
+        "saveUser"
+    );
 
 
-    return date;
-}
+const clearButton =
+    document.getElementById(
+        "clearForm"
+    );
 
 
-/* =====================================================
-   CHECK DATE
-===================================================== */
-
-function checkDateRange(user) {
-
-    const now =
-        new Date();
-
-
-    const start =
-        normalizeDate(
-            user.startDate
-        );
-
-
-    const end =
-        normalizeDate(
-            user.endDate
-        );
-
-
-    if (
-        start &&
-        now < start
-    ) {
-
-        return {
-            ok: false,
-            message:
-                "Tài khoản chưa đến thời gian sử dụng."
-        };
-
-    }
-
-
-    if (
-        end &&
-        now > end
-    ) {
-
-        return {
-            ok: false,
-            message:
-                "Tài khoản đã hết hạn."
-        };
-
-    }
-
-
-    return {
-        ok: true
-    };
-}
+const usersList =
+    document.getElementById(
+        "usersList"
+    );
 
 
 /* =====================================================
    LOGIN
 ===================================================== */
 
-async function login() {
-
-    const code =
-        employeeCodeInput.value
-            .trim()
-            .toUpperCase();
-
-
-    if (!code) {
-
-        showLoginError(
-            "请输入员工编号"
-        );
-
-        return;
-    }
-
-
-    loginButton.disabled =
-        true;
-
-
-    loginMessage.textContent =
-        "正在验证...";
-
-
-    try {
-
-        await ensureAnonymousSession();
-
-
-        const userRef =
-            doc(
-                db,
-                "users",
-                code
-            );
-
-
-        const snapshot =
-            await getDoc(
-                userRef
-            );
-
-
-        if (
-            !snapshot.exists()
-        ) {
-
-            throw new Error(
-                "Mã nhân viên không tồn tại."
-            );
-
-        }
-
-
-        const user =
-            snapshot.data();
-
-
-        if (
-            user.active !== true
-        ) {
-
-            throw new Error(
-                "Tài khoản đã bị vô hiệu hóa."
-            );
-
-        }
-
-
-        const dateCheck =
-            checkDateRange(
-                user
-            );
-
-
-        if (
-            !dateCheck.ok
-        ) {
-
-            throw new Error(
-                dateCheck.message
-            );
-
-        }
-
-
-        /*
-         * Mỗi lần đăng nhập tạo
-         * session ID mới.
-         *
-         * Nếu thiết bị khác đăng nhập
-         * bằng cùng mã, session cũ
-         * sẽ không còn hợp lệ.
-         */
-
-        const newSession =
-            createSessionId();
-
-
-        await updateDoc(
-            userRef,
-            {
-
-                activeSession:
-                    newSession,
-
-                lastLogin:
-                    serverTimestamp()
-
-            }
-        );
-
-
-        employeeId =
-            code;
-
-
-        sessionId =
-            newSession;
-
-
-        localStorage.setItem(
-            EMPLOYEE_KEY,
-            employeeId
-        );
-
-
-        localStorage.setItem(
-            SESSION_KEY,
-            sessionId
-        );
-
-
-        openApp();
-
-    } catch (error) {
-
-        console.error(error);
-
-        showLoginError(
-            error.message ||
-            "Không thể đăng nhập."
-        );
-
-    } finally {
-
-        loginButton.disabled =
-            false;
-
-    }
-}
-
-
-/* =====================================================
-   OPEN APP
-===================================================== */
-
-async function openApp() {
-
-    loginScreen.classList.add(
-        "hidden"
-    );
-
-
-    appScreen.classList.remove(
-        "hidden"
-    );
-
-
-    await loadUser();
-
-
-    startClock();
-
-}
-
-
-/* =====================================================
-   LOAD USER
-===================================================== */
-
-async function loadUser() {
-
-    if (
-        !employeeId ||
-        !sessionId
-    ) {
-
-        logout();
-
-        return;
-    }
-
-
-    const userRef =
-        doc(
-            db,
-            "users",
-            employeeId
-        );
-
-
-    /*
-     * realtime listener
-     *
-     * Admin thay đổi dữ liệu
-     * → app nhận thay đổi.
-     */
-
-    unsubscribeUser =
-        onSnapshot(
-            userRef,
-            snapshot => {
-
-                if (
-                    !snapshot.exists()
-                ) {
-
-                    logout();
-
-                    return;
-                }
-
-
-                const user =
-                    snapshot.data();
-
-
-                /*
-                 * Kiểm tra session
-                 */
-
-                if (
-                    user.activeSession !==
-                    sessionId
-                ) {
-
-                    alert(
-                        "Phiên đăng nhập đã được sử dụng trên thiết bị khác."
-                    );
-
-                    logout();
-
-                    return;
-                }
-
-
-                /*
-                 * Kiểm tra active
-                 */
-
-                if (
-                    user.active !== true
-                ) {
-
-                    alert(
-                        "Tài khoản đã bị khóa."
-                    );
-
-                    logout();
-
-                    return;
-                }
-
-
-                /*
-                 * Kiểm tra thời gian
-                 */
-
-                const dateCheck =
-                    checkDateRange(
-                        user
-                    );
-
-
-                if (
-                    !dateCheck.ok
-                ) {
-
-                    alert(
-                        dateCheck.message
-                    );
-
-                    logout();
-
-                    return;
-                }
-
-
-                renderUser(
-                    user
-                );
-
-            },
-            error => {
-
-                console.error(
-                    error
-                );
-
-            }
-        );
-}
-
-
-/* =====================================================
-   RENDER USER
-===================================================== */
-
-function renderUser(user) {
-
-    employeeHeader.textContent =
-        `${user.employeeId || employeeId}` +
-        `(${user.name || ""})`;
-
-
-    accountStatus.textContent =
-        user.active
-            ? "Active"
-            : "Inactive";
-
-
-    /*
-     * Màu được lưu trên server.
-     */
-
-    applyColor(
-        user.color === "green"
-    );
-
-
-    /*
-     * Timer
-     */
-
-    if (
-        user.timerStart
-    ) {
-
-        startTimer(
-            normalizeDate(
-                user.timerStart
-            )
-        );
-
-    }
-
-
-    /*
-     * QR demo
-     */
-
-    generateDemoQR(
-        user.employeeId ||
-        employeeId,
-        user.name || ""
-    );
-}
-
-
-/* =====================================================
-   COLOR
-===================================================== */
-
-function applyColor(isGreen) {
-
-    if (isGreen) {
-
-        cardHeader.style.backgroundColor =
-            "#38a754";
-
-
-        headerText.textContent =
-            "DEMO - GREEN STATE";
-
-    } else {
-
-        cardHeader.style.backgroundColor =
-            "#f2c75b";
-
-
-        headerText.textContent =
-            "DEMO - YELLOW STATE";
-    }
-}
-
-
-/* =====================================================
-   CLOCK
-===================================================== */
-
-function startClock() {
-
-    if (
-        clockInterval
-    ) {
-
-        clearInterval(
-            clockInterval
-        );
-
-    }
-
-
-    function update() {
-
-        const now =
-            new Date();
-
-
-        currentTime.textContent =
-            `${now.getFullYear()}-` +
-            `${String(
-                now.getMonth() + 1
-            ).padStart(2, "0")}-` +
-            `${String(
-                now.getDate()
-            ).padStart(2, "0")} ` +
-            `${String(
-                now.getHours()
-            ).padStart(2, "0")}:` +
-            `${String(
-                now.getMinutes()
-            ).padStart(2, "0")}:` +
-            `${String(
-                now.getSeconds()
-            ).padStart(2, "0")}`;
-    }
-
-
-    update();
-
-
-    clockInterval = setInterval(
-        update,
-        1000
-    );
-}
-
-
-/* =====================================================
-   TIMER
-===================================================== */
-
-function startTimer(start) {
-
-    if (!start) {
-        statusTimer.textContent = "00:00:00";
-        return;
-    }
-
-
-    if (durationInterval) {
-        clearInterval(durationInterval);
-    }
-
-
-    function updateTimer() {
-
-        const elapsed =
-            Math.max(
-                0,
-                Math.floor(
-                    (
-                        Date.now() -
-                        start.getTime()
-                    ) / 1000
-                )
-            );
-
-
-        const h =
-            Math.floor(
-                elapsed / 3600
-            );
-
-
-        const m =
-            Math.floor(
-                (elapsed % 3600) / 60
-            );
-
-
-        const s =
-            elapsed % 60;
-
-
-        statusTimer.textContent =
-            `${pad(h)}:` +
-            `${pad(m)}:` +
-            `${pad(s)}`;
-    }
-
-
-    updateTimer();
-
-
-    durationInterval = setInterval(
-        updateTimer,
-        1000
-    );
-}
-
-
-function pad(value) {
-
-    return String(value)
-        .padStart(2, "0");
-}
-
-
-/* =====================================================
-   QR DEMO
-===================================================== */
-
-function generateDemoQR(
-    employeeId,
-    name
-) {
-
-    const data =
-        JSON.stringify({
-
-            type: "THOR-DEMO",
-
-            employeeId:
-                employeeId,
-
-            name:
-                name,
-
-            timestamp:
-                Date.now()
-
-        });
-
-
-    qrcode.innerHTML = "";
-
-
-    /*
-     * QR demo bằng dịch vụ tạo ảnh.
-     *
-     * Không dùng làm mã xác thực
-     * ra/vào thực tế.
-     */
-
-    const img =
-        document.createElement(
-            "img"
-        );
-
-
-    img.alt =
-        "THOR Demo QR";
-
-
-    img.src =
-        "https://api.qrserver.com/v1/create-qr-code/" +
-        "?size=220x220&data=" +
-        encodeURIComponent(
-            data
-        );
-
-
-    qrcode.appendChild(
-        img
-    );
-}
-
-
-refreshButton.addEventListener(
+loginButton.addEventListener(
     "click",
     async () => {
 
-        if (!employeeId) {
+        const mail =
+            email.value.trim();
+
+        const pass =
+            password.value;
+
+
+        if (
+            !mail ||
+            !pass
+        ) {
+
+            loginMessage.textContent =
+                "Nhập email và mật khẩu.";
+
             return;
         }
 
 
-        const ref =
-            doc(
-                db,
-                "users",
-                employeeId
+        try {
+
+            await signInWithEmailAndPassword(
+                auth,
+                mail,
+                pass
             );
 
 
-        const snapshot =
+            loginMessage.textContent =
+                "";
+
+        } catch (error) {
+
+            console.error(error);
+
+            loginMessage.textContent =
+                "Đăng nhập thất bại.";
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   AUTH
+===================================================== */
+
+onAuthStateChanged(
+    auth,
+    async user => {
+
+        if (!user) {
+
+            adminLogin.classList.remove(
+                "hidden"
+            );
+
+            adminPanel.classList.add(
+                "hidden"
+            );
+
+            return;
+        }
+
+
+        /*
+         * Security Rules vẫn là lớp
+         * bảo vệ chính.
+         */
+
+        const adminRef =
+            doc(
+                db,
+                "admins",
+                user.uid
+            );
+
+
+        const adminSnapshot =
             await getDoc(
-                ref
+                adminRef
             );
 
 
         if (
-            snapshot.exists()
+            !adminSnapshot.exists()
         ) {
 
-            const user =
-                snapshot.data();
+            await signOut(auth);
 
+            loginMessage.textContent =
+                "Tài khoản này không có quyền admin.";
 
-            generateDemoQR(
-                user.employeeId ||
-                employeeId,
-                user.name || ""
-            );
-
+            return;
         }
+
+
+        adminLogin.classList.add(
+            "hidden"
+        );
+
+
+        adminPanel.classList.remove(
+            "hidden"
+        );
+
+
+        loadUsers();
 
     }
 );
@@ -889,143 +251,659 @@ refreshButton.addEventListener(
    LOGOUT
 ===================================================== */
 
-async function logout() {
-
-    if (
-        unsubscribeUser
-    ) {
-
-        unsubscribeUser();
-
-        unsubscribeUser =
-            null;
-    }
-
-
-    if (clockInterval) {
-        clearInterval(clockInterval);
-        clockInterval = null;
-    }
-
-
-    if (durationInterval) {
-        clearInterval(durationInterval);
-        durationInterval = null;
-    }
-
-
-    employeeId = null;
-    sessionId = null;
-
-
-    localStorage.removeItem(
-        EMPLOYEE_KEY
-    );
-
-
-    localStorage.removeItem(
-        SESSION_KEY
-    );
-
-
-    appScreen.classList.add(
-        "hidden"
-    );
-
-
-    loginScreen.classList.remove(
-        "hidden"
-    );
-
-
-    employeeCodeInput.value =
-        "";
-
-
-    loginMessage.textContent =
-        "";
-}
-
-
 logoutButton.addEventListener(
     "click",
-    logout
+    () => signOut(auth)
 );
 
 
 /* =====================================================
-   LOGIN ERROR
+   SAVE USER
 ===================================================== */
 
-function showLoginError(
-    message
-) {
+saveButton.addEventListener(
+    "click",
+    saveUser
+);
 
-    loginMessage.textContent =
-        message;
+
+async function saveUser() {
+
+    const id =
+        employeeId.value
+            .trim()
+            .toUpperCase();
+
+
+    const name =
+        employeeName.value
+            .trim();
+
+
+    if (
+        !id ||
+        !name
+    ) {
+
+        alert(
+            "Nhập mã và tên."
+        );
+
+        return;
+    }
+
+
+    const userRef =
+        doc(
+            db,
+            "users",
+            id
+        );
+
+
+    const oldSnapshot =
+        await getDoc(
+            userRef
+        );
+
+
+    let oldData =
+        oldSnapshot.exists()
+            ? oldSnapshot.data()
+            : null;
+
+
+    await setDoc(
+        userRef,
+        {
+
+            employeeId:
+                id,
+
+            name:
+                name,
+
+            role:
+                employeeRole.value,
+
+            active:
+                oldData?.active ??
+                true,
+
+            color:
+                employeeColor.value,
+
+            startDate:
+                startDate.value
+                    ? new Date(
+                        startDate.value
+                    )
+                    : null,
+
+            endDate:
+                endDate.value
+                    ? new Date(
+                        endDate.value
+                    )
+                    : null,
+
+            activeSession:
+                oldData?.activeSession ??
+                null,
+
+            timerStart:
+                oldData?.timerStart ??
+                serverTimestamp(),
+
+            createdAt:
+                oldData?.createdAt ??
+                serverTimestamp(),
+
+            updatedAt:
+                serverTimestamp()
+
+        },
+        {
+            merge: true
+        }
+    );
+
+
+    alert(
+        "Đã lưu nhân viên."
+    );
+
+
+    clearForm();
+
+    loadUsers();
 }
 
 
 /* =====================================================
-   LOGIN BUTTON
+   LOAD USERS
 ===================================================== */
 
-loginButton.addEventListener(
-    "click",
-    login
-);
+async function loadUsers() {
+
+    usersList.innerHTML =
+        "Đang tải...";
 
 
-employeeCodeInput.addEventListener(
-    "keydown",
-    event => {
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "users"
+                )
+            );
+
+
+        usersList.innerHTML =
+            "";
+
 
         if (
-            event.key === "Enter"
+            snapshot.empty
         ) {
 
-            login();
+            usersList.innerHTML =
+                "<p>Chưa có nhân viên.</p>";
 
+            return;
         }
 
+
+        snapshot.forEach(
+            userDoc => {
+
+                renderUser(
+                    userDoc.id,
+                    userDoc.data()
+                );
+
+            }
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        usersList.innerHTML =
+            "<p>Không thể tải dữ liệu.</p>";
     }
-);
-
-
-/* =====================================================
-   AUTHENTICATION
-===================================================== */
-
-async function ensureAnonymousSession() {
-
-    if (auth.currentUser) {
-        return auth.currentUser;
-    }
-
-
-    if (!authReady) {
-        authReady = signInAnonymously(auth)
-            .then(result => result.user)
-            .catch(error => {
-                authReady = null;
-                throw error;
-            });
-    }
-
-
-    return authReady;
 }
 
 
-ensureAnonymousSession()
-    .then(() => {
-        if (employeeId && sessionId) {
-            openApp();
-        }
-    })
-    .catch(error => {
-        console.error(error);
-        showLoginError(
-            "Không thể kết nối. Hãy bật Anonymous Authentication trong Firebase."
+/* =====================================================
+   RENDER USER
+===================================================== */
+
+function renderUser(
+    id,
+    user
+) {
+
+    const row =
+        document.createElement(
+            "div"
         );
-    });
+
+
+    row.className =
+        "user-row";
+
+
+    const info =
+        document.createElement(
+            "div"
+        );
+
+
+    info.className =
+        "user-info";
+
+
+    info.innerHTML = `
+        <strong>
+            ${escapeHTML(
+                user.name || ""
+            )}
+        </strong>
+
+        <small>
+            Mã: ${escapeHTML(id)}
+            <br>
+            Quyền:
+            ${escapeHTML(
+                user.role || "user"
+            )}
+            <br>
+            Trạng thái:
+            ${
+                user.active
+                    ? "🟢 Active"
+                    : "🔴 Inactive"
+            }
+        </small>
+    `;
+
+
+    const actions =
+        document.createElement(
+            "div"
+        );
+
+
+    actions.className =
+        "user-actions";
+
+
+    /* EDIT */
+
+    const edit =
+        createButton(
+            "Sửa",
+            "button-gray"
+        );
+
+
+    edit.onclick =
+        () => fillForm(
+            id,
+            user
+        );
+
+
+    /* TOGGLE */
+
+    const toggle =
+        createButton(
+            user.active
+                ? "Khóa"
+                : "Mở khóa",
+            user.active
+                ? "button-red"
+                : "button-green"
+        );
+
+
+    toggle.onclick =
+        () => toggleUser(
+            id,
+            user.active
+        );
+
+
+    /* RESET DEVICE */
+
+    const reset =
+        createButton(
+            "Reset thiết bị",
+            "button-gray"
+        );
+
+
+    reset.onclick =
+        () => resetDevice(
+            id
+        );
+
+
+    /* DELETE */
+
+    const remove =
+        createButton(
+            "Xóa",
+            "button-red"
+        );
+
+
+    remove.onclick =
+        () => deleteUser(
+            id
+        );
+
+
+    actions.appendChild(
+        edit
+    );
+
+
+    actions.appendChild(
+        toggle
+    );
+
+
+    actions.appendChild(
+        reset
+    );
+
+
+    actions.appendChild(
+        remove
+    );
+
+
+    row.appendChild(
+        info
+    );
+
+
+    row.appendChild(
+        actions
+    );
+
+
+    usersList.appendChild(
+        row
+    );
+}
+
+
+/* =====================================================
+   CREATE BUTTON
+===================================================== */
+
+function createButton(
+    text,
+    className
+) {
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+
+    button.textContent =
+        text;
+
+
+    button.className =
+        className;
+
+
+    return button;
+}
+
+
+/* =====================================================
+   EDIT FORM
+===================================================== */
+
+function fillForm(
+    id,
+    user
+) {
+
+    employeeId.value =
+        id;
+
+
+    employeeId.disabled =
+        true;
+
+
+    employeeName.value =
+        user.name || "";
+
+
+    employeeRole.value =
+        user.role || "user";
+
+
+    employeeColor.value =
+        user.color || "yellow";
+
+
+    startDate.value =
+        toInputDate(
+            user.startDate
+        );
+
+
+    endDate.value =
+        toInputDate(
+            user.endDate
+        );
+}
+
+
+/* =====================================================
+   DATE → INPUT
+===================================================== */
+
+function toInputDate(
+    value
+) {
+
+    if (!value) {
+        return "";
+    }
+
+
+    let date;
+
+
+    if (
+        typeof value.toDate ===
+        "function"
+    ) {
+
+        date =
+            value.toDate();
+
+    } else {
+
+        date =
+            new Date(value);
+
+    }
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+    }
+
+
+    const local =
+        new Date(
+            date.getTime() -
+            date.getTimezoneOffset() *
+            60000
+        );
+
+
+    return local
+        .toISOString()
+        .slice(
+            0,
+            16
+        );
+}
+
+
+/* =====================================================
+   TOGGLE
+===================================================== */
+
+async function toggleUser(
+    id,
+    current
+) {
+
+    await updateDoc(
+        doc(
+            db,
+            "users",
+            id
+        ),
+        {
+
+            active:
+                !current,
+
+            updatedAt:
+                serverTimestamp()
+
+        }
+    );
+
+
+    loadUsers();
+}
+
+
+/* =====================================================
+   RESET DEVICE
+===================================================== */
+
+async function resetDevice(
+    id
+) {
+
+    const confirmed =
+        confirm(
+            "Reset thiết bị của nhân viên này?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    await updateDoc(
+        doc(
+            db,
+            "users",
+            id
+        ),
+        {
+
+            activeSession:
+                null,
+
+            updatedAt:
+                serverTimestamp()
+
+        }
+    );
+
+
+    alert(
+        "Đã reset thiết bị."
+    );
+}
+
+
+/* =====================================================
+   DELETE
+===================================================== */
+
+async function deleteUser(
+    id
+) {
+
+    const confirmed =
+        confirm(
+            "Bạn chắc chắn muốn xóa nhân viên này?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    await deleteDoc(
+        doc(
+            db,
+            "users",
+            id
+        )
+    );
+
+
+    loadUsers();
+}
+
+
+/* =====================================================
+   CLEAR
+===================================================== */
+
+clearButton.addEventListener(
+    "click",
+    clearForm
+);
+
+
+function clearForm() {
+
+    employeeId.value =
+        "";
+
+    employeeName.value =
+        "";
+
+    employeeRole.value =
+        "user";
+
+    employeeColor.value =
+        "yellow";
+
+    startDate.value =
+        "";
+
+    endDate.value =
+        "";
+
+    employeeId.disabled =
+        false;
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(
+    value
+) {
+
+    return String(value)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+}
