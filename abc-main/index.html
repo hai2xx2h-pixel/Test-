@@ -2,390 +2,236 @@
 <html lang="zh">
 
 <head>
+
     <meta charset="UTF-8" />
+
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Cache-Control"
+        content="no-cache, no-store, must-revalidate" />
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#2f3347">
+    <meta http-equiv="Pragma"
+        content="no-cache" />
+
+    <meta http-equiv="Expires"
+        content="0" />
+
+    <meta name="apple-mobile-web-app-capable"
+        content="yes">
+
+    <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+
+    <meta name="theme-color"
+        content="#2f3347">
+
+
+    <!-- QR GIỮ NGUYÊN -->
 
     <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 
-    <link rel="apple-touch-icon" href="icon.png">
+
+    <link rel="apple-touch-icon"
+        href="icon.png">
+
+
+    <link rel="stylesheet"
+        href="styles.css">
+
 
     <title>二维码通行</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            touch-action: none;
-        }
-
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #2f3347;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        body {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            overflow: hidden;
-            overscroll-behavior: none;
-
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "SF Pro Text",
-                "PingFang SC",
-                "Helvetica Neue",
-                STHeiti,
-                sans-serif;
-
-            background-image: url("background.png");
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: cover;
-
-            color: white;
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-
-            /* Căn chuẩn khoảng cách từ đỉnh màn hình iPhone xuống */
-            padding-top: max(50px, env(safe-area-inset-top));
-        }
-
-        /* Tên Nhân Viên Phía Trên */
-        .header {
-            margin-top: 10px;
-            font-size: 18px;
-            color: #e2ce9c;
-            font-weight: 300;
-            text-align: center;
-            letter-spacing: 0.3px;
-        }
-
-        /* Thẻ QR Chính */
-        .card {
-            margin-top: 22px;
-            width: 80%;
-            max-width: 325px;
-            border-radius: 10px;
-            position: relative;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Header Thẻ */
-        .card-header {
-            background-color: #f2c75b; /* Màu vàng chuẩn ảnh gốc */
-            padding: 15px 10px;
-            text-align: center;
-            color: #ffffff;
-            font-size: 13.5px;
-            font-weight: 300;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            position: relative;
-            transition: background-color 0.3s ease;
-        }
-
-        /* Vết khuyết hình tròn 2 bên */
-        .circle1,
-        .circle2 {
-            position: absolute;
-            background-color: #2f3347;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            bottom: -6px;
-            z-index: 10;
-        }
-
-        .circle1 { left: -6px; }
-        .circle2 { right: -6px; }
-
-        /* Thân Thẻ Trắng */
-        .card-body {
-            background-color: #ffffff;
-            padding: 16px 16px 18px 16px;
-            text-align: center;
-            color: #000;
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Dòng Thời Gian Trên Mã QR */
-        .time {
-            font-size: 14.5px;
-            font-weight: 300;
-            color: #222222;
-            margin-bottom: 12px;
-            letter-spacing: 0.2px;
-            line-height: 1.2;
-            width: 100%;
-        }
-
-        /* Mã QR */
-        #qrcode {
-            width: 230px;
-            height: 230px;
-            min-width: 230px;
-            min-height: 230px;
-            margin: 0 auto;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            overflow: hidden;
-        }
-
-        #qrcode img,
-        #qrcode canvas {
-            width: 230px !important;
-            height: 230px !important;
-            display: block !important;
-        }
-
-        /* Nút 刷新二维码 Ở Chính Giữa */
-        .refresh {
-            margin-top: 14px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .refresh-title {
-            cursor: pointer;
-            font-size: 12px;
-            color: #888888;
-            font-weight: 300;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Trạng Thái & Đồng Hồ Đếm */
-        .status-box {
-            margin-top: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #4cd964; /* Màu xanh nhạt chuẩn ảnh gốc */
-        }
-
-        .status-label {
-            font-size: 16px;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-            animation: pulse-green 1.2s infinite ease-in-out;
-        }
-
-        .status-timer {
-            font-size: 20px;
-            font-weight: 300;
-            margin-top: 2px;
-            letter-spacing: 0.5px;
-            font-variant-numeric: tabular-nums;
-        }
-
-        @keyframes pulse-green {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
-        }
-
-        /* Đoạn Văn Ghi Chú Phía Dưới */
-        .note {
-            margin: 26px 10% 0 10%;
-            font-size: 12.5px;
-            font-weight: 300;
-            color: #e2ce9c;
-            line-height: 1.55;
-            text-align: center;
-            letter-spacing: 0.2px;
-            opacity: 0.9;
-        }
-    </style>
 </head>
+
 
 <body>
 
-    <div class="header">
-        V25111639(Nguyễn Văn Hải)
-    </div>
 
-    <div class="card">
-        <div class="card-header" id="cardHeader">
-            <span id="headerText">
-                将二维码对准扫描器刷码出场
-            </span>
-            <div class="circle1"></div>
-            <div class="circle2"></div>
-        </div>
+    <!-- ==============================
+         LOGIN
+    =============================== -->
 
-        <div class="card-body">
-            <div class="time" id="currentTime">--</div>
+    <div id="loginScreen"
+         class="login-screen">
 
-            <div id="qrcode"></div>
+        <div class="login-box">
 
-            <div class="refresh">
-                <span onclick="generateQRCode(event)" class="refresh-title">刷新二维码</span>
+            <img
+                src="Logo.jpg"
+                class="login-logo"
+                alt="Logo"
+            >
+
+            <div class="login-title">
+                THOR
             </div>
 
-            <div class="status-box">
-                <div class="status-label">已生效</div>
-                <div class="status-timer" id="statusTimer">00:00:00</div>
+            <div class="login-subtitle">
+                员工身份验证
             </div>
+
+
+            <input
+                id="employeeCodeInput"
+                class="employee-input"
+                type="text"
+                placeholder="请输入员工编号"
+                autocomplete="off"
+                autocapitalize="characters"
+            >
+
+
+            <button
+                id="loginButton"
+                class="login-button"
+            >
+                确认
+            </button>
+
+
+            <div
+                id="loginMessage"
+                class="login-message"
+            ></div>
+
         </div>
+
     </div>
 
-    <div class="note">
-        尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
+
+
+    <!-- ==============================
+         MAIN APP
+    =============================== -->
+
+    <div id="appScreen"
+         class="app-screen hidden">
+
+
+        <!-- TÊN NHÂN VIÊN -->
+
+        <div
+            class="header"
+            id="employeeHeader"
+        >
+            --
+        </div>
+
+
+
+        <!-- CARD -->
+
+        <div class="card">
+
+
+            <div
+                class="card-header"
+                id="cardHeader"
+            >
+
+                <span id="headerText">
+                    将二维码对准扫描器刷码出场
+                </span>
+
+
+                <div class="circle1"></div>
+
+                <div class="circle2"></div>
+
+            </div>
+
+
+
+            <div class="card-body">
+
+
+                <!-- THỜI GIAN HIỆN TẠI -->
+
+                <div
+                    class="time"
+                    id="currentTime"
+                >
+                    --
+                </div>
+
+
+
+                <!-- ======================
+                     QR GIỮ NGUYÊN
+                ======================= -->
+
+                <div id="qrcode"></div>
+
+
+                <div class="refresh">
+
+                    <span
+                        onclick="generateQRCode(event)"
+                        class="refresh-title"
+                    >
+                        刷新二维码
+                    </span>
+
+                </div>
+
+
+
+                <!-- TIMER -->
+
+                <div class="status-box">
+
+                    <div class="status-label">
+                        已生效
+                    </div>
+
+
+                    <div
+                        class="status-timer"
+                        id="statusTimer"
+                    >
+                        00:00:00
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- NOTE -->
+
+        <div class="note">
+
+            尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
+
+        </div>
+
+
+
+        <!-- LOGOUT -->
+
+        <button
+            id="logoutButton"
+            class="logout-button"
+        >
+            退出登录
+        </button>
+
+
     </div>
 
-    <script>
-        /* Chặn kéo cuộn màn hình */
-        document.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-        }, { passive: false });
 
-        const employeeId = "V25111639";
-        const employeeName = "Nguyễn Văn Hải";
 
-        const TIMER_STORAGE_KEY = "qr_access_start_time";
-        const COLOR_STORAGE_KEY = "qr_access_color";
+    <script
+        type="module"
+        src="app.js"
+    ></script>
 
-        function pad(num) {
-            return num < 10 ? "0" + num : String(num);
-        }
 
-        let savedColor = localStorage.getItem(COLOR_STORAGE_KEY);
-        // Mặc định vàng (出场) theo ảnh mới
-        let isGreen = savedColor ? savedColor === "green" : false;
-
-        const cardHeader = document.getElementById("cardHeader");
-        const headerText = document.getElementById("headerText");
-
-        function applyHeaderColor() {
-            if (isGreen) {
-                cardHeader.style.backgroundColor = "#38a754";
-                headerText.textContent = "将二维码对准扫描器刷码进场";
-            } else {
-                cardHeader.style.backgroundColor = "#f2c75b";
-                headerText.textContent = "将二维码对准扫描器刷码出场";
-            }
-        }
-
-        let startTime = localStorage.getItem(TIMER_STORAGE_KEY);
-        if (!startTime) {
-            startTime = Date.now();
-            localStorage.setItem(TIMER_STORAGE_KEY, String(startTime));
-        } else {
-            startTime = Number(startTime);
-        }
-
-        function updateAllTimers() {
-            const now = new Date();
-            const formattedTime =
-                `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ` +
-                `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-
-            document.getElementById("currentTime").textContent = formattedTime;
-
-            const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
-            const hours = Math.floor(elapsedSeconds / 3600);
-            const minutes = Math.floor((elapsedSeconds % 3600) / 60);
-            const seconds = elapsedSeconds % 60;
-
-            document.getElementById("statusTimer").textContent =
-                `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-        }
-
-        function resetTimer() {
-            startTime = Date.now();
-            localStorage.setItem(TIMER_STORAGE_KEY, String(startTime));
-            document.getElementById("statusTimer").textContent = "00:00:00";
-            updateAllTimers();
-        }
-
-        function toggleHeaderColor() {
-            isGreen = !isGreen;
-            localStorage.setItem(COLOR_STORAGE_KEY, isGreen ? "green" : "yellow");
-            applyHeaderColor();
-            resetTimer();
-        }
-
-        function generateQRCode(event) {
-            if (event && event.currentTarget) {
-                event.currentTarget.blur();
-            }
-
-            const now = new Date();
-            const formattedTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
-            const uniqueToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
-
-            const accessData = `https://YOUR-AUTHORIZED-DOMAIN/access?id=${encodeURIComponent(employeeId)}&name=${encodeURIComponent(employeeName)}&time=${encodeURIComponent(formattedTime)}&token=${encodeURIComponent(uniqueToken)}`;
-
-            const qrcodeElement = document.getElementById("qrcode");
-            qrcodeElement.innerHTML = "";
-
-            new QRCode(qrcodeElement, {
-                text: accessData,
-                width: 230,
-                height: 230,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
-            });
-        }
-
-        let pressTimer = null;
-        const HOLD_DURATION = 5000;
-
-        function startPress(e) {
-            if (e.target.closest(".card")) return;
-            clearTimeout(pressTimer);
-            pressTimer = setTimeout(() => { toggleHeaderColor(); }, HOLD_DURATION);
-        }
-
-        function cancelPress() {
-            if (pressTimer) {
-                clearTimeout(pressTimer);
-                pressTimer = null;
-            }
-        }
-
-        document.addEventListener("touchstart", startPress, { passive: true });
-        document.addEventListener("touchend", cancelPress);
-        document.addEventListener("touchcancel", cancelPress);
-        document.addEventListener("mousedown", startPress);
-        document.addEventListener("mouseup", cancelPress);
-        document.addEventListener("mouseleave", cancelPress);
-
-        applyHeaderColor();
-        updateAllTimers();
-        generateQRCode();
-        setInterval(updateAllTimers, 1000);
-    </script>
 </body>
+
 </html>
