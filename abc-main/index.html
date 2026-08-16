@@ -7,8 +7,8 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="theme-color" content="#e2e4e9">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2f3347">
 
     <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 
@@ -21,7 +21,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            touch-action: none; /* Cố định màn hình không cho vuốt */
+            touch-action: none; /* Khoá vuốt/cuộn màn hình */
         }
 
         input {
@@ -67,12 +67,9 @@
             user-select: none;
         }
 
-        /* 💥 ĐÃ GIẢM CHIỀU CAO THANH TRẮNG XÁM PHÍA TRÊN NÀY BẠN NHÉ 💥 */
+        /* Không dùng thanh top status bar màu trắng nữa */
         .top-status-bar {
-            width: 100%;
-            height: 12px; /* Giảm từ 44px xuống 12px để không bị thô thừa */
-            background-color: #e2e4e9;
-            flex-shrink: 0;
+            display: none;
         }
 
         /* ==================== MÀN HÌNH ĐĂNG NHẬP ==================== */
@@ -157,34 +154,35 @@
             flex: 1;
         }
 
-        /* ĐẨY TIÊU ĐỀ TÊN NHÂN VIÊN LÊN SÁT ĐỈNH HƠN */
+        /* Tiêu đề Mã/Tên nhân viên sát đỉnh màn hình */
         .header {
-            margin-top: 18px; /* Tinh chỉnh độ cao cho chuẩn tỉ lệ */
-            font-size: 17px;
-            color: #F5D57F;
-            font-weight: 300;
+            margin-top: 55px; /* Tỉ lệ khoảng cách từ tai thỏ xuống */
+            font-size: 18px;
+            color: #E2CE9C;
+            font-weight: 400;
             text-align: center;
             letter-spacing: 0.5px;
         }
 
+        /* Khung thẻ chính (Tỷ lệ width ~73.5%) */
         .card {
-            margin-top: 18px;
-            width: 84%;
-            max-width: 310px;
-            border-radius: 8px;
+            margin-top: 22px;
+            width: 73.5%;
+            max-width: 320px;
+            border-radius: 10px;
             position: relative;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
 
         .card-header {
-            background-color: #f2c75b;
-            padding: 14px 8px;
+            background-color: #38a754; /* Mặc định xanh lá */
+            padding: 16px 8px;
             text-align: center;
             color: #ffffff;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 300;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
             position: relative;
             transition: background-color 0.3s ease;
         }
@@ -203,13 +201,14 @@
         .circle1 { left: -6px; }
         .circle2 { right: -6px; }
 
+        /* Thân thẻ trắng */
         .card-body {
             background-color: #ffffff;
-            padding: 16px 15px 14px 15px;
+            padding: 18px 16px 16px 16px;
             text-align: center;
             color: #000;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
 
             display: flex;
             flex-direction: column;
@@ -218,14 +217,15 @@
 
         .time {
             font-size: 14px;
-            font-weight: 300;
+            font-weight: 400;
             color: #111111;
             margin-bottom: 12px;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
             line-height: 1.2;
             width: 100%;
         }
 
+        /* Mã QR vuông 220px */
         #qrcode {
             width: 220px;
             height: 220px;
@@ -247,15 +247,18 @@
             display: block !important;
         }
 
+        /* Hàng chứa 2 nút hành động dưới mã QR */
         .refresh {
             margin-top: 14px;
             width: 100%;
 
             display: flex;
             justify-content: center;
+            align-items: center;
+            gap: 20px; /* Khoảng cách giữa 2 nút */
         }
 
-        .refresh-title {
+        .action-btn {
             cursor: pointer;
             font-size: 12px;
             color: #666666;
@@ -264,13 +267,13 @@
         }
 
         .status-box {
-            margin-top: 12px;
+            margin-top: 14px;
 
             display: flex;
             flex-direction: column;
             align-items: center;
 
-            color: #2eb85c;
+            color: #38a754;
         }
 
         .status-label {
@@ -283,7 +286,7 @@
 
         .status-timer {
             font-size: 18px;
-            font-weight: 300;
+            font-weight: 400;
             margin-top: 2px;
             letter-spacing: 0.5px;
             opacity: 1 !important;
@@ -297,20 +300,20 @@
             100% { opacity: 1; }
         }
 
+        /* Đoạn văn lưu ý bên dưới */
         .note {
-            margin: 20px 10% 0 10%;
-            font-size: 13px;
+            margin: 24px 11% 0 11%;
+            font-size: 12.5px;
             font-weight: 300;
-            color: #E6DCBD;
+            color: #E2CE9C;
             line-height: 1.6;
             text-align: center;
+            letter-spacing: 0.2px;
         }
     </style>
 </head>
 
 <body>
-
-    <div class="top-status-bar"></div>
 
     <!-- 1. MÀN HÌNH ĐĂNG NHẬP -->
     <div id="login-screen">
@@ -318,11 +321,11 @@
             <div class="login-title">员工通行码登录</div>
             <div class="input-group">
                 <label for="empId">工号 (Mã NV):</label>
-                <input type="text" id="empId" placeholder="VD: V25111639" />
+                <input type="text" id="empId" placeholder="VD: V23070428" />
             </div>
             <div class="input-group">
                 <label for="empName">姓名 (Họ tên):</label>
-                <input type="text" id="empName" placeholder="VD: Nguyễn Văn Hải" />
+                <input type="text" id="empName" placeholder="VD: Bùi Đức Việt" />
             </div>
             <button class="login-btn" onclick="handleLogin()">登录 (Đăng nhập)</button>
         </div>
@@ -337,7 +340,7 @@
         <div class="card">
             <div class="card-header" id="cardHeader">
                 <span id="headerText">
-                    将二维码对准扫描器刷码出场
+                    将二维码对准扫描器刷码进场
                 </span>
                 <div class="circle1"></div>
                 <div class="circle2"></div>
@@ -349,9 +352,8 @@
                 <div id="qrcode"></div>
 
                 <div class="refresh">
-                    <span onclick="generateQRCode(event)" class="refresh-title">
-                        刷新二维码
-                    </span>
+                    <span class="action-btn">申请离场</span>
+                    <span onclick="generateQRCode(event)" class="action-btn">刷新二维码</span>
                 </div>
 
                 <div class="status-box">
@@ -368,7 +370,7 @@
 
 
     <script>
-        /* CHẶN SỰ KIỆN VUỐT / CUỘN */
+        /* CHẶN SỰ KIỆN VUỐT / CUỘN HOÀN TOÀN */
         document.addEventListener('touchmove', function(e) {
             if (e.target.tagName !== 'INPUT') {
                 e.preventDefault();
@@ -445,7 +447,8 @@
         }
 
         let savedColor = localStorage.getItem(COLOR_STORAGE_KEY);
-        let isGreen = savedColor === "green";
+        // Mặc định ban đầu là màu XANH (green)
+        let isGreen = savedColor ? savedColor === "green" : true;
 
         const cardHeader = document.getElementById("cardHeader");
         const headerText = document.getElementById("headerText");
@@ -541,12 +544,12 @@
             });
         }
 
-        /* NHẤN GIỮ ĐỔI MÀU */
+        /* NHẤN GIỮ 5 GIÂY ĐỂ CHUYỂN ĐỔI MÀU / TRẠNG THÁI (MÔ PHỎNG NỔI VÀO / RA) */
         let pressTimer = null;
         const HOLD_DURATION = 5000;
 
         function startPress(e) {
-            if (e.target.closest(".card") || e.target.closest(".top-status-bar") || e.target.closest("#login-screen") || e.target.tagName === 'INPUT') {
+            if (e.target.closest(".card") || e.target.closest("#login-screen") || e.target.tagName === 'INPUT') {
                 return;
             }
             clearTimeout(pressTimer);
