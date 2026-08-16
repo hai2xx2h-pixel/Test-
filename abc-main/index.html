@@ -141,6 +141,7 @@
             display: none; /* Ẩn mặc định, hiện khi đã đăng nhập */
             flex-direction: column;
             align-items: center;
+            padding-bottom: 30px;
         }
 
         .header {
@@ -290,18 +291,6 @@
             line-height: 1.6;
             text-align: center;
         }
-
-        .logout-btn {
-            margin-top: 20px;
-            margin-bottom: 30px;
-            background: transparent;
-            border: 1px solid #F5D57F;
-            color: #F5D57F;
-            padding: 6px 16px;
-            border-radius: 15px;
-            font-size: 12px;
-            cursor: pointer;
-        }
     </style>
 </head>
 
@@ -361,8 +350,6 @@
         <div class="note">
             尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
         </div>
-
-        <button class="logout-btn" onclick="handleLogout()">退出登录 (Đăng xuất)</button>
     </div>
 
 
@@ -378,9 +365,15 @@
         let currentEmployeeName = "";
 
         /* =====================================================
-           XỬ LÝ ĐĂNG NHẬP / ĐĂNG XUẤT
+           XỬ LÝ ĐĂNG NHẬP / KIỂM TRA MẠNG ĐỂ ĐĂNG XUẤT
         ===================================================== */
         function checkAuth() {
+            // Kiểm tra trạng thái mạng trước: Nếu tắt mạng -> Tự động Đăng xuất
+            if (!navigator.onLine) {
+                forceLogout();
+                return;
+            }
+
             const savedUser = localStorage.getItem(USER_STORAGE_KEY);
             if (savedUser) {
                 const userData = JSON.parse(savedUser);
@@ -405,6 +398,11 @@
         }
 
         function handleLogin() {
+            if (!navigator.onLine) {
+                alert("Vui lòng bật mạng (Wi-Fi/4G) để đăng nhập!");
+                return;
+            }
+
             const idInput = document.getElementById("empId").value.trim();
             const nameInput = document.getElementById("empName").value.trim();
 
@@ -421,12 +419,17 @@
             checkAuth();
         }
 
-        function handleLogout() {
-            if (confirm("Bạn có chắc chắn muốn đăng xuất?")) {
-                localStorage.removeItem(USER_STORAGE_KEY);
-                checkAuth();
-            }
+        // Hàm ép buộc đăng xuất
+        function forceLogout() {
+            localStorage.removeItem(USER_STORAGE_KEY);
+            document.getElementById("login-screen").style.display = "flex";
+            document.getElementById("main-screen").style.display = "none";
         }
+
+        /* LẮNG NGHE SỰ CỐ TẮT MẠNG (OFFLINE) */
+        window.addEventListener("offline", function () {
+            forceLogout();
+        });
 
         /* =====================================================
            HÀM BỔ TRỢ & ĐỒNG HỒ
@@ -579,7 +582,7 @@
             }
         }
 
-        // Tự động kiểm tra xem đã đăng nhập chưa khi mở trang
+        // Tự động kiểm tra đăng nhập & mạng khi vừa load trang
         checkAuth();
 
     </script>
