@@ -14,7 +14,7 @@
 
     <link rel="apple-touch-icon" href="icon.png">
 
-    <!-- Đã đổi tiêu đề trang tại đây -->
+    <!-- Tiêu đề trang trên tab trình duyệt -->
     <title>员工码</title>
 
     <style>
@@ -62,6 +62,87 @@
             flex-shrink: 0;
         }
 
+        /* ==================== MÀN HÌNH ĐĂNG NHẬP ==================== */
+        #login-screen {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .login-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #F5D57F;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: #E6DCBD;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #555;
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            font-size: 15px;
+            outline: none;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f2c75b;
+            color: #2f3347;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .login-btn:active {
+            background: #dca738;
+        }
+
+        /* ==================== MÀN HÌNH CHÍNH (THẺ QR) ==================== */
+        #main-screen {
+            width: 100%;
+            display: none; /* Ẩn mặc định, hiện khi đã đăng nhập */
+            flex-direction: column;
+            align-items: center;
+        }
+
         .header {
             margin-top: 25px;
             font-size: 17px;
@@ -104,13 +185,8 @@
             z-index: 10;
         }
 
-        .circle1 {
-            left: -6px;
-        }
-
-        .circle2 {
-            right: -6px;
-        }
+        .circle1 { left: -6px; }
+        .circle2 { right: -6px; }
 
         .card-body {
             background-color: #ffffff;
@@ -201,17 +277,9 @@
         }
 
         @keyframes pulse-green {
-            0% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.25;
-            }
-
-            100% {
-                opacity: 1;
-            }
+            0% { opacity: 1; }
+            50% { opacity: 0.25; }
+            100% { opacity: 1; }
         }
 
         .note {
@@ -222,6 +290,18 @@
             line-height: 1.6;
             text-align: center;
         }
+
+        .logout-btn {
+            margin-top: 20px;
+            margin-bottom: 30px;
+            background: transparent;
+            border: 1px solid #F5D57F;
+            color: #F5D57F;
+            padding: 6px 16px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -229,163 +309,158 @@
 
     <div class="top-status-bar"></div>
 
-    <div class="header">
-        V25111639(Nguyễn Văn Hải)
+    <!-- 1. MÀN HÌNH ĐĂNG NHẬP -->
+    <div id="login-screen">
+        <div class="login-box">
+            <div class="login-title">员工通行码登录</div>
+            <div class="input-group">
+                <label for="empId">工号 (Mã NV):</label>
+                <input type="text" id="empId" placeholder="VD: V25111639" />
+            </div>
+            <div class="input-group">
+                <label for="empName">姓名 (Họ tên):</label>
+                <input type="text" id="empName" placeholder="VD: Nguyễn Văn Hải" />
+            </div>
+            <button class="login-btn" onclick="handleLogin()">登录 (Đăng nhập)</button>
+        </div>
     </div>
 
-    <div class="card">
-
-        <div class="card-header" id="cardHeader">
-
-            <span id="headerText">
-                将二维码对准扫描器刷码出场
-            </span>
-
-            <div class="circle1"></div>
-            <div class="circle2"></div>
-
+    <!-- 2. MÀN HÌNH CHÍNH HIỂN THỊ MÃ QR -->
+    <div id="main-screen">
+        <div class="header" id="userInfoHeader">
+            --(--)
         </div>
 
-        <div class="card-body">
-
-            <div class="time" id="currentTime">
-                --
-            </div>
-
-            <div id="qrcode"></div>
-
-            <div class="refresh">
-                <span
-                    onclick="generateQRCode(event)"
-                    class="refresh-title">
-                    刷新二维码
+        <div class="card">
+            <div class="card-header" id="cardHeader">
+                <span id="headerText">
+                    将二维码对准扫描器刷码出场
                 </span>
+                <div class="circle1"></div>
+                <div class="circle2"></div>
             </div>
 
-            <div class="status-box">
+            <div class="card-body">
+                <div class="time" id="currentTime">--</div>
 
-                <div class="status-label">
-                    已生效
+                <div id="qrcode"></div>
+
+                <div class="refresh">
+                    <span onclick="generateQRCode(event)" class="refresh-title">
+                        刷新二维码
+                    </span>
                 </div>
 
-                <div
-                    class="status-timer"
-                    id="statusTimer">
-                    00:00:00
+                <div class="status-box">
+                    <div class="status-label">已生效</div>
+                    <div class="status-timer" id="statusTimer">00:00:00</div>
                 </div>
-
             </div>
-
         </div>
 
-    </div>
+        <div class="note">
+            尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
+        </div>
 
-    <div class="note">
-        尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
+        <button class="logout-btn" onclick="handleLogout()">退出登录 (Đăng xuất)</button>
     </div>
 
 
     <script>
-
         /* =====================================================
-           CẤU HÌNH
+           KEY LƯU TRỮ LOCALSTORAGE
         ===================================================== */
-
-        const employeeId = "V25111639";
-        const employeeName = "Nguyễn Văn Hải";
-
-
-        /* =====================================================
-           KEY LƯU TRỮ
-        ===================================================== */
-
+        const USER_STORAGE_KEY = "qr_employee_user";
         const TIMER_STORAGE_KEY = "qr_access_start_time";
         const COLOR_STORAGE_KEY = "qr_access_color";
 
+        let currentEmployeeId = "";
+        let currentEmployeeName = "";
 
         /* =====================================================
-           HÀM PAD
+           XỬ LÝ ĐĂNG NHẬP / ĐĂNG XUẤT
         ===================================================== */
+        function checkAuth() {
+            const savedUser = localStorage.getItem(USER_STORAGE_KEY);
+            if (savedUser) {
+                const userData = JSON.parse(savedUser);
+                currentEmployeeId = userData.id;
+                currentEmployeeName = userData.name;
 
+                // Hiển thị màn hình chính
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("main-screen").style.display = "flex";
+
+                // Cập nhật tên hiển thị
+                document.getElementById("userInfoHeader").textContent = 
+                    `${currentEmployeeId}(${currentEmployeeName})`;
+
+                // Khởi tạo QR và Đồng hồ
+                initApp();
+            } else {
+                // Hiển thị màn hình đăng nhập
+                document.getElementById("login-screen").style.display = "flex";
+                document.getElementById("main-screen").style.display = "none";
+            }
+        }
+
+        function handleLogin() {
+            const idInput = document.getElementById("empId").value.trim();
+            const nameInput = document.getElementById("empName").value.trim();
+
+            if (!idInput || !nameInput) {
+                alert("Vui lòng nhập đầy đủ Mã nhân viên và Họ tên!");
+                return;
+            }
+
+            // Lưu vào localStorage
+            const userData = { id: idInput, name: nameInput };
+            localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
+
+            // Chuyển sang giao diện QR
+            checkAuth();
+        }
+
+        function handleLogout() {
+            if (confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+                localStorage.removeItem(USER_STORAGE_KEY);
+                checkAuth();
+            }
+        }
+
+        /* =====================================================
+           HÀM BỔ TRỢ & ĐỒNG HỒ
+        ===================================================== */
         function pad(num) {
             return num < 10 ? "0" + num : String(num);
         }
 
-
-        /* =====================================================
-           KHÔI PHỤC TRẠNG THÁI MÀU
-        ===================================================== */
-
-        let savedColor =
-            localStorage.getItem(COLOR_STORAGE_KEY);
-
+        let savedColor = localStorage.getItem(COLOR_STORAGE_KEY);
         let isGreen = savedColor === "green";
 
-
-        const cardHeader =
-            document.getElementById("cardHeader");
-
-        const headerText =
-            document.getElementById("headerText");
-
+        const cardHeader = document.getElementById("cardHeader");
+        const headerText = document.getElementById("headerText");
 
         function applyHeaderColor() {
-
             if (isGreen) {
-
-                cardHeader.style.backgroundColor =
-                    "#38a754";
-
-                headerText.textContent =
-                    "将二维码对准扫描器刷码进场";
-
+                cardHeader.style.backgroundColor = "#38a754";
+                headerText.textContent = "将二维码对准扫描器刷码进场";
             } else {
-
-                cardHeader.style.backgroundColor =
-                    "#f2c75b";
-
-                headerText.textContent =
-                    "将二维码对准扫描器刷码出场";
+                cardHeader.style.backgroundColor = "#f2c75b";
+                headerText.textContent = "将二维码对准扫描器刷码出场";
             }
         }
 
-
-        /* =====================================================
-           KHÔI PHỤC THỜI ĐIỂM BẮT ĐẦU TIMER
-        ===================================================== */
-
-        let startTime =
-            localStorage.getItem(TIMER_STORAGE_KEY);
-
-
+        let startTime = localStorage.getItem(TIMER_STORAGE_KEY);
         if (!startTime) {
-
             startTime = Date.now();
-
-            localStorage.setItem(
-                TIMER_STORAGE_KEY,
-                String(startTime)
-            );
-
+            localStorage.setItem(TIMER_STORAGE_KEY, String(startTime));
         } else {
-
             startTime = Number(startTime);
-
         }
 
-
-        /* =====================================================
-           CẬP NHẬT ĐỒNG HỒ
-        ===================================================== */
-
         function updateAllTimers() {
-
             const now = new Date();
-
-
-            /* -----------------------------------------------
-               Thời gian hiện tại phía trên QR
-            ------------------------------------------------ */
 
             const formattedTime =
                 `${now.getFullYear()}-` +
@@ -395,339 +470,118 @@
                 `${pad(now.getMinutes())}:` +
                 `${pad(now.getSeconds())}`;
 
+            document.getElementById("currentTime").textContent = formattedTime;
 
-            document.getElementById(
-                "currentTime"
-            ).textContent = formattedTime;
+            const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
+            const hours = Math.floor(elapsedSeconds / 3600);
+            const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+            const seconds = elapsedSeconds % 60;
 
-
-            /* -----------------------------------------------
-               Tính thời gian đã chạy
-            ------------------------------------------------ */
-
-            const elapsedSeconds =
-                Math.max(
-                    0,
-                    Math.floor(
-                        (Date.now() - startTime) / 1000
-                    )
-                );
-
-
-            /* -----------------------------------------------
-               HH:MM:SS
-            ------------------------------------------------ */
-
-            const hours =
-                Math.floor(
-                    elapsedSeconds / 3600
-                );
-
-
-            const minutes =
-                Math.floor(
-                    (elapsedSeconds % 3600) / 60
-                );
-
-
-            const seconds =
-                elapsedSeconds % 60;
-
-
-            document.getElementById(
-                "statusTimer"
-            ).textContent =
-                `${pad(hours)}:` +
-                `${pad(minutes)}:` +
-                `${pad(seconds)}`;
+            document.getElementById("statusTimer").textContent =
+                `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
         }
 
-
-        /* =====================================================
-           RESET TIMER
-           
-           CHỈ ĐƯỢC GỌI KHI ĐỔI MÀU
-        ===================================================== */
-
         function resetTimer() {
-
             startTime = Date.now();
-
-
-            localStorage.setItem(
-                TIMER_STORAGE_KEY,
-                String(startTime)
-            );
-
-
-            /*
-             * Hiển thị 00:00:00 ngay lập tức
-             */
-
-            document.getElementById(
-                "statusTimer"
-            ).textContent = "00:00:00";
-
-
-            /*
-             * Cập nhật lại toàn bộ đồng hồ
-             */
-
+            localStorage.setItem(TIMER_STORAGE_KEY, String(startTime));
+            document.getElementById("statusTimer").textContent = "00:00:00";
             updateAllTimers();
         }
 
-
-        /* =====================================================
-           ĐỔI MÀU + RESET TIMER
-        ===================================================== */
-
         function toggleHeaderColor() {
-
-            /*
-             * Đổi màu
-             */
-
             isGreen = !isGreen;
-
-
-            /*
-             * Lưu màu hiện tại
-             * để reload vẫn giữ màu
-             */
-
-            localStorage.setItem(
-                COLOR_STORAGE_KEY,
-                isGreen ? "green" : "yellow"
-            );
-
-
-            /*
-             * Áp dụng màu mới
-             */
-
+            localStorage.setItem(COLOR_STORAGE_KEY, isGreen ? "green" : "yellow");
             applyHeaderColor();
-
-
-            /*
-             * QUAN TRỌNG:
-             *
-             * Mỗi lần:
-             *
-             * Vàng → Xanh
-             *
-             * hoặc
-             *
-             * Xanh → Vàng
-             *
-             * đều reset timer về 00:00:00
-             */
-
             resetTimer();
         }
 
-
         /* =====================================================
-           TẠO QR
+           TẠO QR CODE DỰA TRÊN THÔNG TIN ĐÃ ĐĂNG NHẬP
         ===================================================== */
-
         function generateQRCode(event) {
-
-            if (
-                event &&
-                event.currentTarget
-            ) {
-
+            if (event && event.currentTarget) {
                 event.currentTarget.blur();
             }
 
-
             const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const day = String(now.getDate()).padStart(2, "0");
+            const hours = String(now.getHours()).padStart(2, "0");
+            const minutes = String(now.getMinutes()).padStart(2, "0");
+            const seconds = String(now.getSeconds()).padStart(2, "0");
 
-
-            const year =
-                now.getFullYear();
-
-            const month =
-                String(
-                    now.getMonth() + 1
-                ).padStart(2, "0");
-
-            const day =
-                String(
-                    now.getDate()
-                ).padStart(2, "0");
-
-            const hours =
-                String(
-                    now.getHours()
-                ).padStart(2, "0");
-
-            const minutes =
-                String(
-                    now.getMinutes()
-                ).padStart(2, "0");
-
-            const seconds =
-                String(
-                    now.getSeconds()
-                ).padStart(2, "0");
-
-
-            const formattedTime =
-                `${year}-${month}-${day} ` +
-                `${hours}:${minutes}:${seconds}`;
-
-
-            const uniqueToken =
-                Math.random()
-                    .toString(36)
-                    .substring(2) +
-                Date.now().toString(36);
-
-
-            /*
-             * URL mẫu.
-             * Thay bằng endpoint hợp lệ của hệ thống bạn.
-             */
+            const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            const uniqueToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
 
             const accessData =
                 `https://YOUR-AUTHORIZED-DOMAIN/access` +
-                `?id=${encodeURIComponent(employeeId)}` +
-                `&name=${encodeURIComponent(employeeName)}` +
+                `?id=${encodeURIComponent(currentEmployeeId)}` +
+                `&name=${encodeURIComponent(currentEmployeeName)}` +
                 `&time=${encodeURIComponent(formattedTime)}` +
                 `&token=${encodeURIComponent(uniqueToken)}`;
 
-
-            const qrcodeElement =
-                document.getElementById("qrcode");
-
-
+            const qrcodeElement = document.getElementById("qrcode");
             qrcodeElement.innerHTML = "";
 
-
             new QRCode(qrcodeElement, {
-
                 text: accessData,
-
                 width: 220,
-
                 height: 220,
-
                 colorDark: "#000000",
-
                 colorLight: "#ffffff",
-
-                correctLevel:
-                    QRCode.CorrectLevel.M
+                correctLevel: QRCode.CorrectLevel.M
             });
         }
 
-
         /* =====================================================
-           NHẤN GIỮ 5 GIÂY ĐỂ ĐỔI MÀU
+           NHẤN GIỮ 5 GIÂY ĐỂ ĐỔI MÀU (TÍNH NĂNG ẨN)
         ===================================================== */
-
         let pressTimer = null;
-
         const HOLD_DURATION = 5000;
 
-
         function startPress(e) {
-
-            if (
-                e.target.closest(".card") ||
-                e.target.closest(".top-status-bar")
-            ) {
-
+            if (e.target.closest(".card") || e.target.closest(".top-status-bar") || e.target.closest("#login-screen")) {
                 return;
             }
-
-
             clearTimeout(pressTimer);
-
-
-            pressTimer =
-                setTimeout(() => {
-
-                    toggleHeaderColor();
-
-                }, HOLD_DURATION);
+            pressTimer = setTimeout(() => {
+                toggleHeaderColor();
+            }, HOLD_DURATION);
         }
 
-
         function cancelPress() {
-
             if (pressTimer) {
-
                 clearTimeout(pressTimer);
-
                 pressTimer = null;
             }
         }
 
-
-        document.addEventListener(
-            "touchstart",
-            startPress,
-            { passive: true }
-        );
-
-        document.addEventListener(
-            "touchend",
-            cancelPress
-        );
-
-        document.addEventListener(
-            "touchcancel",
-            cancelPress
-        );
-
-        document.addEventListener(
-            "mousedown",
-            startPress
-        );
-
-        document.addEventListener(
-            "mouseup",
-            cancelPress
-        );
-
-        document.addEventListener(
-            "mouseleave",
-            cancelPress
-        );
-
+        document.addEventListener("touchstart", startPress, { passive: true });
+        document.addEventListener("touchend", cancelPress);
+        document.addEventListener("touchcancel", cancelPress);
+        document.addEventListener("mousedown", startPress);
+        document.addEventListener("mouseup", cancelPress);
+        document.addEventListener("mouseleave", cancelPress);
 
         /* =====================================================
            KHỞI CHẠY
         ===================================================== */
+        let timerInterval = null;
 
-        applyHeaderColor();
+        function initApp() {
+            applyHeaderColor();
+            updateAllTimers();
+            generateQRCode();
 
-        updateAllTimers();
+            if (!timerInterval) {
+                timerInterval = setInterval(updateAllTimers, 1000);
+            }
+        }
 
-        generateQRCode();
-
-
-        /*
-         * Đồng hồ cập nhật mỗi giây.
-         *
-         * Nếu reload:
-         * startTime vẫn còn trong localStorage.
-         *
-         * Nếu vuốt/chuyển trang:
-         * khi quay lại sẽ tính lại bằng Date.now().
-         *
-         * Vì vậy timer không bị reset.
-         */
-
-        setInterval(
-            updateAllTimers,
-            1000
-        );
+        // Tự động kiểm tra xem đã đăng nhập chưa khi mở trang
+        checkAuth();
 
     </script>
-
 </body>
-
 </html>
