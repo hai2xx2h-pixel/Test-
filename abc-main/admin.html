@@ -2,310 +2,226 @@
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
 
-    <!-- Đã sửa tiêu đề tab thành Admin -->
-    <title>Admin</title>
+    <meta charset="UTF-8">
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-        body {
-            background-color: #2f3347;
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 30px 15px;
-        }
+    <title>THOR ADMIN</title>
 
-        .container {
-            width: 100%;
-            max-width: 680px;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            padding: 24px;
-        }
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .top-bar h2 {
-            font-size: 22px;
-            color: #111;
-            font-weight: 700;
-        }
-
-        .btn-logout {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-logout:hover {
-            background-color: #2563eb;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 14px;
-            color: #222;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 28px;
-        }
-
-        .input-field,
-        .select-field {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-            background-color: #fff;
-        }
-
-        .input-field:focus,
-        .select-field:focus {
-            border-color: #3b82f6;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 4px;
-        }
-
-        .btn-primary {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            padding: 9px 18px;
-            border-radius: 6px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .btn-secondary {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            padding: 9px 18px;
-            border-radius: 6px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .employee-list {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .employee-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .employee-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .emp-name {
-            font-weight: 700;
-            font-size: 15px;
-            color: #111;
-        }
-
-        .emp-detail {
-            font-size: 12.5px;
-            color: #666;
-        }
-
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 4px;
-        }
-
-        .status-active {
-            background-color: #22c55e;
-        }
-
-        .status-inactive {
-            background-color: #ef4444;
-        }
-
-        .text-active {
-            color: #22c55e;
-            font-weight: 500;
-        }
-
-        .text-inactive {
-            color: #ef4444;
-            font-weight: 500;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        .btn-action {
-            border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
-            font-size: 12px;
-            color: white;
-            cursor: pointer;
-        }
-
-        .btn-edit { background-color: #6b7280; }
-        .btn-lock { background-color: #ef4444; }
-        .btn-unlock { background-color: #22c55e; }
-        .btn-reset { background-color: #6b7280; }
-        .btn-delete { background-color: #ef4444; }
-    </style>
 </head>
+
 
 <body>
 
-    <div class="container">
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <h2>Quản lý nhân viên</h2>
-            <button class="btn-logout" onclick="logout()">Đăng xuất</button>
-        </div>
 
-        <!-- Form Thêm / Sửa -->
-        <div class="section-title">Thêm / sửa nhân viên</div>
-        <form id="employeeForm" class="form-group" onsubmit="saveEmployee(event)">
-            <input type="text" id="empCode" class="input-field" placeholder="Mã nhân viên" required />
-            <input type="text" id="empName" class="input-field" placeholder="Tên nhân viên" required />
-            
-            <select id="empRole" class="select-field">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-            </select>
+<div class="admin-page">
 
-            <input type="datetime-local" id="startDate" class="input-field" />
-            <input type="datetime-local" id="endDate" class="input-field" />
 
-            <select id="empStatus" class="select-field">
-                <option value="Vàng">Vàng</option>
-                <option value="Xanh">Xanh</option>
-            </select>
+    <!-- ADMIN LOGIN -->
 
-            <div class="form-actions">
-                <button type="submit" class="btn-primary">Lưu nhân viên</button>
-                <button type="button" class="btn-secondary" onclick="resetForm()">Xóa form</button>
-            </div>
-        </form>
+    <div
+        id="adminLogin"
+        class="admin-card"
+    >
 
-        <!-- Danh sách -->
-        <div class="section-title" style="margin-top: 20px;">Danh sách</div>
-        <div class="employee-list" id="employeeList">
-            <!-- Dữ liệu mẫu hiển thị -->
-            <div class="employee-card">
-                <div class="employee-info">
-                    <div class="emp-detail">MÃ: 67YUvMM6SREf1csLyKF8</div>
-                    <div class="emp-detail">Quyền: user</div>
-                    <div class="emp-detail">
-                        Trạng thái: <span class="status-dot status-inactive"></span><span class="text-inactive">Inactive</span>
-                    </div>
-                </div>
-                <div class="card-actions">
-                    <button class="btn-action btn-edit">Sửa</button>
-                    <button class="btn-action btn-unlock">Mở khóa</button>
-                    <button class="btn-action btn-reset">Reset thiết bị</button>
-                    <button class="btn-action btn-delete">Xóa</button>
-                </div>
-            </div>
+        <h1>
+            THOR ADMIN
+        </h1>
 
-            <div class="employee-card">
-                <div class="employee-info">
-                    <div class="emp-name">Nguyễn Văn Hải</div>
-                    <div class="emp-detail">Mã: V25111639</div>
-                    <div class="emp-detail">Quyền: admin</div>
-                    <div class="emp-detail">
-                        Trạng thái: <span class="status-dot status-active"></span><span class="text-active">Active</span>
-                    </div>
-                </div>
-                <div class="card-actions">
-                    <button class="btn-action btn-edit">Sửa</button>
-                    <button class="btn-action btn-lock">Khóa</button>
-                    <button class="btn-action btn-reset">Reset thiết bị</button>
-                    <button class="btn-action btn-delete">Xóa</button>
-                </div>
-            </div>
 
-            <div class="employee-card">
-                <div class="employee-info">
-                    <div class="emp-name">Nguyễn Phương Giang</div>
-                    <div class="emp-detail">Mã: V26021159</div>
-                    <div class="emp-detail">Quyền: user</div>
-                </div>
-                <div class="card-actions">
-                    <button class="btn-action btn-edit">Sửa</button>
-                    <button class="btn-action btn-lock">Khóa</button>
-                    <button class="btn-action btn-reset">Reset thiết bị</button>
-                    <button class="btn-action btn-delete">Xóa</button>
-                </div>
-            </div>
-        </div>
+        <p class="admin-subtitle">
+            Quản lý nhân viên
+        </p>
+
+
+        <input
+            id="adminEmail"
+            type="email"
+            placeholder="Email Admin"
+        >
+
+
+        <input
+            id="adminPassword"
+            type="password"
+            placeholder="Mật khẩu"
+        >
+
+
+        <button
+            id="adminLoginButton"
+        >
+            Đăng nhập
+        </button>
+
+
+        <div
+            id="adminLoginMessage"
+            class="login-message"
+        ></div>
+
     </div>
 
-    <script>
-        function resetForm() {
-            document.getElementById('employeeForm').reset();
-        }
 
-        function saveEmployee(e) {
-            e.preventDefault();
-            alert('Đã lưu thông tin nhân viên!');
-        }
 
-        function logout() {
-            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-                window.location.href = 'index.html';
-            }
-        }
-    </script>
+    <!-- ADMIN PANEL -->
+
+    <div
+        id="adminPanel"
+        class="admin-card hidden"
+    >
+
+
+        <div class="admin-title">
+
+            <h1>
+                Quản lý nhân viên
+            </h1>
+
+
+            <button
+                id="adminLogout"
+                class="button-gray"
+            >
+                Đăng xuất
+            </button>
+
+        </div>
+
+
+
+        <!-- FORM -->
+
+        <div class="admin-form">
+
+            <h2>
+                Thêm / sửa nhân viên
+            </h2>
+
+
+            <input
+                id="employeeId"
+                placeholder="Mã nhân viên"
+            >
+
+
+            <input
+                id="employeeName"
+                placeholder="Tên nhân viên"
+            >
+
+
+            <select
+                id="employeeRole"
+            >
+
+                <option value="user">
+                    User
+                </option>
+
+                <option value="admin">
+                    Admin
+                </option>
+
+            </select>
+
+
+            <label>
+                Ngày bắt đầu
+            </label>
+
+
+            <input
+                id="startDate"
+                type="datetime-local"
+            >
+
+
+            <label>
+                Ngày hết hạn
+            </label>
+
+
+            <input
+                id="endDate"
+                type="datetime-local"
+            >
+
+
+            <select
+                id="employeeColor"
+            >
+
+                <option value="yellow">
+                    Vàng
+                </option>
+
+                <option value="green">
+                    Xanh
+                </option>
+
+            </select>
+
+
+            <div class="admin-form-buttons">
+
+                <button
+                    id="saveUser"
+                    class="button-green"
+                >
+                    Lưu nhân viên
+                </button>
+
+
+                <button
+                    id="clearForm"
+                    class="button-gray"
+                >
+                    Xóa form
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- LIST -->
+
+        <h2>
+            Danh sách nhân viên
+        </h2>
+
+
+        <div
+            id="usersList"
+            class="users-list"
+        >
+            Đang tải...
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script
+    type="module"
+    src="admin.js"
+></script>
+
+
 </body>
 
 </html>
