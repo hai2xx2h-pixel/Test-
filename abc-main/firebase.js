@@ -8,38 +8,21 @@ import { getFirestore } from
     "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 
+// 🎯 Dán thông số thực tế của bạn vào đây:
 const firebaseConfig = {
-
-    apiKey: "DÁN_API_KEY_CỦA_BẠN",
-
-    authDomain:
-        "DÁN_PROJECT_ID.firebaseapp.com",
-
-    projectId:
-        "DÁN_PROJECT_ID",
-
-    storageBucket:
-        "DÁN_PROJECT_ID.firebasestorage.app",
-
-    messagingSenderId:
-        "DÁN_MESSAGING_SENDER_ID",
-
-    appId:
-        "DÁN_APP_ID"
+    apiKey: "AIzaSyDqVgpx9OSwEl_NQIR-KflGD-B0FIysZhc",
+    authDomain: "du-an-cua-hai.firebaseapp.com",
+    projectId: "du-an-cua-hai",
+    storageBucket: "du-an-cua-hai.firebasestorage.app",
+    messagingSenderId: "924184286263",
+    appId: "1:924184286263:web:3d7b6b94e74fef87585bb2",
+    measurementId: "G-8DZLWTWTKW"
 };
 
 
-const app =
-    initializeApp(firebaseConfig);
-
-
-const auth =
-    getAuth(app);
-
-
-const db =
-    getFirestore(app);
-
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 export {
     app,
