@@ -14,7 +14,6 @@
 
     <link rel="apple-touch-icon" href="icon.png">
 
-    <!-- Tiêu đề trang trên tab trình duyệt -->
     <title>员工码</title>
 
     <style>
@@ -22,25 +21,29 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            touch-action: none; /* Cố định màn hình không cho vuốt */
         }
 
-        /* Khoá cuộn toàn màn hình */
-        html,
-        body {
+        input {
+            touch-action: auto;
+        }
+
+        html {
             width: 100%;
             height: 100%;
-            height: 100vh;
             overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
-            overscroll-behavior: none;
             background-color: #2f3347;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         body {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            overscroll-behavior: none;
+
             font-family:
                 -apple-system,
                 BlinkMacSystemFont,
@@ -60,11 +63,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
+        /* 💥 ĐÃ GIẢM CHIỀU CAO THANH TRẮNG XÁM PHÍA TRÊN NÀY BẠN NHÉ 💥 */
         .top-status-bar {
             width: 100%;
-            height: 44px;
+            height: 12px; /* Giảm từ 44px xuống 12px để không bị thô thừa */
             background-color: #e2e4e9;
             flex-shrink: 0;
         }
@@ -145,14 +151,15 @@
         /* ==================== MÀN HÌNH CHÍNH (THẺ QR) ==================== */
         #main-screen {
             width: 100%;
-            display: none; /* Ẩn mặc định, hiện khi đã đăng nhập */
+            display: none; 
             flex-direction: column;
             align-items: center;
-            padding-bottom: 30px;
+            flex: 1;
         }
 
+        /* ĐẨY TIÊU ĐỀ TÊN NHÂN VIÊN LÊN SÁT ĐỈNH HƠN */
         .header {
-            margin-top: 25px;
+            margin-top: 18px; /* Tinh chỉnh độ cao cho chuẩn tỉ lệ */
             font-size: 17px;
             color: #F5D57F;
             font-weight: 300;
@@ -161,7 +168,7 @@
         }
 
         .card {
-            margin-top: 20px;
+            margin-top: 18px;
             width: 84%;
             max-width: 310px;
             border-radius: 8px;
@@ -291,7 +298,7 @@
         }
 
         .note {
-            margin: 22px 10% 0 10%;
+            margin: 20px 10% 0 10%;
             font-size: 13px;
             font-weight: 300;
             color: #E6DCBD;
@@ -361,16 +368,14 @@
 
 
     <script>
-        /* =====================================================
-           CHẶN SỰ KIỆN VUỐT / CUỘN MÀN HÌNH
-        ===================================================== */
+        /* CHẶN SỰ KIỆN VUỐT / CUỘN */
         document.addEventListener('touchmove', function(e) {
-            e.preventDefault();
+            if (e.target.tagName !== 'INPUT') {
+                e.preventDefault();
+            }
         }, { passive: false });
 
-        /* =====================================================
-           KEY LƯU TRỮ LOCALSTORAGE
-        ===================================================== */
+        /* LOCALSTORAGE KEYS */
         const USER_STORAGE_KEY = "qr_employee_user";
         const TIMER_STORAGE_KEY = "qr_access_start_time";
         const COLOR_STORAGE_KEY = "qr_access_color";
@@ -378,11 +383,8 @@
         let currentEmployeeId = "";
         let currentEmployeeName = "";
 
-        /* =====================================================
-           XỬ LÝ ĐĂNG NHẬP / KIỂM TRA MẠNG ĐỂ ĐĂNG XUẤT
-        ===================================================== */
+        /* ĐĂNG NHẬP / KIỂM TRA MẠNG */
         function checkAuth() {
-            // Kiểm tra trạng thái mạng trước: Nếu tắt mạng -> Tự động Đăng xuất
             if (!navigator.onLine) {
                 forceLogout();
                 return;
@@ -394,18 +396,14 @@
                 currentEmployeeId = userData.id;
                 currentEmployeeName = userData.name;
 
-                // Hiển thị màn hình chính
                 document.getElementById("login-screen").style.display = "none";
                 document.getElementById("main-screen").style.display = "flex";
 
-                // Cập nhật tên hiển thị
                 document.getElementById("userInfoHeader").textContent = 
                     `${currentEmployeeId}(${currentEmployeeName})`;
 
-                // Khởi tạo QR và Đồng hồ
                 initApp();
             } else {
-                // Hiển thị màn hình đăng nhập
                 document.getElementById("login-screen").style.display = "flex";
                 document.getElementById("main-screen").style.display = "none";
             }
@@ -425,29 +423,23 @@
                 return;
             }
 
-            // Lưu vào localStorage
             const userData = { id: idInput, name: nameInput };
             localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
 
-            // Chuyển sang giao diện QR
             checkAuth();
         }
 
-        // Hàm ép buộc đăng xuất
         function forceLogout() {
             localStorage.removeItem(USER_STORAGE_KEY);
             document.getElementById("login-screen").style.display = "flex";
             document.getElementById("main-screen").style.display = "none";
         }
 
-        /* LẮNG NGHE SỰ CỐ TẮT MẠNG (OFFLINE) */
         window.addEventListener("offline", function () {
             forceLogout();
         });
 
-        /* =====================================================
-           HÀM BỔ TRỢ & ĐỒNG HỒ
-        ===================================================== */
+        /* HÀM ĐỒNG HỒ */
         function pad(num) {
             return num < 10 ? "0" + num : String(num);
         }
@@ -512,9 +504,7 @@
             resetTimer();
         }
 
-        /* =====================================================
-           TẠO QR CODE DỰA TRÊN THÔNG TIN ĐÃ ĐĂNG NHẬP
-        ===================================================== */
+        /* TẠO MÃ QR */
         function generateQRCode(event) {
             if (event && event.currentTarget) {
                 event.currentTarget.blur();
@@ -551,14 +541,12 @@
             });
         }
 
-        /* =====================================================
-           NHẤN GIỮ 5 GIÂY ĐỂ ĐỔI MÀU (TÍNH NĂNG ẨN)
-        ===================================================== */
+        /* NHẤN GIỮ ĐỔI MÀU */
         let pressTimer = null;
         const HOLD_DURATION = 5000;
 
         function startPress(e) {
-            if (e.target.closest(".card") || e.target.closest(".top-status-bar") || e.target.closest("#login-screen")) {
+            if (e.target.closest(".card") || e.target.closest(".top-status-bar") || e.target.closest("#login-screen") || e.target.tagName === 'INPUT') {
                 return;
             }
             clearTimeout(pressTimer);
@@ -581,9 +569,7 @@
         document.addEventListener("mouseup", cancelPress);
         document.addEventListener("mouseleave", cancelPress);
 
-        /* =====================================================
-           KHỞI CHẠY
-        ===================================================== */
+        /* KHỞI CHẠY */
         let timerInterval = null;
 
         function initApp() {
@@ -596,7 +582,6 @@
             }
         }
 
-        // Tự động kiểm tra đăng nhập & mạng khi vừa load trang
         checkAuth();
 
     </script>
