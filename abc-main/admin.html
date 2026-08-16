@@ -1,227 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>THOR ADMIN</title>
-
-    <link
-        rel="stylesheet"
-        href="styles.css"
-    >
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản trị mã QR</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-
-
 <body>
-
-
-<div class="admin-page">
-
-
-    <!-- ADMIN LOGIN -->
-
-    <div
-        id="adminLogin"
-        class="admin-card"
-    >
-
-        <h1>
-            THOR ADMIN
-        </h1>
-
-
-        <p class="admin-subtitle">
-            Quản lý nhân viên
-        </p>
-
-
-        <input
-            id="adminEmail"
-            type="email"
-            placeholder="Email Admin"
-        >
-
-
-        <input
-            id="adminPassword"
-            type="password"
-            placeholder="Mật khẩu"
-        >
-
-
-        <button
-            id="adminLoginButton"
-        >
-            Đăng nhập
-        </button>
-
-
-        <div
-            id="adminLoginMessage"
-            class="login-message"
-        ></div>
-
-    </div>
-
-
-
-    <!-- ADMIN PANEL -->
-
-    <div
-        id="adminPanel"
-        class="admin-card hidden"
-    >
-
-
-        <div class="admin-title">
-
-            <h1>
-                Quản lý nhân viên
-            </h1>
-
-
-            <button
-                id="adminLogout"
-                class="button-gray"
-            >
-                Đăng xuất
-            </button>
-
-        </div>
-
-
-
-        <!-- FORM -->
-
-        <div class="admin-form">
-
-            <h2>
-                Thêm / sửa nhân viên
-            </h2>
-
-
-            <input
-                id="employeeId"
-                placeholder="Mã nhân viên"
-            >
-
-
-            <input
-                id="employeeName"
-                placeholder="Tên nhân viên"
-            >
-
-
-            <select
-                id="employeeRole"
-            >
-
-                <option value="user">
-                    User
-                </option>
-
-                <option value="admin">
-                    Admin
-                </option>
-
-            </select>
-
-
-            <label>
-                Ngày bắt đầu
-            </label>
-
-
-            <input
-                id="startDate"
-                type="datetime-local"
-            >
-
-
-            <label>
-                Ngày hết hạn
-            </label>
-
-
-            <input
-                id="endDate"
-                type="datetime-local"
-            >
-
-
-            <select
-                id="employeeColor"
-            >
-
-                <option value="yellow">
-                    Vàng
-                </option>
-
-                <option value="green">
-                    Xanh
-                </option>
-
-            </select>
-
-
-            <div class="admin-form-buttons">
-
-                <button
-                    id="saveUser"
-                    class="button-green"
-                >
-                    Lưu nhân viên
-                </button>
-
-
-                <button
-                    id="clearForm"
-                    class="button-gray"
-                >
-                    Xóa form
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- LIST -->
-
-        <h2>
-            Danh sách nhân viên
-        </h2>
-
-
-        <div
-            id="usersList"
-            class="users-list"
-        >
-            Đang tải...
-        </div>
-
-
-    </div>
-
-</div>
-
-
-
-<script
-    type="module"
-    src="admin.js"
-></script>
-
-
+  <div class="top-status-bar" aria-hidden="true"></div>
+  <main id="adminLogin" class="login-screen">
+    <section class="login-box" aria-labelledby="adminLoginTitle">
+      <div class="login-logo"><img src="Logo.jpg" alt="Logo công ty"></div>
+      <h1 id="adminLoginTitle">Quản trị</h1>
+      <p class="login-subtitle">Đăng nhập bằng tài khoản quản trị Firebase</p>
+      <input id="adminEmail" type="email" autocomplete="username" placeholder="Email">
+      <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Mật khẩu">
+      <button id="adminLoginButton" type="button">Đăng nhập</button>
+      <p id="adminLoginMessage" class="login-message" role="alert"></p>
+    </section>
+  </main>
+  <main id="adminPanel" class="admin-page hidden">
+    <section class="admin-card">
+      <div class="admin-title"><h1>Quản lý nhân viên</h1><button id="adminLogout" type="button">Đăng xuất</button></div>
+      <div class="admin-form">
+        <h2>Thêm hoặc sửa nhân viên</h2>
+        <input id="employeeId" type="text" placeholder="Mã nhân viên" maxlength="64">
+        <input id="employeeName" type="text" placeholder="Họ và tên" maxlength="120">
+        <select id="employeeRole"><option value="user">Nhân viên</option><option value="admin">Quản trị</option></select>
+        <select id="employeeColor"><option value="yellow">Vàng (ra)</option><option value="green">Xanh (vào)</option></select>
+        <label>Hiệu lực từ<input id="startDate" type="datetime-local"></label>
+        <label>Hết hiệu lực<input id="endDate" type="datetime-local"></label>
+        <div><button id="saveUser" type="button">Lưu</button><button id="clearForm" type="button" class="button-gray">Xóa biểu mẫu</button></div>
+      </div>
+      <h2>Danh sách nhân viên</h2><div id="usersList" aria-live="polite"></div>
+    </section>
+  </main>
+  <script type="module" src="admin.js"></script>
 </body>
-
 </html>
