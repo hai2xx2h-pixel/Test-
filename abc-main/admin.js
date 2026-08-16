@@ -9,25 +9,25 @@ import {
     signOut,
     onAuthStateChanged
 } from
-    "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 
 import {
     collection,
     getDocs,
-    doc,
     getDoc,
+    doc,
     setDoc,
     updateDoc,
     deleteDoc,
     serverTimestamp
 } from
-    "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+    "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 
-/* =====================================================
+/* ======================================
    DOM
-===================================================== */
+====================================== */
 
 const adminLogin =
     document.getElementById(
@@ -41,79 +41,79 @@ const adminPanel =
     );
 
 
-const email =
+const adminEmail =
     document.getElementById(
         "adminEmail"
     );
 
 
-const password =
+const adminPassword =
     document.getElementById(
         "adminPassword"
     );
 
 
-const loginButton =
+const adminLoginButton =
     document.getElementById(
         "adminLoginButton"
     );
 
 
-const loginMessage =
+const adminLoginMessage =
     document.getElementById(
         "adminLoginMessage"
     );
 
 
-const logoutButton =
+const adminLogout =
     document.getElementById(
         "adminLogout"
     );
 
 
-const employeeId =
+const employeeIdInput =
     document.getElementById(
         "employeeId"
     );
 
 
-const employeeName =
+const employeeNameInput =
     document.getElementById(
         "employeeName"
     );
 
 
-const employeeRole =
+const employeeRoleInput =
     document.getElementById(
         "employeeRole"
     );
 
 
-const startDate =
+const startDateInput =
     document.getElementById(
         "startDate"
     );
 
 
-const endDate =
+const endDateInput =
     document.getElementById(
         "endDate"
     );
 
 
-const employeeColor =
+const employeeColorInput =
     document.getElementById(
         "employeeColor"
     );
 
 
-const saveButton =
+const saveUserButton =
     document.getElementById(
         "saveUser"
     );
 
 
-const clearButton =
+const clearFormButton =
     document.getElementById(
         "clearForm"
     );
@@ -125,61 +125,70 @@ const usersList =
     );
 
 
-/* =====================================================
-   LOGIN
-===================================================== */
+/* ======================================
+   ADMIN LOGIN
+====================================== */
 
-loginButton.addEventListener(
+adminLoginButton.addEventListener(
     "click",
     async () => {
 
-        const mail =
-            email.value.trim();
+        const email =
+            adminEmail.value.trim();
 
-        const pass =
-            password.value;
+
+        const password =
+            adminPassword.value;
 
 
         if (
-            !mail ||
-            !pass
+            !email ||
+            !password
         ) {
 
-            loginMessage.textContent =
-                "Nhập email và mật khẩu.";
+            adminLoginMessage.textContent =
+                "Vui lòng nhập email và mật khẩu.";
 
             return;
         }
+
+
+        adminLoginButton.disabled =
+            true;
 
 
         try {
 
             await signInWithEmailAndPassword(
                 auth,
-                mail,
-                pass
+                email,
+                password
             );
 
 
-            loginMessage.textContent =
+            adminLoginMessage.textContent =
                 "";
 
         } catch (error) {
 
             console.error(error);
 
-            loginMessage.textContent =
-                "Đăng nhập thất bại.";
+            adminLoginMessage.textContent =
+                "Email hoặc mật khẩu không đúng.";
 
+        } finally {
+
+            adminLoginButton.disabled =
+                false;
         }
 
     }
 );
 
 
-/* =====================================================
-   AUTH
-===================================================== */
+/* ======================================
+   AUTH CHECK
+====================================== */
 
 onAuthStateChanged(
     auth,
@@ -187,21 +196,15 @@ onAuthStateChanged(
 
         if (!user) {
 
-            adminLogin.classList.remove(
-                "hidden"
-            );
-
-            adminPanel.classList.add(
-                "hidden"
-            );
+            showAdminLogin();
 
             return;
         }
 
 
         /*
-         * Security Rules vẫn là lớp
-         * bảo vệ chính.
+         * Kiểm tra UID có nằm trong
+         * collection admins hay không.
          */
 
         const adminRef =
@@ -222,23 +225,19 @@ onAuthStateChanged(
             !adminSnapshot.exists()
         ) {
 
-            await signOut(auth);
+            await signOut(
+                auth
+            );
 
-            loginMessage.textContent =
-                "Tài khoản này không có quyền admin.";
+
+            adminLoginMessage.textContent =
+                "Tài khoản này không có quyền Admin.";
 
             return;
         }
 
 
-        adminLogin.classList.add(
-            "hidden"
-        );
-
-
-        adminPanel.classList.remove(
-            "hidden"
-        );
+        showAdminPanel();
 
 
         loadUsers();
@@ -247,21 +246,61 @@ onAuthStateChanged(
 );
 
 
-/* =====================================================
-   LOGOUT
-===================================================== */
+/* ======================================
+   SHOW LOGIN
+====================================== */
 
-logoutButton.addEventListener(
+function showAdminLogin() {
+
+    adminLogin.classList.remove(
+        "hidden"
+    );
+
+
+    adminPanel.classList.add(
+        "hidden"
+    );
+}
+
+
+/* ======================================
+   SHOW PANEL
+====================================== */
+
+function showAdminPanel() {
+
+    adminLogin.classList.add(
+        "hidden"
+    );
+
+
+    adminPanel.classList.remove(
+        "hidden"
+    );
+}
+
+
+/* ======================================
+   LOGOUT
+====================================== */
+
+adminLogout.addEventListener(
     "click",
-    () => signOut(auth)
+    () => {
+
+        signOut(
+            auth
+        );
+
+    }
 );
 
 
-/* =====================================================
+/* ======================================
    SAVE USER
-===================================================== */
+====================================== */
 
-saveButton.addEventListener(
+saveUserButton.addEventListener(
     "click",
     saveUser
 );
@@ -270,14 +309,22 @@ saveButton.addEventListener(
 async function saveUser() {
 
     const id =
-        employeeId.value
+        employeeIdInput.value
             .trim()
             .toUpperCase();
 
 
     const name =
-        employeeName.value
+        employeeNameInput.value
             .trim();
+
+
+    const role =
+        employeeRoleInput.value;
+
+
+    const color =
+        employeeColorInput.value;
 
 
     if (
@@ -286,7 +333,25 @@ async function saveUser() {
     ) {
 
         alert(
-            "Nhập mã và tên."
+            "Vui lòng nhập mã nhân viên và tên."
+        );
+
+        return;
+    }
+
+
+    /*
+     * Kiểm tra ký tự ID.
+     */
+
+    if (
+        !/^[A-Z0-9_-]+$/.test(
+            id
+        )
+    ) {
+
+        alert(
+            "Mã nhân viên chỉ được dùng A-Z, 0-9, _ hoặc -."
         );
 
         return;
@@ -307,64 +372,72 @@ async function saveUser() {
         );
 
 
-    let oldData =
+    const oldData =
         oldSnapshot.exists()
             ? oldSnapshot.data()
-            : null;
+            : {};
+
+
+    const data = {
+
+        employeeId:
+            id,
+
+        name:
+            name,
+
+        role:
+            role,
+
+        active:
+            oldData.active ??
+            true,
+
+        color:
+            color,
+
+        startDate:
+            startDateInput.value
+                ? new Date(
+                    startDateInput.value
+                )
+                : null,
+
+        endDate:
+            endDateInput.value
+                ? new Date(
+                    endDateInput.value
+                )
+                : null,
+
+        /*
+         * Không reset session khi sửa
+         * thông tin bình thường.
+         */
+
+        activeSession:
+            oldData.activeSession ??
+            null,
+
+        timerStart:
+            oldData.timerStart ??
+            serverTimestamp(),
+
+        createdAt:
+            oldData.createdAt ??
+            serverTimestamp(),
+
+        updatedAt:
+            serverTimestamp()
+    };
 
 
     await setDoc(
         userRef,
+        data,
         {
-
-            employeeId:
-                id,
-
-            name:
-                name,
-
-            role:
-                employeeRole.value,
-
-            active:
-                oldData?.active ??
-                true,
-
-            color:
-                employeeColor.value,
-
-            startDate:
-                startDate.value
-                    ? new Date(
-                        startDate.value
-                    )
-                    : null,
-
-            endDate:
-                endDate.value
-                    ? new Date(
-                        endDate.value
-                    )
-                    : null,
-
-            activeSession:
-                oldData?.activeSession ??
-                null,
-
-            timerStart:
-                oldData?.timerStart ??
-                serverTimestamp(),
-
-            createdAt:
-                oldData?.createdAt ??
-                serverTimestamp(),
-
-            updatedAt:
-                serverTimestamp()
-
-        },
-        {
-            merge: true
+            merge:
+                true
         }
     );
 
@@ -376,13 +449,14 @@ async function saveUser() {
 
     clearForm();
 
+
     loadUsers();
 }
 
 
-/* =====================================================
+/* ======================================
    LOAD USERS
-===================================================== */
+====================================== */
 
 async function loadUsers() {
 
@@ -429,17 +503,20 @@ async function loadUsers() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
+
 
         usersList.innerHTML =
-            "<p>Không thể tải dữ liệu.</p>";
+            "<p>Không thể tải danh sách.</p>";
     }
 }
 
 
-/* =====================================================
-   RENDER USER
-===================================================== */
+/* ======================================
+   RENDER
+====================================== */
 
 function renderUser(
     id,
@@ -466,29 +543,62 @@ function renderUser(
         "user-info";
 
 
-    info.innerHTML = `
-        <strong>
-            ${escapeHTML(
-                user.name || ""
-            )}
-        </strong>
+    const name =
+        document.createElement(
+            "div"
+        );
 
-        <small>
-            Mã: ${escapeHTML(id)}
-            <br>
-            Quyền:
-            ${escapeHTML(
-                user.role || "user"
-            )}
-            <br>
-            Trạng thái:
-            ${
+
+    name.className =
+        "user-name";
+
+
+    name.textContent =
+        user.name ||
+        "";
+
+
+    const details =
+        document.createElement(
+            "div"
+        );
+
+
+    details.className =
+        "user-details";
+
+
+    details.textContent =
+        [
+            `Mã: ${id}`,
+
+            `Quyền: ${user.role || "user"}`,
+
+            `Trạng thái: ${
                 user.active
                     ? "🟢 Active"
                     : "🔴 Inactive"
-            }
-        </small>
-    `;
+            }`,
+
+            `Thiết bị: ${
+                user.activeSession
+                    ? "🟢 Đang sử dụng"
+                    : "⚪ Chưa đăng nhập"
+            }`
+
+        ].join(
+            "\n"
+        );
+
+
+    info.appendChild(
+        name
+    );
+
+
+    info.appendChild(
+        details
+    );
 
 
     const actions =
@@ -511,19 +621,24 @@ function renderUser(
 
 
     edit.onclick =
-        () => fillForm(
-            id,
-            user
-        );
+        () => {
+
+            fillForm(
+                id,
+                user
+            );
+
+        };
 
 
-    /* TOGGLE */
+    /* LOCK */
 
     const toggle =
         createButton(
             user.active
                 ? "Khóa"
                 : "Mở khóa",
+
             user.active
                 ? "button-red"
                 : "button-green"
@@ -531,13 +646,17 @@ function renderUser(
 
 
     toggle.onclick =
-        () => toggleUser(
-            id,
-            user.active
-        );
+        () => {
+
+            toggleUser(
+                id,
+                user.active
+            );
+
+        };
 
 
-    /* RESET DEVICE */
+    /* RESET */
 
     const reset =
         createButton(
@@ -547,9 +666,13 @@ function renderUser(
 
 
     reset.onclick =
-        () => resetDevice(
-            id
-        );
+        () => {
+
+            resetDevice(
+                id
+            );
+
+        };
 
 
     /* DELETE */
@@ -562,9 +685,13 @@ function renderUser(
 
 
     remove.onclick =
-        () => deleteUser(
-            id
-        );
+        () => {
+
+            deleteUser(
+                id
+            );
+
+        };
 
 
     actions.appendChild(
@@ -603,9 +730,9 @@ function renderUser(
 }
 
 
-/* =====================================================
-   CREATE BUTTON
-===================================================== */
+/* ======================================
+   BUTTON
+====================================== */
 
 function createButton(
     text,
@@ -630,57 +757,60 @@ function createButton(
 }
 
 
-/* =====================================================
-   EDIT FORM
-===================================================== */
+/* ======================================
+   FILL FORM
+====================================== */
 
 function fillForm(
     id,
     user
 ) {
 
-    employeeId.value =
+    employeeIdInput.value =
         id;
 
 
-    employeeId.disabled =
+    employeeIdInput.disabled =
         true;
 
 
-    employeeName.value =
+    employeeNameInput.value =
         user.name || "";
 
 
-    employeeRole.value =
-        user.role || "user";
+    employeeRoleInput.value =
+        user.role ||
+        "user";
 
 
-    employeeColor.value =
-        user.color || "yellow";
+    employeeColorInput.value =
+        user.color ||
+        "yellow";
 
 
-    startDate.value =
-        toInputDate(
+    startDateInput.value =
+        convertDate(
             user.startDate
         );
 
 
-    endDate.value =
-        toInputDate(
+    endDateInput.value =
+        convertDate(
             user.endDate
         );
 }
 
 
-/* =====================================================
-   DATE → INPUT
-===================================================== */
+/* ======================================
+   DATE
+====================================== */
 
-function toInputDate(
+function convertDate(
     value
 ) {
 
     if (!value) {
+
         return "";
     }
 
@@ -700,7 +830,6 @@ function toInputDate(
 
         date =
             new Date(value);
-
     }
 
 
@@ -717,8 +846,8 @@ function toInputDate(
     const local =
         new Date(
             date.getTime() -
-            date.getTimezoneOffset() *
-            60000
+            date.getTimezoneOffset()
+            * 60000
         );
 
 
@@ -731,9 +860,9 @@ function toInputDate(
 }
 
 
-/* =====================================================
-   TOGGLE
-===================================================== */
+/* ======================================
+   TOGGLE ACTIVE
+====================================== */
 
 async function toggleUser(
     id,
@@ -762,21 +891,20 @@ async function toggleUser(
 }
 
 
-/* =====================================================
+/* ======================================
    RESET DEVICE
-===================================================== */
+====================================== */
 
 async function resetDevice(
     id
 ) {
 
-    const confirmed =
-        confirm(
-            "Reset thiết bị của nhân viên này?"
-        );
+    if (
+        !confirm(
+            "Bạn chắc chắn muốn reset thiết bị của nhân viên này?"
+        )
+    ) {
 
-
-    if (!confirmed) {
         return;
     }
 
@@ -802,24 +930,26 @@ async function resetDevice(
     alert(
         "Đã reset thiết bị."
     );
+
+
+    loadUsers();
 }
 
 
-/* =====================================================
+/* ======================================
    DELETE
-===================================================== */
+====================================== */
 
 async function deleteUser(
     id
 ) {
 
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             "Bạn chắc chắn muốn xóa nhân viên này?"
-        );
+        )
+    ) {
 
-
-    if (!confirmed) {
         return;
     }
 
@@ -837,11 +967,11 @@ async function deleteUser(
 }
 
 
-/* =====================================================
+/* ======================================
    CLEAR
-===================================================== */
+====================================== */
 
-clearButton.addEventListener(
+clearFormButton.addEventListener(
     "click",
     clearForm
 );
@@ -849,61 +979,30 @@ clearButton.addEventListener(
 
 function clearForm() {
 
-    employeeId.value =
+    employeeIdInput.value =
         "";
 
-    employeeName.value =
+
+    employeeIdInput.disabled =
+        false;
+
+
+    employeeNameInput.value =
         "";
 
-    employeeRole.value =
+
+    employeeRoleInput.value =
         "user";
 
-    employeeColor.value =
+
+    employeeColorInput.value =
         "yellow";
 
-    startDate.value =
+
+    startDateInput.value =
         "";
 
-    endDate.value =
+
+    endDateInput.value =
         "";
-
-    employeeId.disabled =
-        false;
-}
-
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
-
-function escapeHTML(
-    value
-) {
-
-    return String(value)
-
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
 }
