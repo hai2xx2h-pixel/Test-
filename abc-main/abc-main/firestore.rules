@@ -41,8 +41,17 @@ service cloud.firestore {
              * mới được tạo/sửa/xóa.
              */
 
-            allow create, update, delete:
+            allow create, delete:
                 if isAdmin();
+
+
+            /*
+             * Ứng dụng nhân viên chỉ được ghi session
+             * và thời điểm đăng nhập; mọi trường hồ sơ
+             * khác vẫn chỉ do quản trị viên thay đổi.
+             */
+            allow update:
+                if isAdmin() || isSessionUpdate();
 
         }
 
@@ -60,6 +69,16 @@ service cloud.firestore {
                     /documents/admins/
                     $(request.auth.uid)
                 );
+
+        }
+
+
+        function isSessionUpdate() {
+
+            return request.auth != null
+                && request.resource.data.diff(resource.data)
+                    .affectedKeys()
+                    .hasOnly(['activeSession', 'lastLogin']);
 
         }
 
