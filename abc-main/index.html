@@ -1,237 +1,40 @@
-<!DOCTYPE html>
-<html lang="zh">
-
+<!doctype html>
+<html lang="vi">
 <head>
-
-    <meta charset="UTF-8" />
-
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-
-    <meta http-equiv="Cache-Control"
-        content="no-cache, no-store, must-revalidate" />
-
-    <meta http-equiv="Pragma"
-        content="no-cache" />
-
-    <meta http-equiv="Expires"
-        content="0" />
-
-    <meta name="apple-mobile-web-app-capable"
-        content="yes">
-
-    <meta name="apple-mobile-web-app-status-bar-style"
-        content="black-translucent">
-
-    <meta name="theme-color"
-        content="#2f3347">
-
-
-    <!-- QR GIỮ NGUYÊN -->
-
-    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
-
-
-    <link rel="apple-touch-icon"
-        href="icon.png">
-
-
-    <link rel="stylesheet"
-        href="styles.css">
-
-
-    <title>二维码通行</title>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2f3347">
+  <title>Mã QR ra vào</title>
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="stylesheet" href="styles.css">
 </head>
-
-
 <body>
-
-
-    <!-- ==============================
-         LOGIN
-    =============================== -->
-
-    <div id="loginScreen"
-         class="login-screen">
-
-        <div class="login-box">
-
-            <img
-                src="Logo.jpg"
-                class="login-logo"
-                alt="Logo"
-            >
-
-            <div class="login-title">
-                THOR
-            </div>
-
-            <div class="login-subtitle">
-                员工身份验证
-            </div>
-
-
-            <input
-                id="employeeCodeInput"
-                class="employee-input"
-                type="text"
-                placeholder="请输入员工编号"
-                autocomplete="off"
-                autocapitalize="characters"
-            >
-
-
-            <button
-                id="loginButton"
-                class="login-button"
-            >
-                确认
-            </button>
-
-
-            <div
-                id="loginMessage"
-                class="login-message"
-            ></div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ==============================
-         MAIN APP
-    =============================== -->
-
-    <div id="appScreen"
-         class="app-screen hidden">
-
-
-        <!-- TÊN NHÂN VIÊN -->
-
-        <div
-            class="header"
-            id="employeeHeader"
-        >
-            --
-        </div>
-
-
-
-        <!-- CARD -->
-
-        <div class="card">
-
-
-            <div
-                class="card-header"
-                id="cardHeader"
-            >
-
-                <span id="headerText">
-                    将二维码对准扫描器刷码出场
-                </span>
-
-
-                <div class="circle1"></div>
-
-                <div class="circle2"></div>
-
-            </div>
-
-
-
-            <div class="card-body">
-
-
-                <!-- THỜI GIAN HIỆN TẠI -->
-
-                <div
-                    class="time"
-                    id="currentTime"
-                >
-                    --
-                </div>
-
-
-
-                <!-- ======================
-                     QR GIỮ NGUYÊN
-                ======================= -->
-
-                <div id="qrcode"></div>
-
-
-                <div class="refresh">
-
-                    <span
-                        onclick="generateQRCode(event)"
-                        class="refresh-title"
-                    >
-                        刷新二维码
-                    </span>
-
-                </div>
-
-
-
-                <!-- TIMER -->
-
-                <div class="status-box">
-
-                    <div class="status-label">
-                        已生效
-                    </div>
-
-
-                    <div
-                        class="status-timer"
-                        id="statusTimer"
-                    >
-                        00:00:00
-                    </div>
-
-                </div>
-
-
-            </div>
-
-        </div>
-
-
-
-        <!-- NOTE -->
-
-        <div class="note">
-
-            尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
-
-        </div>
-
-
-
-        <!-- LOGOUT -->
-
-        <button
-            id="logoutButton"
-            class="logout-button"
-        >
-            退出登录
-        </button>
-
-
-    </div>
-
-
-
-    <script
-        type="module"
-        src="app.js"
-    ></script>
-
-
+  <div class="top-status-bar" aria-hidden="true"></div>
+  <main id="loginScreen" class="login-screen">
+    <section class="login-box" aria-labelledby="loginTitle">
+      <div class="login-logo"><img src="Logo.jpg" alt="Logo công ty"></div>
+      <h1 id="loginTitle">Mã QR ra vào</h1>
+      <p class="login-subtitle">Nhập mã nhân viên để tiếp tục</p>
+      <label class="sr-only" for="employeeCodeInput">Mã nhân viên</label>
+      <input id="employeeCodeInput" type="text" autocomplete="username" placeholder="Mã nhân viên" maxlength="64">
+      <button id="loginButton" type="button">Đăng nhập</button>
+      <p id="loginMessage" class="login-message" role="alert"></p>
+    </section>
+  </main>
+  <main id="appScreen" class="app-screen hidden">
+    <header class="header" id="employeeHeader"></header>
+    <section class="card" aria-label="Mã QR của nhân viên">
+      <div class="card-header" id="cardHeader"><span id="headerText"></span><span class="circle1"></span><span class="circle2"></span></div>
+      <div class="card-body">
+        <div id="currentTime" class="time"></div>
+        <div id="qrcode" aria-label="Mã QR"></div>
+        <div class="refresh"><button id="refreshButton" class="refresh-title" type="button">Làm mới mã QR</button></div>
+        <div class="status-box"><div id="accountStatus" class="status-label"></div><div id="statusTimer" class="status-timer">00:00:00</div></div>
+      </div>
+    </section>
+    <p class="note">Vui lòng đưa mã QR cho máy quét. Mã được làm mới khi bạn yêu cầu.</p>
+    <button id="logoutButton" class="logout-button" type="button">Đăng xuất</button>
+  </main>
+  <script type="module" src="app.js"></script>
 </body>
-
 </html>
