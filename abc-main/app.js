@@ -1,6 +1,13 @@
 import {
+    auth,
     db
 } from "./firebase.js";
+
+
+import {
+    signInAnonymously
+} from
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
 
 import {
@@ -50,12 +57,6 @@ const loginMessage =
 const employeeHeader =
     document.getElementById(
         "employeeHeader"
-    );
-
-
-const userName =
-    document.getElementById(
-        "userName"
     );
 
 
@@ -135,7 +136,15 @@ let unsubscribeUser =
     null;
 
 
-let timerInterval =
+let clockInterval =
+    null;
+
+
+let durationInterval =
+    null;
+
+
+let authReady =
     null;
 
 
@@ -287,6 +296,9 @@ async function login() {
 
 
     try {
+
+        await ensureAnonymousSession();
+
 
         const userRef =
             doc(
@@ -575,11 +587,6 @@ function renderUser(user) {
         `(${user.name || ""})`;
 
 
-    userName.textContent =
-        user.name ||
-        "";
-
-
     accountStatus.textContent =
         user.active
             ? "Active"
@@ -658,11 +665,11 @@ function applyColor(isGreen) {
 function startClock() {
 
     if (
-        timerInterval
+        clockInterval
     ) {
 
         clearInterval(
-            timerInterval
+            clockInterval
         );
 
     }
@@ -697,7 +704,7 @@ function startClock() {
     update();
 
 
-    setInterval(
+    clockInterval = setInterval(
         update,
         1000
     );
@@ -711,7 +718,13 @@ function startClock() {
 function startTimer(start) {
 
     if (!start) {
+        statusTimer.textContent = "00:00:00";
         return;
+    }
+
+
+    if (durationInterval) {
+        clearInterval(durationInterval);
     }
 
 
@@ -755,7 +768,7 @@ function startTimer(start) {
     updateTimer();
 
 
-    setInterval(
+    durationInterval = setInterval(
         updateTimer,
         1000
     );
@@ -889,6 +902,18 @@ async function logout() {
     }
 
 
+    if (clockInterval) {
+        clearInterval(clockInterval);
+        clockInterval = null;
+    }
+
+
+    if (durationInterval) {
+        clearInterval(durationInterval);
+        durationInterval = null;
+    }
+
+
     employeeId = null;
     sessionId = null;
 
@@ -965,3 +990,42 @@ employeeCodeInput.addEventListener(
 
     }
 );
+
+
+/* =====================================================
+   AUTHENTICATION
+===================================================== */
+
+async function ensureAnonymousSession() {
+
+    if (auth.currentUser) {
+        return auth.currentUser;
+    }
+
+
+    if (!authReady) {
+        authReady = signInAnonymously(auth)
+            .then(result => result.user)
+            .catch(error => {
+                authReady = null;
+                throw error;
+            });
+    }
+
+
+    return authReady;
+}
+
+
+ensureAnonymousSession()
+    .then(() => {
+        if (employeeId && sessionId) {
+            openApp();
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        showLoginError(
+            "Không thể kết nối. Hãy bật Anonymous Authentication trong Firebase."
+        );
+    });
