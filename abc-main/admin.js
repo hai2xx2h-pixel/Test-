@@ -3,14 +3,11 @@ import {
     db
 } from "./firebase.js";
 
-
 import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged
-} from
-    "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
 import {
     collection,
@@ -21,144 +18,183 @@ import {
     updateDoc,
     deleteDoc,
     serverTimestamp
-} from
-    "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 
-/* ======================================
+/* =====================================================
    DOM
-====================================== */
+===================================================== */
 
-const adminLogin =
-    document.getElementById(
-        "adminLogin"
-    );
+const adminLogin = document.getElementById("adminLogin");
+const adminPanel = document.getElementById("adminPanel");
 
-
-const adminPanel =
-    document.getElementById(
-        "adminPanel"
-    );
-
-
-const adminEmail =
-    document.getElementById(
-        "adminEmail"
-    );
-
-
-const adminPassword =
-    document.getElementById(
-        "adminPassword"
-    );
-
+const adminEmail = document.getElementById("adminEmail");
+const adminPassword = document.getElementById("adminPassword");
 
 const adminLoginButton =
-    document.getElementById(
-        "adminLoginButton"
-    );
-
+    document.getElementById("adminLoginButton");
 
 const adminLoginMessage =
-    document.getElementById(
-        "adminLoginMessage"
-    );
-
+    document.getElementById("adminLoginMessage");
 
 const adminLogout =
-    document.getElementById(
-        "adminLogout"
-    );
-
+    document.getElementById("adminLogout");
 
 const employeeIdInput =
-    document.getElementById(
-        "employeeId"
-    );
-
+    document.getElementById("employeeId");
 
 const employeeNameInput =
-    document.getElementById(
-        "employeeName"
-    );
-
+    document.getElementById("employeeName");
 
 const employeeRoleInput =
-    document.getElementById(
-        "employeeRole"
-    );
-
+    document.getElementById("employeeRole");
 
 const startDateInput =
-    document.getElementById(
-        "startDate"
-    );
-
+    document.getElementById("startDate");
 
 const endDateInput =
-    document.getElementById(
-        "endDate"
-    );
-
+    document.getElementById("endDate");
 
 const employeeColorInput =
-    document.getElementById(
-        "employeeColor"
-    );
-
+    document.getElementById("employeeColor");
 
 const saveUserButton =
-    document.getElementById(
-        "saveUser"
-    );
-
+    document.getElementById("saveUser");
 
 const clearFormButton =
-    document.getElementById(
-        "clearForm"
-    );
-
+    document.getElementById("clearForm");
 
 const usersList =
-    document.getElementById(
-        "usersList"
-    );
+    document.getElementById("usersList");
 
 
-/* ======================================
+/* =====================================================
+   HIỂN THỊ
+===================================================== */
+
+function showAdminLogin() {
+
+    adminLogin.classList.remove("hidden");
+
+    adminPanel.classList.add("hidden");
+}
+
+
+function showAdminPanel() {
+
+    adminLogin.classList.add("hidden");
+
+    adminPanel.classList.remove("hidden");
+}
+
+
+/* =====================================================
+   HIỂN THỊ LỖI FIREBASE
+===================================================== */
+
+function getFirebaseErrorMessage(error) {
+
+    console.error("Firebase error:", error);
+    console.error("Error code:", error?.code);
+    console.error("Error message:", error?.message);
+
+    switch (error?.code) {
+
+        case "auth/invalid-credential":
+            return "Email hoặc mật khẩu không đúng.";
+
+        case "auth/invalid-email":
+            return "Email không hợp lệ.";
+
+        case "auth/user-disabled":
+            return "Tài khoản này đã bị khóa.";
+
+        case "auth/user-not-found":
+            return "Không tìm thấy tài khoản.";
+
+        case "auth/wrong-password":
+            return "Mật khẩu không đúng.";
+
+        case "auth/too-many-requests":
+            return "Có quá nhiều lần đăng nhập thất bại. Hãy thử lại sau.";
+
+        case "auth/operation-not-allowed":
+            return "Phương thức Email/Password chưa được bật trong Firebase.";
+
+        case "auth/network-request-failed":
+            return "Không thể kết nối Firebase. Kiểm tra Internet.";
+
+        case "auth/unauthorized-domain":
+            return "Domain hiện tại chưa được thêm vào Authorized domains.";
+
+        default:
+            return "Đăng nhập thất bại: " +
+                (error?.message || "Lỗi không xác định.");
+    }
+}
+
+
+/* =====================================================
    ADMIN LOGIN
-====================================== */
+===================================================== */
 
 adminLoginButton.addEventListener(
     "click",
-    async () => {
-
-        const email =
-            adminEmail.value.trim();
+    loginAdmin
+);
 
 
-        const password =
-            adminPassword.value;
+adminPassword.addEventListener(
+    "keydown",
+    event => {
 
-
-        if (
-            !email ||
-            !password
-        ) {
-
-            adminLoginMessage.textContent =
-                "Vui lòng nhập email và mật khẩu.";
-
-            return;
+        if (event.key === "Enter") {
+            loginAdmin();
         }
 
+    }
+);
 
-        adminLoginButton.disabled =
-            true;
+
+adminEmail.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Enter") {
+            loginAdmin();
+        }
+
+    }
+);
 
 
-        try {
+async function loginAdmin() {
 
+    const email =
+        adminEmail.value.trim();
+
+    const password =
+        adminPassword.value;
+
+
+    if (!email || !password) {
+
+        adminLoginMessage.textContent =
+            "Vui lòng nhập email và mật khẩu.";
+
+        return;
+    }
+
+
+    adminLoginButton.disabled = true;
+
+    adminLoginMessage.textContent =
+        "Đang đăng nhập...";
+
+
+    try {
+
+        const result =
             await signInWithEmailAndPassword(
                 auth,
                 email,
@@ -166,33 +202,44 @@ adminLoginButton.addEventListener(
             );
 
 
-            adminLoginMessage.textContent =
-                "";
+        console.log(
+            "Firebase Auth thành công:",
+            result.user.uid
+        );
 
-        } catch (error) {
 
-            console.error(error);
+        adminLoginMessage.textContent =
+            "Đăng nhập thành công.";
 
-            adminLoginMessage.textContent =
-                "Email hoặc mật khẩu không đúng.";
+    } catch (error) {
 
-        } finally {
+        adminLoginMessage.textContent =
+            getFirebaseErrorMessage(error);
 
-            adminLoginButton.disabled =
-                false;
-        }
+    } finally {
+
+        adminLoginButton.disabled = false;
 
     }
-);
+
+}
 
 
-/* ======================================
-   AUTH CHECK
-====================================== */
+/* =====================================================
+   KIỂM TRA ADMIN
+===================================================== */
 
 onAuthStateChanged(
     auth,
     async user => {
+
+        console.log(
+            "Auth state:",
+            user
+                ? user.uid
+                : "Chưa đăng nhập"
+        );
+
 
         if (!user) {
 
@@ -202,103 +249,108 @@ onAuthStateChanged(
         }
 
 
-        /*
-         * Kiểm tra UID có nằm trong
-         * collection admins hay không.
-         */
+        try {
 
-        const adminRef =
-            doc(
-                db,
-                "admins",
+            const adminRef =
+                doc(
+                    db,
+                    "admins",
+                    user.uid
+                );
+
+
+            const adminSnapshot =
+                await getDoc(
+                    adminRef
+                );
+
+
+            if (!adminSnapshot.exists()) {
+
+                console.error(
+                    "UID không tồn tại trong admins:",
+                    user.uid
+                );
+
+
+                await signOut(auth);
+
+
+                adminLoginMessage.textContent =
+                    "Tài khoản đăng nhập được nhưng chưa được cấp quyền Admin.";
+
+                showAdminLogin();
+
+                return;
+            }
+
+
+            console.log(
+                "Admin xác thực thành công:",
                 user.uid
             );
 
 
-        const adminSnapshot =
-            await getDoc(
-                adminRef
+            showAdminPanel();
+
+            await loadUsers();
+
+
+        } catch (error) {
+
+            console.error(
+                "Lỗi kiểm tra Admin:",
+                error
             );
 
 
-        if (
-            !adminSnapshot.exists()
-        ) {
-
-            await signOut(
-                auth
-            );
+            await signOut(auth);
 
 
             adminLoginMessage.textContent =
-                "Tài khoản này không có quyền Admin.";
+                "Không thể kiểm tra quyền Admin: " +
+                (error.message || "");
 
-            return;
+            showAdminLogin();
+
         }
-
-
-        showAdminPanel();
-
-
-        loadUsers();
 
     }
 );
 
 
-/* ======================================
-   SHOW LOGIN
-====================================== */
-
-function showAdminLogin() {
-
-    adminLogin.classList.remove(
-        "hidden"
-    );
-
-
-    adminPanel.classList.add(
-        "hidden"
-    );
-}
-
-
-/* ======================================
-   SHOW PANEL
-====================================== */
-
-function showAdminPanel() {
-
-    adminLogin.classList.add(
-        "hidden"
-    );
-
-
-    adminPanel.classList.remove(
-        "hidden"
-    );
-}
-
-
-/* ======================================
+/* =====================================================
    LOGOUT
-====================================== */
+===================================================== */
 
 adminLogout.addEventListener(
     "click",
-    () => {
+    async () => {
 
-        signOut(
-            auth
-        );
+        try {
+
+            await signOut(auth);
+
+            clearForm();
+
+            showAdminLogin();
+
+        } catch (error) {
+
+            console.error(
+                "Logout error:",
+                error
+            );
+
+        }
 
     }
 );
 
 
-/* ======================================
+/* =====================================================
    SAVE USER
-====================================== */
+===================================================== */
 
 saveUserButton.addEventListener(
     "click",
@@ -327,10 +379,7 @@ async function saveUser() {
         employeeColorInput.value;
 
 
-    if (
-        !id ||
-        !name
-    ) {
+    if (!id || !name) {
 
         alert(
             "Vui lòng nhập mã nhân viên và tên."
@@ -340,15 +389,7 @@ async function saveUser() {
     }
 
 
-    /*
-     * Kiểm tra ký tự ID.
-     */
-
-    if (
-        !/^[A-Z0-9_-]+$/.test(
-            id
-        )
-    ) {
+    if (!/^[A-Z0-9_-]+$/.test(id)) {
 
         alert(
             "Mã nhân viên chỉ được dùng A-Z, 0-9, _ hoặc -."
@@ -358,105 +399,119 @@ async function saveUser() {
     }
 
 
-    const userRef =
-        doc(
-            db,
-            "users",
-            id
+    saveUserButton.disabled = true;
+
+
+    try {
+
+        const userRef =
+            doc(
+                db,
+                "users",
+                id
+            );
+
+
+        const oldSnapshot =
+            await getDoc(userRef);
+
+
+        const oldData =
+            oldSnapshot.exists()
+                ? oldSnapshot.data()
+                : {};
+
+
+        const data = {
+
+            employeeId: id,
+
+            name: name,
+
+            role: role,
+
+            active:
+                oldData.active ??
+                true,
+
+            color:
+                color,
+
+            startDate:
+                startDateInput.value
+                    ? new Date(
+                        startDateInput.value
+                    )
+                    : null,
+
+            endDate:
+                endDateInput.value
+                    ? new Date(
+                        endDateInput.value
+                    )
+                    : null,
+
+            activeSession:
+                oldData.activeSession ??
+                null,
+
+            timerStart:
+                oldData.timerStart ??
+                serverTimestamp(),
+
+            createdAt:
+                oldData.createdAt ??
+                serverTimestamp(),
+
+            updatedAt:
+                serverTimestamp()
+        };
+
+
+        await setDoc(
+            userRef,
+            data,
+            {
+                merge: true
+            }
         );
 
 
-    const oldSnapshot =
-        await getDoc(
-            userRef
+        alert(
+            "Đã lưu nhân viên."
         );
 
 
-    const oldData =
-        oldSnapshot.exists()
-            ? oldSnapshot.data()
-            : {};
+        clearForm();
+
+        await loadUsers();
 
 
-    const data = {
+    } catch (error) {
 
-        employeeId:
-            id,
-
-        name:
-            name,
-
-        role:
-            role,
-
-        active:
-            oldData.active ??
-            true,
-
-        color:
-            color,
-
-        startDate:
-            startDateInput.value
-                ? new Date(
-                    startDateInput.value
-                )
-                : null,
-
-        endDate:
-            endDateInput.value
-                ? new Date(
-                    endDateInput.value
-                )
-                : null,
-
-        /*
-         * Không reset session khi sửa
-         * thông tin bình thường.
-         */
-
-        activeSession:
-            oldData.activeSession ??
-            null,
-
-        timerStart:
-            oldData.timerStart ??
-            serverTimestamp(),
-
-        createdAt:
-            oldData.createdAt ??
-            serverTimestamp(),
-
-        updatedAt:
-            serverTimestamp()
-    };
+        console.error(
+            "Save user error:",
+            error
+        );
 
 
-    await setDoc(
-        userRef,
-        data,
-        {
-            merge:
-                true
-        }
-    );
+        alert(
+            "Không thể lưu nhân viên:\n" +
+            (error.message || "Lỗi không xác định.")
+        );
 
+    } finally {
 
-    alert(
-        "Đã lưu nhân viên."
-    );
+        saveUserButton.disabled = false;
 
+    }
 
-    clearForm();
-
-
-    loadUsers();
 }
 
 
-/* ======================================
+/* =====================================================
    LOAD USERS
-====================================== */
+===================================================== */
 
 async function loadUsers() {
 
@@ -475,13 +530,10 @@ async function loadUsers() {
             );
 
 
-        usersList.innerHTML =
-            "";
+        usersList.innerHTML = "";
 
 
-        if (
-            snapshot.empty
-        ) {
+        if (snapshot.empty) {
 
             usersList.innerHTML =
                 "<p>Chưa có nhân viên.</p>";
@@ -501,68 +553,55 @@ async function loadUsers() {
             }
         );
 
+
     } catch (error) {
 
         console.error(
+            "Load users error:",
             error
         );
 
 
         usersList.innerHTML =
             "<p>Không thể tải danh sách.</p>";
+
     }
+
 }
 
 
-/* ======================================
-   RENDER
-====================================== */
+/* =====================================================
+   RENDER USER
+===================================================== */
 
-function renderUser(
-    id,
-    user
-) {
+function renderUser(id, user) {
 
     const row =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     row.className =
         "user-row";
 
 
     const info =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     info.className =
         "user-info";
 
 
     const name =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     name.className =
         "user-name";
 
-
     name.textContent =
-        user.name ||
-        "";
+        user.name || "";
 
 
     const details =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     details.className =
         "user-details";
@@ -586,26 +625,16 @@ function renderUser(
                     : "⚪ Chưa đăng nhập"
             }`
 
-        ].join(
-            "\n"
-        );
+        ].join("\n");
 
 
-    info.appendChild(
-        name
-    );
+    info.appendChild(name);
 
-
-    info.appendChild(
-        details
-    );
+    info.appendChild(details);
 
 
     const actions =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     actions.className =
         "user-actions";
@@ -635,6 +664,7 @@ function renderUser(
 
     const toggle =
         createButton(
+
             user.active
                 ? "Khóa"
                 : "Mở khóa",
@@ -642,6 +672,7 @@ function renderUser(
             user.active
                 ? "button-red"
                 : "button-green"
+
         );
 
 
@@ -656,7 +687,7 @@ function renderUser(
         };
 
 
-    /* RESET */
+    /* RESET DEVICE */
 
     const reset =
         createButton(
@@ -668,9 +699,7 @@ function renderUser(
     reset.onclick =
         () => {
 
-            resetDevice(
-                id
-            );
+            resetDevice(id);
 
         };
 
@@ -687,52 +716,33 @@ function renderUser(
     remove.onclick =
         () => {
 
-            deleteUser(
-                id
-            );
+            deleteUser(id);
 
         };
 
 
-    actions.appendChild(
-        edit
-    );
+    actions.appendChild(edit);
+
+    actions.appendChild(toggle);
+
+    actions.appendChild(reset);
+
+    actions.appendChild(remove);
 
 
-    actions.appendChild(
-        toggle
-    );
+    row.appendChild(info);
+
+    row.appendChild(actions);
 
 
-    actions.appendChild(
-        reset
-    );
+    usersList.appendChild(row);
 
-
-    actions.appendChild(
-        remove
-    );
-
-
-    row.appendChild(
-        info
-    );
-
-
-    row.appendChild(
-        actions
-    );
-
-
-    usersList.appendChild(
-        row
-    );
 }
 
 
-/* ======================================
-   BUTTON
-====================================== */
+/* =====================================================
+   CREATE BUTTON
+===================================================== */
 
 function createButton(
     text,
@@ -740,9 +750,7 @@ function createButton(
 ) {
 
     const button =
-        document.createElement(
-            "button"
-        );
+        document.createElement("button");
 
 
     button.textContent =
@@ -754,12 +762,13 @@ function createButton(
 
 
     return button;
+
 }
 
 
-/* ======================================
+/* =====================================================
    FILL FORM
-====================================== */
+===================================================== */
 
 function fillForm(
     id,
@@ -768,7 +777,6 @@ function fillForm(
 
     employeeIdInput.value =
         id;
-
 
     employeeIdInput.disabled =
         true;
@@ -779,13 +787,11 @@ function fillForm(
 
 
     employeeRoleInput.value =
-        user.role ||
-        "user";
+        user.role || "user";
 
 
     employeeColorInput.value =
-        user.color ||
-        "yellow";
+        user.color || "yellow";
 
 
     startDateInput.value =
@@ -798,19 +804,17 @@ function fillForm(
         convertDate(
             user.endDate
         );
+
 }
 
 
-/* ======================================
-   DATE
-====================================== */
+/* =====================================================
+   CONVERT DATE
+===================================================== */
 
-function convertDate(
-    value
-) {
+function convertDate(value) {
 
     if (!value) {
-
         return "";
     }
 
@@ -830,6 +834,7 @@ function convertDate(
 
         date =
             new Date(value);
+
     }
 
 
@@ -846,58 +851,76 @@ function convertDate(
     const local =
         new Date(
             date.getTime() -
-            date.getTimezoneOffset()
-            * 60000
+            date.getTimezoneOffset() *
+            60000
         );
 
 
     return local
         .toISOString()
-        .slice(
-            0,
-            16
-        );
+        .slice(0, 16);
+
 }
 
 
-/* ======================================
+/* =====================================================
    TOGGLE ACTIVE
-====================================== */
+===================================================== */
 
 async function toggleUser(
     id,
     current
 ) {
 
-    await updateDoc(
-        doc(
-            db,
-            "users",
-            id
-        ),
-        {
+    try {
 
-            active:
-                !current,
+        await updateDoc(
 
-            updatedAt:
-                serverTimestamp()
+            doc(
+                db,
+                "users",
+                id
+            ),
 
-        }
-    );
+            {
+
+                active:
+                    !current,
+
+                updatedAt:
+                    serverTimestamp()
+
+            }
+
+        );
 
 
-    loadUsers();
+        await loadUsers();
+
+
+    } catch (error) {
+
+        console.error(
+            "Toggle user error:",
+            error
+        );
+
+
+        alert(
+            "Không thể thay đổi trạng thái:\n" +
+            error.message
+        );
+
+    }
+
 }
 
 
-/* ======================================
+/* =====================================================
    RESET DEVICE
-====================================== */
+===================================================== */
 
-async function resetDevice(
-    id
-) {
+async function resetDevice(id) {
 
     if (
         !confirm(
@@ -909,40 +932,60 @@ async function resetDevice(
     }
 
 
-    await updateDoc(
-        doc(
-            db,
-            "users",
-            id
-        ),
-        {
+    try {
 
-            activeSession:
-                null,
+        await updateDoc(
 
-            updatedAt:
-                serverTimestamp()
+            doc(
+                db,
+                "users",
+                id
+            ),
 
-        }
-    );
+            {
+
+                activeSession:
+                    null,
+
+                updatedAt:
+                    serverTimestamp()
+
+            }
+
+        );
 
 
-    alert(
-        "Đã reset thiết bị."
-    );
+        alert(
+            "Đã reset thiết bị."
+        );
 
 
-    loadUsers();
+        await loadUsers();
+
+
+    } catch (error) {
+
+        console.error(
+            "Reset device error:",
+            error
+        );
+
+
+        alert(
+            "Không thể reset thiết bị:\n" +
+            error.message
+        );
+
+    }
+
 }
 
 
-/* ======================================
-   DELETE
-====================================== */
+/* =====================================================
+   DELETE USER
+===================================================== */
 
-async function deleteUser(
-    id
-) {
+async function deleteUser(id) {
 
     if (
         !confirm(
@@ -954,22 +997,43 @@ async function deleteUser(
     }
 
 
-    await deleteDoc(
-        doc(
-            db,
-            "users",
-            id
-        )
-    );
+    try {
+
+        await deleteDoc(
+
+            doc(
+                db,
+                "users",
+                id
+            )
+
+        );
 
 
-    loadUsers();
+        await loadUsers();
+
+
+    } catch (error) {
+
+        console.error(
+            "Delete user error:",
+            error
+        );
+
+
+        alert(
+            "Không thể xóa nhân viên:\n" +
+            error.message
+        );
+
+    }
+
 }
 
 
-/* ======================================
-   CLEAR
-====================================== */
+/* =====================================================
+   CLEAR FORM
+===================================================== */
 
 clearFormButton.addEventListener(
     "click",
@@ -981,7 +1045,6 @@ function clearForm() {
 
     employeeIdInput.value =
         "";
-
 
     employeeIdInput.disabled =
         false;
@@ -1002,7 +1065,7 @@ function clearForm() {
     startDateInput.value =
         "";
 
-
     endDateInput.value =
         "";
+
 }
