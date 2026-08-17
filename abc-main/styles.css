@@ -8,41 +8,12 @@
 html,
 body {
     width: 100%;
-    height: 100%;
     min-height: 100vh;
-
-    overflow: hidden;
-
-    overscroll-behavior: none;
-
-    touch-action: none;
 
     background-color: #2f3347;
 
     -webkit-user-select: none;
     user-select: none;
-}
-
-
-.sr-only {
-
-    position: absolute;
-
-    width: 1px;
-
-    height: 1px;
-
-    padding: 0;
-
-    margin: -1px;
-
-    overflow: hidden;
-
-    clip: rect(0, 0, 0, 0);
-
-    white-space: nowrap;
-
-    border: 0;
 }
 
 
@@ -76,13 +47,6 @@ body {
     flex-direction: column;
 
     align-items: center;
-}
-
-
-input,
-button,
-select {
-    touch-action: manipulation;
 }
 
 
@@ -451,19 +415,11 @@ select {
 
     cursor: pointer;
 
-    border: 0;
-
-    padding: 0;
-
-    background: transparent;
-
     font-size: 12px;
 
     color: #666;
 
     font-weight: 300;
-
-    font-family: inherit;
 }
 
 
@@ -548,208 +504,4 @@ select {
         rgba(255,255,255,.2);
 
     color: white;
-}
-/* =====================================================
-   ADMIN
-===================================================== */
-
-.admin-page {
-
-    width: 100%;
-
-    max-width: 900px;
-
-    margin: 0 auto;
-
-    padding: 25px 15px;
-}
-
-
-.admin-card {
-
-    background: white;
-
-    border-radius: 14px;
-
-    padding: 25px;
-
-    color: #222;
-
-    box-shadow:
-        0 6px 20px
-        rgba(0,0,0,.15);
-
-    margin-bottom: 20px;
-}
-
-
-.admin-card input,
-.admin-card select {
-
-    width: 100%;
-
-    height: 44px;
-
-    margin:
-        7px 0;
-
-    padding:
-        0 12px;
-
-    border:
-        1px solid #ddd;
-
-    border-radius: 7px;
-
-    font-size: 14px;
-}
-
-
-.admin-card button {
-
-    border: 0;
-
-    border-radius: 7px;
-
-    padding:
-        10px 15px;
-
-    margin:
-        5px 3px;
-
-    cursor: pointer;
-
-    background:
-        #2563eb;
-
-    color: white;
-}
-
-
-.admin-title {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content:
-        space-between;
-
-    gap: 10px;
-
-    margin-bottom: 25px;
-}
-
-
-.admin-form {
-
-    padding:
-        18px;
-
-    border:
-        1px solid #eee;
-
-    border-radius: 10px;
-
-    margin-bottom: 25px;
-}
-
-
-.user-row {
-
-    display: flex;
-
-    justify-content:
-        space-between;
-
-    align-items: center;
-
-    gap: 15px;
-
-    padding:
-        15px 0;
-
-    border-bottom:
-        1px solid #eee;
-}
-
-
-.user-info {
-
-    flex: 1;
-}
-
-
-.user-info strong {
-
-    font-size: 16px;
-}
-
-
-.user-info small {
-
-    display: block;
-
-    color: #777;
-
-    margin-top: 4px;
-
-    line-height: 1.5;
-}
-
-
-.user-actions {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    justify-content:
-        flex-end;
-}
-
-
-.button-green {
-
-    background:
-        #38a754 !important;
-}
-
-
-.button-red {
-
-    background:
-        #d9534f !important;
-}
-
-
-.button-gray {
-
-    background:
-        #666 !important;
-}
-
-
-@media (
-    max-width: 600px
-) {
-
-    .user-row {
-
-        flex-direction:
-            column;
-
-        align-items:
-            flex-start;
-    }
-
-
-    .user-actions {
-
-        width: 100%;
-
-        justify-content:
-            flex-start;
-    }
-
 }
