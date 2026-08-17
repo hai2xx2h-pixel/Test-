@@ -42,6 +42,18 @@
 
 
     <!-- =================================================
+         BOOT
+         Tránh hiện LOGIN chớp lên trước khi app khôi phục
+    ================================================== -->
+
+    <style>
+        html.app-booting body {
+            visibility: hidden;
+        }
+    </style>
+
+
+    <!-- =================================================
          QR CODE
          GIỮ NGUYÊN
     ================================================== -->
@@ -140,7 +152,9 @@
     >
 
 
-        <!-- NHÂN VIÊN -->
+        <!-- =================================================
+             NHÂN VIÊN
+        ================================================== -->
 
         <div
             class="header"
@@ -158,7 +172,7 @@
         <div class="card">
 
 
-            <!-- HEADER -->
+            <!-- CARD HEADER -->
 
             <div
                 class="card-header"
@@ -178,7 +192,7 @@
 
 
 
-            <!-- BODY -->
+            <!-- CARD BODY -->
 
             <div class="card-body">
 
@@ -203,7 +217,9 @@
 
 
 
-                <!-- REFRESH QR -->
+                <!-- =================================================
+                     REFRESH QR
+                ================================================== -->
 
                 <div class="refresh">
 
@@ -218,7 +234,9 @@
 
 
 
-                <!-- TIMER -->
+                <!-- =================================================
+                     TIMER
+                ================================================== -->
 
                 <div class="status-box">
 
@@ -259,6 +277,111 @@
 
 
     <!-- =================================================
+         BOOTSTRAP
+         
+         Kiểm tra nhanh localStorage trước khi app.js
+         chạy để tránh hiện màn hình LOGIN chớp lên.
+    ================================================== -->
+
+    <script>
+        (function () {
+
+            try {
+
+                const employeeKey =
+                    "thor_employee_id";
+
+                const savedEmployee =
+                    localStorage.getItem(
+                        employeeKey
+                    );
+
+
+                const loginScreen =
+                    document.getElementById(
+                        "loginScreen"
+                    );
+
+
+                const appScreen =
+                    document.getElementById(
+                        "appScreen"
+                    );
+
+
+                /*
+                 * Không có mạng:
+                 * hiện LOGIN.
+                 */
+
+                if (
+                    !navigator.onLine
+                ) {
+
+                    loginScreen.classList.remove(
+                        "hidden"
+                    );
+
+                    appScreen.classList.add(
+                        "hidden"
+                    );
+
+                }
+
+                /*
+                 * Có employee:
+                 * tạm thời hiện APP.
+                 *
+                 * app.js sẽ kiểm tra Firebase
+                 * và activeSession ngay sau đó.
+                 */
+
+                else if (
+                    savedEmployee
+                ) {
+
+                    loginScreen.classList.add(
+                        "hidden"
+                    );
+
+                    appScreen.classList.remove(
+                        "hidden"
+                    );
+
+                }
+
+                /*
+                 * Chưa có employee:
+                 * hiện LOGIN.
+                 */
+
+                else {
+
+                    loginScreen.classList.remove(
+                        "hidden"
+                    );
+
+                    appScreen.classList.add(
+                        "hidden"
+                    );
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "BOOT ERROR:",
+                    error
+                );
+
+            }
+
+        })();
+    </script>
+
+
+
+    <!-- =================================================
          APP JAVASCRIPT
     ================================================== -->
 
@@ -266,6 +389,31 @@
         type="module"
         src="./app.js"
     ></script>
+
+
+    <!-- =================================================
+         HIỆN TRANG SAU KHI BOOT
+    ================================================== -->
+
+    <script>
+        /*
+         * app.js sẽ xử lý việc chuyển LOGIN/APP.
+         *
+         * Ở đây chỉ bỏ trạng thái boot
+         * sau khi DOM đã sẵn sàng.
+         */
+
+        window.addEventListener(
+            "load",
+            function () {
+
+                document.documentElement
+                    .classList
+                    .remove("app-booting");
+
+            }
+        );
+    </script>
 
 
 </body>
