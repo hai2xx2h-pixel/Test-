@@ -26,70 +26,29 @@ service cloud.firestore {
 
         match /users/{employeeId} {
 
-
             /*
-             * User phải đăng nhập Anonymous Firebase
-             * mới được đọc dữ liệu của chính mình.
+             * Người dùng đã đăng nhập Firebase
+             * mới được đọc.
              */
 
-            allow get:
+            allow read:
                 if request.auth != null;
 
 
             /*
-             * Không cho user tự ý tạo/xóa.
+             * Chỉ admin có document
+             * admins/{uid}
+             * mới được tạo/sửa/xóa.
              */
 
-            allow create, delete:
+            allow create, update, delete:
                 if isAdmin();
 
-
-            /*
-             * Admin được sửa toàn bộ.
-             *
-             * User chỉ được sửa session của
-             * chính mình và không được đổi
-             * employeeId/name/active...
-             */
-
-            allow update:
-                if isAdmin()
-                ||
-                (
-                    request.auth != null
-                    &&
-                    request.resource.data.employeeId
-                        == resource.data.employeeId
-                    &&
-                    request.resource.data.name
-                        == resource.data.name
-                    &&
-                    request.resource.data.active
-                        == resource.data.active
-                    &&
-                    request.resource.data.role
-                        == resource.data.role
-                    &&
-                    request.resource.data.color
-                        == resource.data.color
-                    &&
-                    request.resource.data.startDate
-                        == resource.data.startDate
-                    &&
-                    request.resource.data.endDate
-                        == resource.data.endDate
-                    &&
-                    request.resource.data.activeSession
-                        != null
-                    &&
-                    request.resource.data.activeSession
-                        != resource.data.activeSession
-                );
         }
 
 
         /* ==========================================
-           ADMIN CHECK
+           ADMIN FUNCTION
         ========================================== */
 
         function isAdmin() {
@@ -101,6 +60,7 @@ service cloud.firestore {
                     /documents/admins/
                     $(request.auth.uid)
                 );
+
         }
 
 
@@ -112,6 +72,7 @@ service cloud.firestore {
 
             allow read, write:
                 if false;
+
         }
 
     }
