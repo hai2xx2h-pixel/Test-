@@ -704,10 +704,10 @@ function generateQRCodeFromCache(
                 accessData,
 
             width:
-                230,
+                220,
 
             height:
-                230,
+                220,
 
             colorDark:
                 "#000000",
@@ -2188,10 +2188,10 @@ async function generateQRCode(
                     accessData,
 
                 width:
-                    230,
+                    220,
 
                 height:
-                    230,
+                    220,
 
                 colorDark:
                     "#000000",
