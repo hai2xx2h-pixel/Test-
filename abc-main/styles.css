@@ -652,10 +652,10 @@ body {
         #fff;
 
     /*
-     * Góc vuông
+     * Bo tròn nhẹ 4 góc ngoài
      */
     border-radius:
-        0 !important;
+        12px !important;
 }
 
 
@@ -683,10 +683,10 @@ body {
         block !important;
 
     /*
-     * Góc vuông
+     * Bo tròn nhẹ 4 góc, khớp khung ngoài
      */
     border-radius:
-        0 !important;
+        12px !important;
 }
 
 
