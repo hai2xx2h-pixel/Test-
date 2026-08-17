@@ -687,14 +687,6 @@ body {
      */
     border-radius:
         0 !important;
-
-    /* 
-     * SẮC NÉT, GÓC CẠNH VUÔNG VỨC TUYỆT ĐỐI
-     */
-    image-rendering: 
-        pixelated;
-    image-rendering: 
-        crisp-edges;
 }
 
 
