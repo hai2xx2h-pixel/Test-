@@ -235,3 +235,16 @@
 </body>
 
 </html>
+<script type="module">
+    import { loginAnonymous } from "./firebase.js";
+
+    loginAnonymous()
+        .then((user) => {
+            console.log("Đăng nhập thành công");
+            console.log("UID:", user.uid);
+        })
+        .catch((error) => {
+            console.error("Không đăng nhập được Firebase:", error);
+            alert("Không thể kết nối Firebase: " + error.message);
+        });
+</script>
