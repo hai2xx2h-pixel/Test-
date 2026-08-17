@@ -1,26 +1,9 @@
-import {
-    auth,
-    db
-} from "./firebase.js";
-
-// ĐÃ THÊM: onAuthStateChanged vào import để bắt trạng thái kết nối chuẩn xác
-import {
-    signInAnonymously,
-    onAuthStateChanged
-} from
-    "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-
-import {
-    doc,
-    getDoc,
-    updateDoc,
-    onSnapshot,
-    serverTimestamp
-} from
-    "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+import { auth, db } from "./firebase.js";
+import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import { doc, getDoc, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 /* =====================================================
-   DOM
+   DOM ELEMENTS
 ===================================================== */
 const loginScreen = document.getElementById("loginScreen");
 const appScreen = document.getElementById("appScreen");
@@ -38,7 +21,7 @@ const refreshButton = document.getElementById("refreshButton");
 const logoutButton = document.getElementById("logoutButton");
 
 /* =====================================================
-   SESSION
+   SESSION & STORAGE
 ===================================================== */
 const SESSION_KEY = "thor_session_id";
 const EMPLOYEE_KEY = "thor_employee_id";
@@ -49,23 +32,19 @@ let unsubscribeUser = null;
 let clockInterval = null;
 let durationInterval = null;
 
-/* =====================================================
-   DEVICE SESSION ID
-===================================================== */
 function createSessionId() {
-    return (crypto.randomUUID() + "-" + Date.now().toString(36));
+    return crypto.randomUUID() + "-" + Date.now().toString(36);
 }
 
 /* =====================================================
-   DATE & CHECK
+   DATE UTILS
 ===================================================== */
 function normalizeDate(value) {
     if (!value) return null;
     if (typeof value.toDate === "function") return value.toDate();
     if (value instanceof Date) return value;
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return null;
-    return date;
+    return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function checkDateRange(user) {
@@ -83,7 +62,22 @@ function checkDateRange(user) {
 }
 
 /* =====================================================
-   LOGIN
+   AUTH STATE PROMISE
+===================================================== */
+function waitForAuthReady() {
+    return new Promise((resolve) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe();
+            resolve(user);
+        }, (error) => {
+            console.error("Lỗi onAuthStateChanged:", error);
+            resolve(null);
+        });
+    });
+}
+
+/* =====================================================
+   LOGIN LOGIC
 ===================================================== */
 async function login() {
     const code = employeeCodeInput.value.trim().toUpperCase();
@@ -96,18 +90,27 @@ async function login() {
     loginMessage.textContent = "Đang xác thực...";
 
     try {
-        await ensureAnonymousSession();
+        if (!auth.currentUser) {
+            await signInAnonymously(auth);
+        }
+
         const userRef = doc(db, "users", code);
         const snapshot = await getDoc(userRef);
 
-        if (!snapshot.exists()) throw new Error("Mã nhân viên không tồn tại.");
+        if (!snapshot.exists()) {
+            throw new Error("Mã nhân viên không tồn tại.");
+        }
 
         const user = snapshot.data();
 
-        if (user.active !== true) throw new Error("Tài khoản đã bị vô hiệu hóa.");
+        if (user.active !== true) {
+            throw new Error("Tài khoản đã bị vô hiệu hóa.");
+        }
 
         const dateCheck = checkDateRange(user);
-        if (!dateCheck.ok) throw new Error(dateCheck.message);
+        if (!dateCheck.ok) {
+            throw new Error(dateCheck.message);
+        }
 
         const newSession = createSessionId();
         await updateDoc(userRef, {
@@ -120,29 +123,26 @@ async function login() {
         localStorage.setItem(EMPLOYEE_KEY, employeeId);
         localStorage.setItem(SESSION_KEY, sessionId);
 
-        openApp();
+        await openApp();
     } catch (error) {
         console.error(error);
-        showLoginError(error.message || "Không thể đăng nhập.");
+        showLoginError(error.message || "Không thể đăng nhập. Kiểm tra lại kết nối.");
     } finally {
         loginButton.disabled = false;
     }
 }
 
 /* =====================================================
-   OPEN APP
+   APP FLOW
 ===================================================== */
 async function openApp() {
     loginScreen.classList.add("hidden");
     appScreen.classList.remove("hidden");
-    await loadUser();
+    loadUser();
     startClock();
 }
 
-/* =====================================================
-   LOAD USER (LẮNG NGHE REALTIME FIRESTORE)
-===================================================== */
-async function loadUser() {
+function loadUser() {
     if (!employeeId || !sessionId) {
         logout();
         return;
@@ -150,7 +150,7 @@ async function loadUser() {
 
     const userRef = doc(db, "users", employeeId);
 
-    unsubscribeUser = onSnapshot(userRef, snapshot => {
+    unsubscribeUser = onSnapshot(userRef, (snapshot) => {
         if (!snapshot.exists()) {
             logout();
             return;
@@ -159,7 +159,7 @@ async function loadUser() {
         const user = snapshot.data();
 
         if (user.activeSession !== sessionId) {
-            alert("Phiên đăng nhập đã được sử dụng trên thiết bị khác. Vui lòng đăng nhập lại!");
+            alert("Phiên đăng nhập đã được sử dụng trên thiết bị khác!");
             logout();
             return;
         }
@@ -178,13 +178,13 @@ async function loadUser() {
         }
 
         renderUser(user);
-    }, error => {
-        console.error(error);
+    }, (error) => {
+        console.error("Lỗi lắng nghe dữ liệu:", error);
     });
 }
 
 /* =====================================================
-   RENDER USER & COLOR
+   UI RENDERING
 ===================================================== */
 function renderUser(user) {
     employeeHeader.textContent = `${user.employeeId || employeeId} (${user.name || ""})`;
@@ -193,6 +193,8 @@ function renderUser(user) {
 
     if (user.timerStart) {
         startTimer(normalizeDate(user.timerStart));
+    } else {
+        statusTimer.textContent = "00:00:00";
     }
 
     generateDemoQR(user.employeeId || employeeId, user.name || "");
@@ -208,13 +210,9 @@ function applyColor(isGreen) {
     }
 }
 
-/* =====================================================
-   CLOCK & TIMER
-===================================================== */
 function startClock() {
     if (clockInterval) clearInterval(clockInterval);
-
-    function update() {
+    const update = () => {
         const now = new Date();
         currentTime.textContent = 
             `${now.getFullYear()}-` +
@@ -223,28 +221,21 @@ function startClock() {
             `${String(now.getHours()).padStart(2, "0")}:` +
             `${String(now.getMinutes()).padStart(2, "0")}:` +
             `${String(now.getSeconds()).padStart(2, "0")}`;
-    }
-
+    };
     update();
     clockInterval = setInterval(update, 1000);
 }
 
 function startTimer(start) {
-    if (!start) {
-        statusTimer.textContent = "00:00:00";
-        return;
-    }
-
+    if (!start) return;
     if (durationInterval) clearInterval(durationInterval);
-
-    function updateTimer() {
+    const updateTimer = () => {
         const elapsed = Math.max(0, Math.floor((Date.now() - start.getTime()) / 1000));
         const h = Math.floor(elapsed / 3600);
         const m = Math.floor((elapsed % 3600) / 60);
         const s = elapsed % 60;
         statusTimer.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
-    }
-
+    };
     updateTimer();
     durationInterval = setInterval(updateTimer, 1000);
 }
@@ -253,17 +244,13 @@ function pad(value) {
     return String(value).padStart(2, "0");
 }
 
-/* =====================================================
-   QR CODE
-===================================================== */
-function generateDemoQR(employeeId, name) {
+function generateDemoQR(empId, name) {
     const data = JSON.stringify({
         type: "THOR-ACCESS",
-        employeeId: employeeId,
+        employeeId: empId,
         name: name,
         timestamp: Date.now()
     });
-
     qrcode.innerHTML = "";
     const img = document.createElement("img");
     img.alt = "THOR Demo QR";
@@ -282,21 +269,12 @@ refreshButton.addEventListener("click", async () => {
 });
 
 /* =====================================================
-   LOGOUT
+   LOGOUT & EVENTS
 ===================================================== */
 async function logout() {
-    if (unsubscribeUser) {
-        unsubscribeUser();
-        unsubscribeUser = null;
-    }
-    if (clockInterval) {
-        clearInterval(clockInterval);
-        clockInterval = null;
-    }
-    if (durationInterval) {
-        clearInterval(durationInterval);
-        durationInterval = null;
-    }
+    if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
+    if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
+    if (durationInterval) { clearInterval(durationInterval); durationInterval = null; }
 
     employeeId = null;
     sessionId = null;
@@ -316,52 +294,31 @@ function showLoginError(message) {
 }
 
 loginButton.addEventListener("click", login);
-employeeCodeInput.addEventListener("keydown", event => {
+employeeCodeInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") login();
 });
 
 /* =====================================================
-   AUTHENTICATION FIX (SỬA LỖI RACE CONDITION)
+   INIT APP BOOTSTRAP
 ===================================================== */
-function ensureAnonymousSession() {
-    return new Promise((resolve, reject) => {
-        // Lắng nghe trạng thái thay vì check đồng bộ auth.currentUser
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            unsubscribe(); // Dừng lắng nghe ngay khi nhận được kết quả
-            
-            if (user) {
-                resolve(user); // Đã có phiên Firebase
-            } else {
-                try {
-                    // Nếu thật sự rỗng mới tạo request xác thực lên server
-                    const cred = await signInAnonymously(auth);
-                    resolve(cred.user);
-                } catch (error) {
-                    reject(error);
-                }
-            }
-        });
-    });
-}
-
-// 🎯 Khởi chạy khi Web tải xong:
-// 1. Nếu tìm thấy Session cũ, giấu ngay Form Đăng nhập để tránh chớp nhoáng
 if (employeeId && sessionId) {
     loginScreen.classList.add("hidden");
 }
 
-ensureAnonymousSession()
-    .then(() => {
+waitForAuthReady().then(async (user) => {
+    try {
+        if (!user) {
+            await signInAnonymously(auth);
+        }
+
         if (employeeId && sessionId) {
-            // Có dữ liệu -> Mở app bình thường
             openApp();
         } else {
-            // Không có -> Hiện form đăng nhập
             loginScreen.classList.remove("hidden");
         }
-    })
-    .catch(error => {
-        console.error(error);
+    } catch (error) {
+        console.error("Lỗi khởi tạo Firebase Auth:", error);
+        showLoginError("Lỗi kết nối máy chủ. Vui lòng tải lại trang.");
         loginScreen.classList.remove("hidden");
-        showLoginError("Không thể kết nối Firebase. Vui lòng thử lại.");
-    });
+    }
+});
