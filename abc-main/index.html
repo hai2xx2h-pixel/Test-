@@ -28,6 +28,11 @@
         content="0"
     >
 
+
+    <!-- =================================================
+         iPHONE / PWA
+    ================================================== -->
+
     <meta
         name="apple-mobile-web-app-capable"
         content="yes"
@@ -35,12 +40,22 @@
 
     <meta
         name="apple-mobile-web-app-status-bar-style"
-        content="black-translucent"
+        content="default"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="员工码"
+    >
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes"
     >
 
     <meta
         name="theme-color"
-        content="#2f3347"
+        content="#e3e4e9"
     >
 
 
@@ -62,7 +77,7 @@
 
 
     <!-- =================================================
-         QR CODE LIBRARY
+         QR CODE
          GIỮ NGUYÊN
     ================================================== -->
 
@@ -72,7 +87,7 @@
 
 
     <!-- =================================================
-         ICON
+         APP ICON
     ================================================== -->
 
     <link
@@ -82,7 +97,7 @@
 
 
     <!-- =================================================
-         CSS
+         STYLES
     ================================================== -->
 
     <link
@@ -91,7 +106,11 @@
     >
 
 
-    <title>二维码通行</title>
+    <!-- =================================================
+         TÊN ỨNG DỤNG
+    ================================================== -->
+
+    <title>员工码</title>
 
 </head>
 
@@ -229,8 +248,7 @@
 
 
                 <!-- =================================================
-                     QR
-                     Kích thước CSS: 220 × 220
+                     QR CODE
                 ================================================== -->
 
                 <div
@@ -302,12 +320,12 @@
 
 
     <!-- =================================================
-         INITIAL BOOT
+         BOOTSTRAP
          
-         Chỉ quyết định giao diện ban đầu dựa trên
-         employeeId đã lưu.
+         Nếu đã có employeeId:
+         tạm thời hiện APP.
          
-         Firebase vẫn được app.js kiểm tra phía sau.
+         app.js sẽ kiểm tra Firebase phía sau.
     ================================================== -->
 
     <script>
@@ -339,8 +357,7 @@
 
 
                 /*
-                 * Không có mạng:
-                 * Hiện login.
+                 * Không có mạng
                  */
 
                 if (
@@ -359,15 +376,7 @@
 
 
                 /*
-                 * Đã có employee:
-                 *
-                 * Hiện app tạm thời.
-                 *
-                 * app.js sẽ:
-                 *
-                 * 1. Lấy cache
-                 * 2. Hiện QR ngay
-                 * 3. Kiểm tra Firebase
+                 * Đã có employee
                  */
 
                 else if (
@@ -386,7 +395,7 @@
 
 
                 /*
-                 * Chưa đăng nhập:
+                 * Chưa đăng nhập
                  */
 
                 else {
@@ -411,8 +420,7 @@
 
 
                 /*
-                 * An toàn:
-                 * nếu boot lỗi thì hiện login.
+                 * Fallback an toàn
                  */
 
                 const loginScreen =
@@ -466,6 +474,7 @@
     ></script>
 
 
+
     <!-- =================================================
          END BOOT
     ================================================== -->
@@ -487,10 +496,7 @@
 
 
         /*
-         * Fallback:
-         *
-         * Nếu load event không chạy do môi trường
-         * PWA/Safari đặc biệt, vẫn bỏ boot sau 5 giây.
+         * Fallback cho Safari / PWA
          */
 
         setTimeout(
