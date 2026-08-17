@@ -10,31 +10,54 @@
 </head>
 <body>
   <div class="top-status-bar" aria-hidden="true"></div>
+
   <main id="loginScreen" class="login-screen">
-    <section class="login-box" aria-labelledby="loginTitle">
+    <section class="login-box">
       <div class="login-logo"><img src="Logo.jpg" alt="Logo công ty"></div>
-      <h1 id="loginTitle">Mã QR ra vào</h1>
+      <h1>Mã QR ra vào</h1>
       <p class="login-subtitle">Nhập mã nhân viên để tiếp tục</p>
-      <label class="sr-only" for="employeeCodeInput">Mã nhân viên</label>
-      <input id="employeeCodeInput" type="text" autocomplete="username" placeholder="Mã nhân viên" maxlength="64">
+      <input id="employeeCodeInput" type="text" placeholder="Mã nhân viên" maxlength="64">
       <button id="loginButton" type="button">Đăng nhập</button>
-      <p id="loginMessage" class="login-message" role="alert"></p>
+      <p id="loginMessage" class="login-message"></p>
     </section>
   </main>
+
   <main id="appScreen" class="app-screen hidden">
     <header class="header" id="employeeHeader"></header>
-    <section class="card" aria-label="Mã QR của nhân viên">
-      <div class="card-header" id="cardHeader"><span id="headerText"></span><span class="circle1"></span><span class="circle2"></span></div>
+
+    <section class="card">
+      <div class="card-header" id="cardHeader">
+        <span id="headerText">将二维码对准扫描器刷码出场</span>
+        <span class="circle1"></span>
+        <span class="circle2"></span>
+      </div>
+
       <div class="card-body">
         <div id="currentTime" class="time"></div>
-        <div id="qrcode" aria-label="Mã QR"></div>
-        <div class="refresh"><button id="refreshButton" class="refresh-title" type="button">Làm mới mã QR</button></div>
-        <div class="status-box"><div id="accountStatus" class="status-label"></div><div id="statusTimer" class="status-timer">00:00:00</div></div>
+        <div id="qrcode"></div>
+
+        <div class="refresh">
+          <button id="refreshButton" class="refresh-title" type="button">
+            刷新二维码
+          </button>
+        </div>
+
+        <div class="status-box">
+          <div id="accountStatus" class="status-label">已生效</div>
+          <div id="statusTimer" class="status-timer">00:00:00</div>
+        </div>
       </div>
     </section>
-    <p class="note">Vui lòng đưa mã QR cho máy quét. Mã được làm mới khi bạn yêu cầu.</p>
-    <button id="logoutButton" class="logout-button" type="button">Đăng xuất</button>
+
+    <p class="note">
+      尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，请遵守企业安全规定，感谢您的配合。
+    </p>
+
+    <button id="logoutButton" class="logout-button" type="button">
+      Đăng xuất
+    </button>
   </main>
+
   <script type="module" src="app.js"></script>
 </body>
 </html>
