@@ -1,45 +1,50 @@
+/* =====================================================
+   GLOBAL
+===================================================== */
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+
+    /*
+     * APP NHÂN VIÊN KHÔNG CHO CUỘN
+     * Admin sẽ override riêng ở cuối file.
+     */
+    touch-action: none;
 }
 
 
 html,
 body {
     width: 100%;
-    min-height: 100vh;
-
-    background-color: #2f3347;
-
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-
-.sr-only {
-
-    position: absolute;
-
-    width: 1px;
-
-    height: 1px;
-
-    padding: 0;
-
-    margin: -1px;
+    height: 100%;
 
     overflow: hidden;
 
-    clip: rect(0, 0, 0, 0);
+    /*
+     * MÀU VÙNG TAI THỎ / STATUS BAR
+     */
+    background-color: #e3e4e9;
 
-    white-space: nowrap;
+    -webkit-user-select: none;
+    user-select: none;
 
-    border: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
 
 body {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    overflow: hidden;
+
+    overscroll-behavior: none;
 
     font-family:
         -apple-system,
@@ -49,6 +54,71 @@ body {
         "Helvetica Neue",
         STHeiti,
         sans-serif;
+
+    /*
+     * NỀN APP
+     */
+    background-image:
+        url("background.png");
+
+    background-repeat:
+        no-repeat;
+
+    background-position:
+        center center;
+
+    background-size:
+        cover;
+
+    color:
+        white;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    /*
+     * ĐẨY NỘI DUNG LÊN CAO
+     */
+    padding-top:
+        max(
+            18px,
+            env(safe-area-inset-top)
+        );
+}
+
+
+/* =====================================================
+   HIDDEN
+===================================================== */
+
+.hidden {
+    display:
+        none !important;
+}
+
+
+/* =====================================================
+   LOGIN SCREEN
+===================================================== */
+
+.login-screen {
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    z-index:
+        999;
+
+    background:
+        #2f3347;
 
     background-image:
         url("background.png");
@@ -62,41 +132,8 @@ body {
     background-size:
         cover;
 
-    color: white;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-}
-
-
-.top-status-bar {
-
-    width: 100%;
-
-    height: 44px;
-
-    background-color:
-        #e2e4e9;
-
-    flex-shrink: 0;
-}
-
-
-/* =====================================================
-   LOGIN
-===================================================== */
-
-.login-screen {
-
-    width: 100%;
-
-    min-height:
-        calc(100vh - 44px);
-
-    display: flex;
+    display:
+        flex;
 
     justify-content:
         center;
@@ -104,122 +141,193 @@ body {
     align-items:
         center;
 
-    padding: 20px;
+    padding:
+        20px;
 }
 
 
 .login-box {
+    width:
+        100%;
 
-    width: 100%;
+    max-width:
+        330px;
 
-    max-width: 330px;
+    padding:
+        28px 24px;
 
     background:
-        rgba(255,255,255,0.96);
+        rgba(
+            255,
+            255,
+            255,
+            0.96
+        );
 
-    border-radius: 14px;
+    border-radius:
+        14px;
 
-    padding: 30px 25px;
+    text-align:
+        center;
 
-    text-align: center;
+    color:
+        #222;
 
     box-shadow:
-        0 8px 25px
-        rgba(0,0,0,0.30);
-
-    color: #222;
+        0 8px 30px
+        rgba(
+            0,
+            0,
+            0,
+            0.35
+        );
 }
 
 
-.login-logo img {
+.login-logo {
+    width:
+        65px;
 
-    width: 70px;
+    height:
+        65px;
 
-    height: 70px;
+    object-fit:
+        cover;
 
-    object-fit: cover;
+    border-radius:
+        12px;
 
-    border-radius: 12px;
-
-    margin-bottom: 15px;
+    margin-bottom:
+        12px;
 }
 
 
-.login-box h1 {
+.login-title {
+    font-size:
+        27px;
 
-    font-size: 28px;
-
-    margin-bottom: 5px;
+    font-weight:
+        400;
 }
 
 
 .login-subtitle {
+    margin-top:
+        5px;
 
-    color: #777;
+    margin-bottom:
+        23px;
 
-    font-size: 14px;
+    color:
+        #777;
 
-    margin-bottom: 25px;
+    font-size:
+        14px;
 }
 
 
-.login-box input {
+.employee-input {
+    width:
+        100%;
 
-    width: 100%;
+    height:
+        46px;
 
-    height: 46px;
+    border:
+        1px solid #ddd;
 
-    border: 1px solid #ddd;
+    border-radius:
+        8px;
 
-    border-radius: 8px;
+    outline:
+        none;
 
-    padding: 0 14px;
+    text-align:
+        center;
 
-    font-size: 15px;
+    font-size:
+        15px;
 
-    outline: none;
+    color:
+        #222;
 
-    text-align: center;
+    background:
+        #fff;
+
+    -webkit-appearance:
+        none;
+
+    appearance:
+        none;
 }
 
 
-.login-box input:focus {
-
+.employee-input:focus {
     border-color:
         #38a754;
 }
 
 
-.login-box button {
+.login-button {
+    width:
+        100%;
 
-    width: 100%;
+    height:
+        46px;
 
-    height: 46px;
+    margin-top:
+        12px;
 
-    border: 0;
+    border:
+        none;
 
-    border-radius: 8px;
-
-    margin-top: 12px;
+    border-radius:
+        8px;
 
     background:
         #38a754;
 
-    color: white;
+    color:
+        #fff;
 
-    font-size: 15px;
+    font-size:
+        15px;
+
+    -webkit-appearance:
+        none;
+
+    appearance:
+        none;
+}
+
+
+.login-button:active {
+    opacity:
+        0.85;
+}
+
+
+.login-button:disabled {
+    opacity:
+        0.6;
 }
 
 
 .login-message {
+    min-height:
+        20px;
 
-    min-height: 20px;
+    margin-top:
+        12px;
 
-    margin-top: 12px;
+    font-size:
+        13px;
 
-    font-size: 13px;
+    color:
+        #d9534f;
 
-    color: #d9534f;
+    line-height:
+        1.4;
 }
 
 
@@ -228,348 +336,619 @@ body {
 ===================================================== */
 
 .app-screen {
+    width:
+        100%;
 
-    width: 100%;
+    height:
+        100%;
 
     min-height:
-        calc(100vh - 44px);
+        100%;
 
-    display: flex;
+    display:
+        flex;
 
-    flex-direction: column;
+    flex-direction:
+        column;
 
-    align-items: center;
+    align-items:
+        center;
+
+    padding-top:
+        0;
 }
 
 
-.hidden {
+/* =====================================================
+   TOP STATUS BAR
+===================================================== */
 
-    display: none !important;
+.top-status-bar {
+    width:
+        100%;
+
+    height:
+        44px;
+
+    background-color:
+        #e3e4e9;
+
+    flex-shrink:
+        0;
 }
 
+
+/* =====================================================
+   EMPLOYEE HEADER
+===================================================== */
 
 .header {
+    margin-top:
+        18px;
 
-    margin-top: 25px;
+    font-size:
+        17px;
 
-    font-size: 17px;
+    color:
+        #F5D57F;
 
-    color: #F5D57F;
+    font-weight:
+        300;
 
-    font-weight: 300;
+    text-align:
+        center;
 
-    text-align: center;
+    letter-spacing:
+        0.5px;
 
-    letter-spacing: 0.5px;
+    line-height:
+        1.25;
+
+    width:
+        100%;
 }
 
 
+/* =====================================================
+   CARD
+===================================================== */
+
 .card {
+    margin-top:
+        16px;
 
-    margin-top: 20px;
+    width:
+        84%;
 
-    width: 84%;
+    max-width:
+        310px;
 
-    max-width: 310px;
+    border-radius:
+        8px;
 
-    border-radius: 8px;
-
-    position: relative;
+    position:
+        relative;
 
     box-shadow:
         0 6px 16px
-        rgba(0,0,0,0.3);
+        rgba(
+            0,
+            0,
+            0,
+            0.3
+        );
 }
 
 
-.card-header {
+/* =====================================================
+   CARD HEADER
+===================================================== */
 
+.card-header {
     background-color:
         #f2c75b;
 
     padding:
         14px 8px;
 
-    text-align: center;
+    text-align:
+        center;
 
-    color: white;
+    color:
+        #fff;
 
-    font-size: 14px;
+    font-size:
+        14px;
 
-    font-weight: 300;
+    font-weight:
+        300;
 
-    border-radius:
-        8px 8px 0 0;
+    border-top-left-radius:
+        8px;
 
-    position: relative;
+    border-top-right-radius:
+        8px;
+
+    position:
+        relative;
 
     transition:
         background-color
         0.3s ease;
+
+    line-height:
+        1.35;
+
+    min-height:
+        45px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
 }
 
 
+#headerText {
+    display:
+        block;
+
+    width:
+        100%;
+}
+
+
+/* =====================================================
+   CIRCLES
+===================================================== */
+
 .circle1,
 .circle2 {
-
-    position: absolute;
+    position:
+        absolute;
 
     background-color:
         #2f3347;
 
-    width: 12px;
+    width:
+        12px;
 
-    height: 12px;
+    height:
+        12px;
 
-    border-radius: 50%;
+    border-radius:
+        50%;
 
-    bottom: -6px;
+    bottom:
+        -6px;
 
-    z-index: 10;
+    z-index:
+        10;
 }
 
 
 .circle1 {
-    left: -6px;
+    left:
+        -6px;
 }
 
 
 .circle2 {
-    right: -6px;
+    right:
+        -6px;
 }
 
+
+/* =====================================================
+   CARD BODY
+===================================================== */
 
 .card-body {
-
-    background-color: white;
+    background-color:
+        #fff;
 
     padding:
-        16px 15px 14px;
+        16px 15px 14px 15px;
 
-    text-align: center;
+    text-align:
+        center;
 
-    color: #000;
+    color:
+        #000;
 
-    border-radius:
-        0 0 8px 8px;
+    border-bottom-left-radius:
+        8px;
 
-    display: flex;
+    border-bottom-right-radius:
+        8px;
 
-    flex-direction: column;
+    display:
+        flex;
 
-    align-items: center;
+    flex-direction:
+        column;
+
+    align-items:
+        center;
 }
 
 
+/* =====================================================
+   CURRENT TIME
+===================================================== */
+
 .time {
+    font-size:
+        14px;
 
-    font-size: 14px;
+    font-weight:
+        300;
 
-    font-weight: 300;
+    color:
+        #111;
 
-    color: #111;
-
-    margin-bottom: 12px;
+    margin-bottom:
+        12px;
 
     letter-spacing:
         0.3px;
 
-    width: 100%;
-}
+    line-height:
+        1.2;
 
-
-#qrcode {
-
-    width: 220px;
-
-    height: 220px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    overflow: hidden;
-}
-
-
-#qrcode canvas,
-#qrcode img {
-
-    width: 220px !important;
-
-    height: 220px !important;
-}
-
-
-.qr-placeholder {
-
-    width: 220px;
-
-    height: 220px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    background: #eee;
-
-    color: #777;
-}
-
-
-.refresh {
-
-    margin-top: 14px;
-
-    width: 100%;
-
-    display: flex;
-
-    justify-content: center;
-}
-
-
-.refresh-title {
-
-    cursor: pointer;
-
-    font-size: 12px;
-
-    color: #666;
-
-    font-weight: 300;
-}
-
-
-.status-box {
-
-    margin-top: 12px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    color: #2eb85c;
-}
-
-
-.status-label {
-
-    font-size: 16px;
-
-    animation:
-        pulse-green
-        1.2s infinite ease-in-out;
-}
-
-
-.status-timer {
-
-    font-size: 18px;
-
-    margin-top: 2px;
+    width:
+        100%;
 
     font-variant-numeric:
         tabular-nums;
 }
 
 
+/* =====================================================
+   QR CODE
+   GIỮ NGUYÊN 220 × 220
+   GÓC VUÔNG HOÀN TOÀN
+===================================================== */
+
+#qrcode {
+    width:
+        220px;
+
+    height:
+        220px;
+
+    min-width:
+        220px;
+
+    min-height:
+        220px;
+
+    max-width:
+        220px;
+
+    max-height:
+        220px;
+
+    margin:
+        0 auto;
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+
+    overflow:
+        hidden;
+
+    background:
+        #fff;
+
+    /*
+     * Góc vuông
+     */
+    border-radius:
+        0 !important;
+}
+
+
+#qrcode img,
+#qrcode canvas {
+    width:
+        220px !important;
+
+    height:
+        220px !important;
+
+    min-width:
+        220px !important;
+
+    min-height:
+        220px !important;
+
+    max-width:
+        220px !important;
+
+    max-height:
+        220px !important;
+
+    display:
+        block !important;
+
+    /*
+     * Góc vuông
+     */
+    border-radius:
+        0 !important;
+}
+
+
+/* =====================================================
+   REFRESH QR
+===================================================== */
+
+.refresh {
+    margin-top:
+        14px;
+
+    width:
+        100%;
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+}
+
+
+.refresh-title {
+    cursor:
+        pointer;
+
+    font-size:
+        12px;
+
+    color:
+        #666;
+
+    font-weight:
+        300;
+
+    -webkit-tap-highlight-color:
+        transparent;
+
+    user-select:
+        none;
+}
+
+
+.refresh-title:active {
+    opacity:
+        0.6;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status-box {
+    margin-top:
+        12px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    color:
+        #2eb85c;
+}
+
+
+.status-label {
+    font-size:
+        16px;
+
+    font-weight:
+        400;
+
+    letter-spacing:
+        0.5px;
+
+    animation:
+        pulse-green
+        1.2s infinite
+        ease-in-out;
+}
+
+
+.status-timer {
+    font-size:
+        18px;
+
+    font-weight:
+        300;
+
+    margin-top:
+        2px;
+
+    letter-spacing:
+        0.5px;
+
+    opacity:
+        1 !important;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+/* =====================================================
+   GREEN PULSE
+===================================================== */
+
 @keyframes pulse-green {
 
     0% {
-        opacity: 1;
+        opacity:
+            1;
     }
 
     50% {
-        opacity: .25;
+        opacity:
+            0.25;
     }
 
     100% {
-        opacity: 1;
+        opacity:
+            1;
     }
 }
 
 
+/* =====================================================
+   NOTE
+===================================================== */
+
 .note {
-
     margin:
-        22px 10% 0;
+        22px 10% 0 10%;
 
-    font-size: 13px;
+    font-size:
+        13px;
 
-    color: #E6DCBD;
+    font-weight:
+        300;
 
-    line-height: 1.6;
+    color:
+        #E6DCBD;
 
-    text-align: center;
+    line-height:
+        1.6;
+
+    text-align:
+        center;
+
+    letter-spacing:
+        0;
+
+    opacity:
+        1;
+
+    max-width:
+        360px;
 }
 
+
+/* =====================================================
+   LOGOUT
+   ẨN HOÀN TOÀN
+===================================================== */
 
 .logout-button {
-
-    margin-top: 20px;
-
-    padding:
-        8px 18px;
-
-    border: 0;
-
-    border-radius: 8px;
-
-    background:
-        rgba(255,255,255,.2);
-
-    color: white;
+    display:
+        none !important;
 }
+
+
 /* =====================================================
-   ADMIN
+   ADMIN PAGE
 ===================================================== */
 
 .admin-page {
+    width:
+        100%;
 
-    width: 100%;
+    max-width:
+        900px;
 
-    max-width: 900px;
+    margin:
+        0 auto;
 
-    margin: 0 auto;
+    padding:
+        25px 15px;
 
-    padding: 25px 15px;
+    color:
+        #222;
 }
 
 
 .admin-card {
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.97
+        );
 
-    background: white;
+    border-radius:
+        14px;
 
-    border-radius: 14px;
-
-    padding: 25px;
-
-    color: #222;
+    padding:
+        25px;
 
     box-shadow:
-        0 6px 20px
-        rgba(0,0,0,.15);
+        0 8px 30px
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
 
-    margin-bottom: 20px;
+    margin-bottom:
+        20px;
+}
+
+
+.admin-card h1 {
+    margin-bottom:
+        8px;
+}
+
+
+.admin-card h2 {
+    margin:
+        18px 0 12px;
+}
+
+
+.admin-subtitle {
+    color:
+        #777;
+
+    margin-bottom:
+        20px;
 }
 
 
 .admin-card input,
 .admin-card select {
+    width:
+        100%;
 
-    width: 100%;
-
-    height: 44px;
+    height:
+        44px;
 
     margin:
-        7px 0;
+        6px 0;
 
     padding:
         0 12px;
@@ -577,17 +956,33 @@ body {
     border:
         1px solid #ddd;
 
-    border-radius: 7px;
+    border-radius:
+        7px;
 
-    font-size: 14px;
+    background:
+        #fff;
+
+    font-size:
+        14px;
+
+    outline:
+        none;
+}
+
+
+.admin-card input:focus,
+.admin-card select:focus {
+    border-color:
+        #38a754;
 }
 
 
 .admin-card button {
+    border:
+        none;
 
-    border: 0;
-
-    border-radius: 7px;
+    border-radius:
+        7px;
 
     padding:
         10px 15px;
@@ -595,31 +990,32 @@ body {
     margin:
         5px 3px;
 
-    cursor: pointer;
+    color:
+        #fff;
 
-    background:
-        #2563eb;
-
-    color: white;
+    cursor:
+        pointer;
 }
 
 
 .admin-title {
-
-    display: flex;
-
-    align-items: center;
+    display:
+        flex;
 
     justify-content:
         space-between;
 
-    gap: 10px;
+    align-items:
+        center;
 
-    margin-bottom: 25px;
+    gap:
+        10px;
 }
 
 
 .admin-form {
+    margin-top:
+        20px;
 
     padding:
         18px;
@@ -627,22 +1023,68 @@ body {
     border:
         1px solid #eee;
 
-    border-radius: 10px;
+    border-radius:
+        10px;
+}
 
-    margin-bottom: 25px;
+
+.admin-form label {
+    display:
+        block;
+
+    margin-top:
+        8px;
+
+    font-size:
+        13px;
+
+    color:
+        #555;
+}
+
+
+.admin-form-buttons {
+    margin-top:
+        10px;
+}
+
+
+.button-green {
+    background:
+        #38a754 !important;
+}
+
+
+.button-red {
+    background:
+        #d9534f !important;
+}
+
+
+.button-gray {
+    background:
+        #666 !important;
+}
+
+
+.users-list {
+    margin-top:
+        10px;
 }
 
 
 .user-row {
-
-    display: flex;
+    display:
+        flex;
 
     justify-content:
         space-between;
 
-    align-items: center;
+    align-items:
+        center;
 
-    gap: 15px;
+    gap:
+        15px;
 
     padding:
         15px 0;
@@ -653,67 +1095,75 @@ body {
 
 
 .user-info {
+    flex:
+        1;
 
-    flex: 1;
+    min-width:
+        0;
 }
 
 
-.user-info strong {
+.user-name {
+    font-size:
+        16px;
 
-    font-size: 16px;
+    font-weight:
+        500;
 }
 
 
-.user-info small {
+.user-details {
+    margin-top:
+        5px;
 
-    display: block;
+    color:
+        #777;
 
-    color: #777;
+    font-size:
+        13px;
 
-    margin-top: 4px;
+    line-height:
+        1.6;
 
-    line-height: 1.5;
+    white-space:
+        pre-line;
 }
 
 
 .user-actions {
+    display:
+        flex;
 
-    display: flex;
-
-    flex-wrap: wrap;
+    flex-wrap:
+        wrap;
 
     justify-content:
         flex-end;
 }
 
 
-.button-green {
+/* =====================================================
+   ADMIN MOBILE
+===================================================== */
 
-    background:
-        #38a754 !important;
-}
+@media (max-width: 600px) {
 
-
-.button-red {
-
-    background:
-        #d9534f !important;
-}
+    .admin-card {
+        padding:
+            18px;
+    }
 
 
-.button-gray {
+    .admin-title {
+        align-items:
+            flex-start;
 
-    background:
-        #666 !important;
-}
+        flex-direction:
+            column;
+    }
 
-
-@media (
-    max-width: 600px
-) {
 
     .user-row {
-
         flex-direction:
             column;
 
@@ -723,11 +1173,140 @@ body {
 
 
     .user-actions {
-
-        width: 100%;
+        width:
+            100%;
 
         justify-content:
             flex-start;
     }
 
+}
+
+
+/* =====================================================
+   SMALL SCREEN
+===================================================== */
+
+@media (max-height: 700px) {
+
+    body {
+        padding-top:
+            max(
+                12px,
+                env(safe-area-inset-top)
+            );
+    }
+
+
+    .header {
+        margin-top:
+            12px;
+    }
+
+
+    .card {
+        margin-top:
+            12px;
+    }
+
+
+    .note {
+        margin-top:
+            14px;
+    }
+
+}
+
+
+/* =====================================================
+   ADMIN ONLY
+   CHỈ TRANG ADMIN ĐƯỢC VUỐT DỌC
+   APP NHÂN VIÊN KHÔNG BỊ ẢNH HƯỞNG
+===================================================== */
+
+.admin-body {
+
+    width:
+        100%;
+
+    min-height:
+        100vh;
+
+    height:
+        auto;
+
+    overflow-y:
+        auto !important;
+
+    overflow-x:
+        hidden !important;
+
+    touch-action:
+        pan-y !important;
+
+    -webkit-overflow-scrolling:
+        touch;
+
+    overscroll-behavior-y:
+        auto;
+
+    align-items:
+        stretch;
+
+    padding-top:
+        0;
+}
+
+
+/*
+ * Cho phép toàn bộ phần tử bên trong
+ * trang Admin nhận thao tác vuốt dọc.
+ */
+
+.admin-body *,
+.admin-body *::before,
+.admin-body *::after {
+
+    touch-action:
+        pan-y !important;
+}
+
+
+/*
+ * Trang Admin có thể dài.
+ */
+
+.admin-body .admin-page {
+
+    width:
+        100%;
+
+    max-width:
+        900px;
+
+    min-height:
+        100vh;
+
+    height:
+        auto;
+
+    overflow:
+        visible;
+
+    padding-bottom:
+        50px;
+}
+
+
+/*
+ * Danh sách nhân viên.
+ */
+
+.admin-body .users-list {
+
+    width:
+        100%;
+
+    overflow:
+        visible;
 }
