@@ -1,17 +1,23 @@
 import {
-    db,
     auth,
-    signInAnonymously
+    db
 } from "./firebase.js";
+
+
+import {
+    signInAnonymously
+} from
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
 
 import {
     doc,
     getDoc,
     updateDoc,
     onSnapshot,
-    runTransaction,
     serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+} from
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 
 /* =====================================================
@@ -19,216 +25,170 @@ import {
 ===================================================== */
 
 const loginScreen =
-    document.getElementById("loginScreen");
+    document.getElementById(
+        "loginScreen"
+    );
+
 
 const appScreen =
-    document.getElementById("appScreen");
+    document.getElementById(
+        "appScreen"
+    );
+
 
 const employeeCodeInput =
-    document.getElementById("employeeCodeInput");
+    document.getElementById(
+        "employeeCodeInput"
+    );
+
 
 const loginButton =
-    document.getElementById("loginButton");
+    document.getElementById(
+        "loginButton"
+    );
+
 
 const loginMessage =
-    document.getElementById("loginMessage");
+    document.getElementById(
+        "loginMessage"
+    );
+
 
 const employeeHeader =
-    document.getElementById("employeeHeader");
+    document.getElementById(
+        "employeeHeader"
+    );
+
+
+const accountStatus =
+    document.getElementById(
+        "accountStatus"
+    );
+
 
 const cardHeader =
-    document.getElementById("cardHeader");
+    document.getElementById(
+        "cardHeader"
+    );
+
 
 const headerText =
-    document.getElementById("headerText");
+    document.getElementById(
+        "headerText"
+    );
+
 
 const currentTime =
-    document.getElementById("currentTime");
+    document.getElementById(
+        "currentTime"
+    );
+
 
 const statusTimer =
-    document.getElementById("statusTimer");
-
-const refreshQRCode =
-    document.getElementById("refreshQRCode");
-
-const qrcodeElement =
-    document.getElementById("qrcode");
+    document.getElementById(
+        "statusTimer"
+    );
 
 
-/* =====================================================
-   ẨN NÚT ĐĂNG XUẤT NẾU HTML CŨ VẪN CÒN
-===================================================== */
+const qrcode =
+    document.getElementById(
+        "qrcode"
+    );
+
+
+const refreshButton =
+    document.getElementById(
+        "refreshButton"
+    );
+
 
 const logoutButton =
-    document.getElementById("logoutButton");
-
-if (logoutButton) {
-
-    logoutButton.style.display =
-        "none";
-}
+    document.getElementById(
+        "logoutButton"
+    );
 
 
 /* =====================================================
-   STORAGE KEYS
+   SESSION
 ===================================================== */
+
+const SESSION_KEY =
+    "thor_session_id";
+
 
 const EMPLOYEE_KEY =
     "thor_employee_id";
 
-const DEVICE_KEY =
-    "thor_device_id";
-
-const USER_CACHE_KEY =
-    "thor_user_cache";
-
-
-/* =====================================================
-   GLOBAL STATE
-===================================================== */
 
 let employeeId =
     localStorage.getItem(
         EMPLOYEE_KEY
     );
 
-let deviceId =
+
+let sessionId =
     localStorage.getItem(
-        DEVICE_KEY
+        SESSION_KEY
     );
+
 
 let unsubscribeUser =
     null;
 
+
 let clockInterval =
     null;
 
-let timerStart =
+
+let durationInterval =
     null;
 
-let loginInProgress =
-    false;
 
-let pressTimer =
+let authReady =
     null;
-
-let isLoggedIn =
-    false;
 
 
 /* =====================================================
-   CREATE DEVICE ID
+   DEVICE SESSION ID
 ===================================================== */
 
-function createDeviceId() {
-
-    if (
-        typeof crypto !== "undefined" &&
-        typeof crypto.randomUUID === "function"
-    ) {
-
-        return crypto.randomUUID();
-    }
-
+function createSessionId() {
 
     return (
-        Date.now().toString(36) +
+        crypto.randomUUID() +
         "-" +
-        Math.random()
-            .toString(36)
-            .substring(2) +
-        "-" +
-        Math.random()
-            .toString(36)
-            .substring(2)
+        Date.now().toString(36)
     );
 }
 
 
 /* =====================================================
-   INIT DEVICE ID
+   DATE
 ===================================================== */
-
-if (!deviceId) {
-
-    deviceId =
-        createDeviceId();
-
-    localStorage.setItem(
-        DEVICE_KEY,
-        deviceId
-    );
-}
-
-
-/* =====================================================
-   UTILITY
-===================================================== */
-
-function pad(number) {
-
-    return String(number)
-        .padStart(2, "0");
-}
-
 
 function normalizeDate(value) {
 
     if (!value) {
-
         return null;
     }
 
 
-    /*
-     * Firestore Timestamp
-     */
-
     if (
-        typeof value.toDate === "function"
+        typeof value.toDate ===
+        "function"
     ) {
 
         return value.toDate();
+
     }
 
 
-    /*
-     * JavaScript Date
-     */
-
-    if (
-        value instanceof Date
-    ) {
+    if (value instanceof Date) {
 
         return value;
+
     }
 
-
-    /*
-     * Milliseconds từ cache
-     */
-
-    if (
-        typeof value === "number"
-    ) {
-
-        const date =
-            new Date(value);
-
-        if (
-            !Number.isNaN(
-                date.getTime()
-            )
-        ) {
-
-            return date;
-        }
-    }
-
-
-    /*
-     * String
-     */
 
     const date =
         new Date(value);
@@ -241,6 +201,7 @@ function normalizeDate(value) {
     ) {
 
         return null;
+
     }
 
 
@@ -249,176 +210,10 @@ function normalizeDate(value) {
 
 
 /* =====================================================
-   CACHE USER
+   CHECK DATE
 ===================================================== */
 
-/*
- * Lưu thông tin cần thiết để có thể
- * hiển thị app/QR ngay lập tức khi mở lại.
- *
- * QR chỉ có tác dụng hiển thị theo yêu cầu
- * hiện tại của bạn.
- */
-
-function saveUserCache(user) {
-
-    try {
-
-        const cachedUser = {
-
-            employeeId:
-                user.employeeId ||
-                employeeId ||
-                "",
-
-            name:
-                user.name ||
-                "",
-
-            color:
-                user.color ||
-                "yellow",
-
-            timerStart:
-                normalizeDate(
-                    user.timerStart
-                )
-                    ? normalizeDate(
-                        user.timerStart
-                    ).getTime()
-                    : null
-
-        };
-
-
-        localStorage.setItem(
-            USER_CACHE_KEY,
-            JSON.stringify(
-                cachedUser
-            )
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "SAVE CACHE ERROR:",
-            error
-        );
-    }
-}
-
-
-/* =====================================================
-   LOAD USER CACHE
-===================================================== */
-
-function getUserCache() {
-
-    try {
-
-        const raw =
-            localStorage.getItem(
-                USER_CACHE_KEY
-            );
-
-
-        if (!raw) {
-
-            return null;
-        }
-
-
-        const user =
-            JSON.parse(raw);
-
-
-        if (
-            !user ||
-            typeof user !== "object"
-        ) {
-
-            return null;
-        }
-
-
-        return user;
-
-
-    } catch (error) {
-
-        console.error(
-            "READ CACHE ERROR:",
-            error
-        );
-
-
-        return null;
-    }
-}
-
-
-/* =====================================================
-   DELETE USER CACHE
-===================================================== */
-
-function clearUserCache() {
-
-    localStorage.removeItem(
-        USER_CACHE_KEY
-    );
-}
-
-
-/* =====================================================
-   FIREBASE LOGIN
-===================================================== */
-
-async function ensureFirebaseLogin() {
-
-    if (
-        auth.currentUser
-    ) {
-
-        return auth.currentUser;
-    }
-
-
-    if (
-        !navigator.onLine
-    ) {
-
-        throw new Error(
-            "OFFLINE"
-        );
-    }
-
-
-    const result =
-        await signInAnonymously(
-            auth
-        );
-
-
-    return result.user;
-}
-
-
-/* =====================================================
-   CHECK ACCOUNT
-===================================================== */
-
-function checkEmployeeAccount(user) {
-
-    if (
-        user.active !== true
-    ) {
-
-        throw new Error(
-            "Tài khoản đã bị khóa."
-        );
-    }
-
+function checkDateRange(user) {
 
     const now =
         new Date();
@@ -441,9 +236,12 @@ function checkEmployeeAccount(user) {
         now < start
     ) {
 
-        throw new Error(
-            "Tài khoản chưa đến thời gian sử dụng."
-        );
+        return {
+            ok: false,
+            message:
+                "Tài khoản chưa đến thời gian sử dụng."
+        };
+
     }
 
 
@@ -452,389 +250,26 @@ function checkEmployeeAccount(user) {
         now > end
     ) {
 
-        throw new Error(
-            "Tài khoản đã hết hạn."
-        );
-    }
-}
+        return {
+            ok: false,
+            message:
+                "Tài khoản đã hết hạn."
+        };
 
-
-/* =====================================================
-   SHOW APP IMMEDIATELY FROM CACHE
-===================================================== */
-
-/*
- * Đây là phần giúp loại bỏ delay 2-3 giây.
- *
- * Không chờ:
- *
- * Firebase Auth
- * Firebase Firestore
- *
- * Mà lấy dữ liệu đã lưu trên máy
- * và vẽ QR ngay.
- */
-
-function showCachedAppImmediately() {
-
-    if (
-        !employeeId
-    ) {
-
-        return false;
-    }
-
-
-    const cached =
-        getUserCache();
-
-
-    if (
-        !cached
-    ) {
-
-        return false;
-    }
-
-
-    /*
-     * Nếu cache thuộc mã khác
-     * thì không sử dụng.
-     */
-
-    if (
-        cached.employeeId &&
-        cached.employeeId !== employeeId
-    ) {
-
-        return false;
-    }
-
-
-    try {
-
-        /*
-         * Nhân viên
-         */
-
-        employeeHeader.textContent =
-            `${cached.employeeId || employeeId} (${cached.name || ""})`;
-
-
-        /*
-         * Màu
-         */
-
-        applyHeaderColor(
-            cached.color === "green"
-        );
-
-
-        /*
-         * Timer
-         */
-
-        timerStart =
-            normalizeDate(
-                cached.timerStart
-            );
-
-
-        /*
-         * Hiện app NGAY
-         */
-
-        loginScreen.classList.add(
-            "hidden"
-        );
-
-
-        appScreen.classList.remove(
-            "hidden"
-        );
-
-
-        /*
-         * Đánh dấu đang hiển thị app
-         */
-
-        isLoggedIn =
-            true;
-
-
-        /*
-         * Chạy đồng hồ ngay
-         */
-
-        startClock();
-
-
-        /*
-         * QR ngay
-         *
-         * Không chờ Firebase.
-         */
-
-        generateQRCodeFromCache(
-            cached
-        );
-
-
-        return true;
-
-
-    } catch (error) {
-
-        console.error(
-            "CACHE APP ERROR:",
-            error
-        );
-
-
-        return false;
-    }
-}
-
-
-/* =====================================================
-   QR FROM CACHE
-===================================================== */
-
-function generateQRCodeFromCache(
-    user
-) {
-
-    if (
-        !qrcodeElement
-    ) {
-
-        return;
-    }
-
-
-    if (
-        !employeeId
-    ) {
-
-        return;
-    }
-
-
-    /*
-     * QR vẫn tạo ngay cả khi Firebase
-     * đang xác minh ở phía sau.
-     */
-
-    const now =
-        new Date();
-
-
-    const formattedTime =
-        `${now.getFullYear()}-` +
-        `${String(
-            now.getMonth() + 1
-        ).padStart(2, "0")}-` +
-        `${String(
-            now.getDate()
-        ).padStart(2, "0")} ` +
-        `${String(
-            now.getHours()
-        ).padStart(2, "0")}:` +
-        `${String(
-            now.getMinutes()
-        ).padStart(2, "0")}:` +
-        `${String(
-            now.getSeconds()
-        ).padStart(2, "0")}`;
-
-
-    const employeeName =
-        user.name || "";
-
-
-    const uniqueToken =
-        Math.random()
-            .toString(36)
-            .substring(2) +
-        Date.now()
-            .toString(36);
-
-
-    /*
-     * GIỮ NGUYÊN CƠ CHẾ QR
-     */
-
-    const accessData =
-        `https://YOUR-AUTHORIZED-DOMAIN/access` +
-        `?id=${encodeURIComponent(
-            employeeId
-        )}` +
-        `&name=${encodeURIComponent(
-            employeeName
-        )}` +
-        `&time=${encodeURIComponent(
-            formattedTime
-        )}` +
-        `&token=${encodeURIComponent(
-            uniqueToken
-        )}`;
-
-
-    qrcodeElement.innerHTML =
-        "";
-
-
-    if (
-        typeof QRCodeStyling === "undefined"
-    ) {
-
-        console.error(
-            "QRCodeStyling library chưa được tải."
-        );
-
-        return;
-    }
-
-
-    const qr =
-        new QRCodeStyling(
-            {
-
-                width:
-                    220,
-
-                height:
-                    220,
-
-                data:
-                    accessData,
-
-                margin:
-                    0,
-
-                qrOptions: {
-
-                    errorCorrectionLevel:
-                        "M"
-
-                },
-
-                dotsOptions: {
-
-                    type:
-                        "square",
-
-                    color:
-                        "#000000"
-
-                },
-
-                cornersSquareOptions: {
-
-                    type:
-                        "extra-rounded",
-
-                    color:
-                        "#000000"
-
-                },
-
-                cornersDotOptions: {
-
-                    type:
-                        "dot",
-
-                    color:
-                        "#000000"
-
-                },
-
-                backgroundOptions: {
-
-                    color:
-                        "#ffffff"
-
-                }
-
-            }
-        );
-
-
-    qr.append(
-        qrcodeElement
-    );
-}
-
-
-/* =====================================================
-   GET EMPLOYEE
-===================================================== */
-
-async function getEmployee(
-    code
-) {
-
-    const userRef =
-        doc(
-            db,
-            "users",
-            code
-        );
-
-
-    const snapshot =
-        await getDoc(
-            userRef
-        );
-
-
-    if (
-        !snapshot.exists()
-    ) {
-
-        throw new Error(
-            "Mã nhân viên không tồn tại."
-        );
     }
 
 
     return {
-
-        ref:
-            userRef,
-
-        data:
-            snapshot.data()
-
+        ok: true
     };
 }
 
 
 /* =====================================================
-   EMPLOYEE LOGIN
+   LOGIN
 ===================================================== */
 
 async function login() {
-
-    if (
-        loginInProgress
-    ) {
-
-        return;
-    }
-
-
-    if (
-        !navigator.onLine
-    ) {
-
-        showLoginMessage(
-            "Không có kết nối mạng."
-        );
-
-        return;
-    }
-
 
     const code =
         employeeCodeInput.value
@@ -844,7 +279,7 @@ async function login() {
 
     if (!code) {
 
-        showLoginMessage(
+        showLoginError(
             "请输入员工编号"
         );
 
@@ -852,183 +287,109 @@ async function login() {
     }
 
 
-    loginInProgress =
-        true;
-
-
     loginButton.disabled =
         true;
 
 
-    showLoginMessage(
-        "正在验证..."
-    );
+    loginMessage.textContent =
+        "正在验证...";
 
 
     try {
 
-        /*
-         * Firebase Authentication
-         */
-
-        await ensureFirebaseLogin();
+        await ensureAnonymousSession();
 
 
-        /*
-         * Lấy user
-         */
-
-        const result =
-            await getEmployee(
+        const userRef =
+            doc(
+                db,
+                "users",
                 code
             );
 
 
-        const userRef =
-            result.ref;
+        const snapshot =
+            await getDoc(
+                userRef
+            );
+
+
+        if (
+            !snapshot.exists()
+        ) {
+
+            throw new Error(
+                "Mã nhân viên không tồn tại."
+            );
+
+        }
+
+
+        const user =
+            snapshot.data();
+
+
+        if (
+            user.active !== true
+        ) {
+
+            throw new Error(
+                "Tài khoản đã bị vô hiệu hóa."
+            );
+
+        }
+
+
+        const dateCheck =
+            checkDateRange(
+                user
+            );
+
+
+        if (
+            !dateCheck.ok
+        ) {
+
+            throw new Error(
+                dateCheck.message
+            );
+
+        }
 
 
         /*
-         * Kiểm tra account
+         * Mỗi lần đăng nhập tạo
+         * session ID mới.
+         *
+         * Nếu thiết bị khác đăng nhập
+         * bằng cùng mã, session cũ
+         * sẽ không còn hợp lệ.
          */
 
-        checkEmployeeAccount(
-            result.data
-        );
+        const newSession =
+            createSessionId();
 
 
-        /*
-         * =============================================
-         * KIỂM TRA 1 THIẾT BỊ
-         * =============================================
-         */
+        await updateDoc(
+            userRef,
+            {
 
-        await runTransaction(
-            db,
-            async transaction => {
+                activeSession:
+                    newSession,
 
-                const freshSnapshot =
-                    await transaction.get(
-                        userRef
-                    );
+                lastLogin:
+                    serverTimestamp()
 
-
-                if (
-                    !freshSnapshot.exists()
-                ) {
-
-                    throw new Error(
-                        "Mã nhân viên không tồn tại."
-                    );
-                }
-
-
-                const user =
-                    freshSnapshot.data();
-
-
-                /*
-                 * Kiểm tra account lại
-                 */
-
-                checkEmployeeAccount(
-                    user
-                );
-
-
-                /*
-                 * Thiết bị đang giữ mã
-                 */
-
-                const currentDevice =
-                    user.activeSession ||
-                    null;
-
-
-                /*
-                 * =======================================
-                 * CHƯA CÓ THIẾT BỊ
-                 * =======================================
-                 */
-
-                if (
-                    !currentDevice
-                ) {
-
-                    transaction.update(
-                        userRef,
-                        {
-
-                            activeSession:
-                                deviceId,
-
-                            lastLogin:
-                                serverTimestamp(),
-
-                            updatedAt:
-                                serverTimestamp()
-
-                        }
-                    );
-
-
-                    return;
-                }
-
-
-                /*
-                 * =======================================
-                 * CÙNG THIẾT BỊ
-                 * =======================================
-                 */
-
-                if (
-                    currentDevice ===
-                    deviceId
-                ) {
-
-                    transaction.update(
-                        userRef,
-                        {
-
-                            activeSession:
-                                deviceId,
-
-                            lastLogin:
-                                serverTimestamp(),
-
-                            updatedAt:
-                                serverTimestamp()
-
-                        }
-                    );
-
-
-                    return;
-                }
-
-
-                /*
-                 * =======================================
-                 * THIẾT BỊ KHÁC
-                 * =======================================
-                 */
-
-                throw new Error(
-                    "Mã nhân viên này đang được sử dụng trên thiết bị khác."
-                );
             }
         );
 
 
-        /*
-         * =========================================
-         * LƯU USER
-         * =========================================
-         */
-
         employeeId =
             code;
+
+
+        sessionId =
+            newSession;
 
 
         localStorage.setItem(
@@ -1037,117 +398,28 @@ async function login() {
         );
 
 
-        /*
-         * Lưu cache ngay.
-         */
-
-        saveUserCache({
-            employeeId:
-                userRef.id,
-
-            name:
-                result.data.name ||
-                "",
-
-            color:
-                result.data.color ||
-                "yellow",
-
-            timerStart:
-                result.data.timerStart ||
-                null
-        });
-
-
-        isLoggedIn =
-            true;
-
-
-        showLoginMessage(
-            ""
+        localStorage.setItem(
+            SESSION_KEY,
+            sessionId
         );
 
 
-        /*
-         * Vào app
-         */
-
-        await openApp();
-
+        openApp();
 
     } catch (error) {
 
-        console.error(
-            "LOGIN ERROR:",
-            error
+        console.error(error);
+
+        showLoginError(
+            error.message ||
+            "Không thể đăng nhập."
         );
-
-
-        if (
-            error?.message ===
-            "OFFLINE"
-        ) {
-
-            showLoginMessage(
-                "Không có kết nối mạng."
-            );
-
-            return;
-        }
-
-
-        if (
-            !navigator.onLine
-        ) {
-
-            showLoginMessage(
-                "Mất kết nối mạng."
-            );
-
-            return;
-        }
-
-
-        if (
-            error?.code ===
-            "permission-denied"
-        ) {
-
-            showLoginMessage(
-                "Firebase từ chối quyền truy cập Firestore."
-            );
-
-            return;
-        }
-
-
-        if (
-            error?.code ===
-            "auth/operation-not-allowed"
-        ) {
-
-            showLoginMessage(
-                "Firebase Anonymous Authentication chưa được bật."
-            );
-
-            return;
-        }
-
-
-        showLoginMessage(
-            error?.message ||
-            "Đăng nhập thất bại."
-        );
-
 
     } finally {
 
-        loginInProgress =
-            false;
-
-
         loginButton.disabled =
             false;
+
     }
 }
 
@@ -1158,405 +430,66 @@ async function login() {
 
 async function openApp() {
 
-    if (
-        !employeeId
-    ) {
-
-        showLogin();
-
-        return;
-    }
+    loginScreen.classList.add(
+        "hidden"
+    );
 
 
-    /*
-     * Nếu có cache:
-     * hiện ngay.
-     */
-
-    showCachedAppImmediately();
+    appScreen.classList.remove(
+        "hidden"
+    );
 
 
-    /*
-     * Nếu offline:
-     * về login theo yêu cầu.
-     */
-
-    if (
-        !navigator.onLine
-    ) {
-
-        forceLocalLogout(
-            "Mất kết nối mạng. Vui lòng đăng nhập lại."
-        );
-
-        return;
-    }
+    await loadUser();
 
 
-    /*
-     * Firebase chạy phía sau.
-     */
-
-    await verifyCurrentSession();
+    startClock();
 
 }
 
 
 /* =====================================================
-   VERIFY CURRENT SESSION
-===================================================== */
-
-/*
- * Firebase xác minh ở phía sau.
- *
- * Không chặn việc hiển thị QR.
- */
-
-async function verifyCurrentSession() {
-
-    if (
-        !employeeId
-    ) {
-
-        return false;
-    }
-
-
-    try {
-
-        await ensureFirebaseLogin();
-
-
-        /*
-         * User document
-         */
-
-        const userRef =
-            doc(
-                db,
-                "users",
-                employeeId
-            );
-
-
-        const snapshot =
-            await getDoc(
-                userRef
-            );
-
-
-        /*
-         * User bị xóa
-         */
-
-        if (
-            !snapshot.exists()
-        ) {
-
-            clearUserSession(
-                "Tài khoản không còn tồn tại."
-            );
-
-            return false;
-        }
-
-
-        const user =
-            snapshot.data();
-
-
-        /*
-         * Account
-         */
-
-        checkEmployeeAccount(
-            user
-        );
-
-
-        /*
-         * =========================================
-         * DEVICE / ADMIN RESET
-         * =========================================
-         */
-
-        if (
-            user.activeSession !==
-            deviceId
-        ) {
-
-            clearUserSession(
-                "Tài khoản đã được Admin reset hoặc chuyển sang thiết bị khác."
-            );
-
-            return false;
-        }
-
-
-        /*
-         * Cập nhật cache
-         */
-
-        saveUserCache(
-            user
-        );
-
-
-        /*
-         * Render dữ liệu mới
-         */
-
-        renderUser(
-            user
-        );
-
-
-        /*
-         * QR cập nhật theo dữ liệu mới
-         */
-
-        if (
-            isLoggedIn
-        ) {
-
-            generateQRCode();
-        }
-
-
-        /*
-         * Theo dõi realtime
-         */
-
-        loadUser();
-
-
-        return true;
-
-
-    } catch (error) {
-
-        console.error(
-            "VERIFY SESSION ERROR:",
-            error
-        );
-
-
-        /*
-         * Mất mạng:
-         * login ngay.
-         */
-
-        if (
-            !navigator.onLine
-        ) {
-
-            clearUserSession(
-                "Mất kết nối mạng. Vui lòng đăng nhập lại."
-            );
-
-            return false;
-        }
-
-
-        /*
-         * Nếu Firebase lỗi tạm thời,
-         * KHÔNG đá người dùng ra ngay.
-         *
-         * QR cache vẫn đang hiển thị.
-         */
-
-        if (
-            error?.code ===
-            "permission-denied"
-        ) {
-
-            clearUserSession(
-                "Phiên đăng nhập không còn quyền truy cập."
-            );
-
-            return false;
-        }
-
-
-        console.warn(
-            "Firebase kiểm tra tạm thời thất bại."
-        );
-
-
-        /*
-         * Giữ app đang hiển thị.
-         */
-
-        return true;
-    }
-}
-
-
-/* =====================================================
-   RESTORE APP
-===================================================== */
-
-/*
- * Được gọi khi reload / mở lại app.
- *
- * QR từ cache hiện trước.
- * Firebase kiểm tra sau.
- */
-
-async function restoreApp() {
-
-    employeeId =
-        localStorage.getItem(
-            EMPLOYEE_KEY
-        );
-
-
-    /*
-     * Không có employee
-     */
-
-    if (
-        !employeeId
-    ) {
-
-        showLogin();
-
-        return;
-    }
-
-
-    /*
-     * Không có mạng
-     */
-
-    if (
-        !navigator.onLine
-    ) {
-
-        showLogin(
-            "Mất kết nối mạng. Vui lòng đăng nhập lại."
-        );
-
-        return;
-    }
-
-
-    /*
-     * ==========================================
-     * HIỆN QR NGAY
-     * ==========================================
-     */
-
-    const cacheShown =
-        showCachedAppImmediately();
-
-
-    /*
-     * Nếu có cache, người dùng sẽ
-     * thấy QR ngay lập tức.
-     */
-
-    if (!cacheShown) {
-
-        /*
-         * Chưa có cache:
-         * phải xác minh Firebase.
-         */
-
-        loginScreen.classList.remove(
-            "hidden"
-        );
-
-        appScreen.classList.add(
-            "hidden"
-        );
-    }
-
-
-    /*
-     * Firebase xác minh phía sau.
-     */
-
-    await verifyCurrentSession();
-}
-
-
-/* =====================================================
-   LOAD USER REALTIME
+   LOAD USER
 ===================================================== */
 
 async function loadUser() {
 
     if (
-        !employeeId
+        !employeeId ||
+        !sessionId
     ) {
+
+        logout();
 
         return;
     }
-
-
-    const currentEmployee =
-        employeeId;
 
 
     const userRef =
         doc(
             db,
             "users",
-            currentEmployee
+            employeeId
         );
 
 
     /*
-     * Hủy listener cũ
-     */
-
-    if (
-        unsubscribeUser
-    ) {
-
-        unsubscribeUser();
-
-        unsubscribeUser =
-            null;
-    }
-
-
-    /*
-     * Realtime listener
+     * realtime listener
+     *
+     * Admin thay đổi dữ liệu
+     * → app nhận thay đổi.
      */
 
     unsubscribeUser =
         onSnapshot(
-
             userRef,
-
             snapshot => {
-
-                /*
-                 * User bị xóa
-                 */
 
                 if (
                     !snapshot.exists()
                 ) {
 
-                    clearUserSession(
-                        "Tài khoản không còn tồn tại."
-                    );
-
-                    return;
-                }
-
-
-                /*
-                 * User hiện tại khác
-                 */
-
-                if (
-                    employeeId !==
-                    currentEmployee
-                ) {
+                    logout();
 
                     return;
                 }
@@ -1567,131 +500,77 @@ async function loadUser() {
 
 
                 /*
-                 * ========================================
-                 * ACTIVE SESSION
-                 *
-                 * Admin Reset cũng vào đây.
-                 * ========================================
+                 * Kiểm tra session
                  */
 
                 if (
                     user.activeSession !==
-                    deviceId
+                    sessionId
                 ) {
 
-                    clearUserSession(
-                        "Tài khoản đã được Admin reset hoặc chuyển sang thiết bị khác."
+                    alert(
+                        "Phiên đăng nhập đã được sử dụng trên thiết bị khác."
                     );
+
+                    logout();
 
                     return;
                 }
 
 
                 /*
-                 * ACTIVE
+                 * Kiểm tra active
                  */
 
                 if (
                     user.active !== true
                 ) {
 
-                    clearUserSession(
+                    alert(
                         "Tài khoản đã bị khóa."
                     );
 
+                    logout();
+
                     return;
                 }
 
 
                 /*
-                 * DATE
+                 * Kiểm tra thời gian
                  */
 
-                try {
-
-                    checkEmployeeAccount(
+                const dateCheck =
+                    checkDateRange(
                         user
                     );
 
-                } catch (error) {
 
-                    clearUserSession(
-                        error.message
+                if (
+                    !dateCheck.ok
+                ) {
+
+                    alert(
+                        dateCheck.message
                     );
+
+                    logout();
 
                     return;
                 }
 
-
-                /*
-                 * Cập nhật cache
-                 */
-
-                saveUserCache(
-                    user
-                );
-
-
-                /*
-                 * Render
-                 */
 
                 renderUser(
                     user
                 );
+
             },
-
-
             error => {
 
                 console.error(
-                    "FIRESTORE REALTIME ERROR:",
                     error
                 );
 
-
-                /*
-                 * Mất mạng:
-                 * logout ngay.
-                 */
-
-                if (
-                    !navigator.onLine
-                ) {
-
-                    clearUserSession(
-                        "Mất kết nối mạng. Vui lòng đăng nhập lại."
-                    );
-
-                    return;
-                }
-
-
-                /*
-                 * Permission denied
-                 */
-
-                if (
-                    error?.code ===
-                    "permission-denied"
-                ) {
-
-                    clearUserSession(
-                        "Phiên đăng nhập không còn quyền truy cập."
-                    );
-
-                    return;
-                }
-
-
-                /*
-                 * Lỗi tạm thời:
-                 * giữ QR.
-                 */
-
-                console.warn(
-                    "Firestore realtime tạm thời không kết nối."
-                );
             }
         );
 }
@@ -1701,32 +580,24 @@ async function loadUser() {
    RENDER USER
 ===================================================== */
 
-function renderUser(
-    user
-) {
-
-    /*
-     * Lưu cache trước
-     */
-
-    saveUserCache(
-        user
-    );
-
-
-    /*
-     * Employee name
-     */
+function renderUser(user) {
 
     employeeHeader.textContent =
-        `${user.employeeId || employeeId} (${user.name || ""})`;
+        `${user.employeeId || employeeId}` +
+        `(${user.name || ""})`;
+
+
+    accountStatus.textContent =
+        user.active
+            ? "Active"
+            : "Inactive";
 
 
     /*
-     * Color
+     * Màu được lưu trên server.
      */
 
-    applyHeaderColor(
+    applyColor(
         user.color === "green"
     );
 
@@ -1735,77 +606,45 @@ function renderUser(
      * Timer
      */
 
-    timerStart =
-        normalizeDate(
-            user.timerStart
-        );
-
-
-    /*
-     * Nếu chưa có timerStart
-     */
-
     if (
-        !timerStart
+        user.timerStart
     ) {
 
-        timerStart =
-            new Date();
+        startTimer(
+            normalizeDate(
+                user.timerStart
+            )
+        );
 
-
-        if (
-            navigator.onLine &&
-            employeeId
-        ) {
-
-            updateDoc(
-                doc(
-                    db,
-                    "users",
-                    employeeId
-                ),
-                {
-
-                    timerStart:
-                        serverTimestamp(),
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            ).catch(
-                error => {
-
-                    console.error(
-                        "TIMER INIT ERROR:",
-                        error
-                    );
-                }
-            );
-        }
     }
 
 
-    updateTimer();
+    /*
+     * QR demo
+     */
+
+    generateDemoQR(
+        user.employeeId ||
+        employeeId,
+        user.name || ""
+    );
 }
 
 
 /* =====================================================
-   HEADER COLOR
+   COLOR
 ===================================================== */
 
-function applyHeaderColor(
-    green
-) {
+function applyColor(isGreen) {
 
-    if (green) {
+    if (isGreen) {
 
         cardHeader.style.backgroundColor =
             "#38a754";
 
 
         headerText.textContent =
-            "将二维码对准扫描器刷码进场";
+            "DEMO - GREEN STATE";
 
     } else {
 
@@ -1814,159 +653,7 @@ function applyHeaderColor(
 
 
         headerText.textContent =
-            "将二维码对准扫描器刷码出场";
-    }
-}
-
-
-/* =====================================================
-   TOGGLE COLOR
-===================================================== */
-
-async function toggleHeaderColor() {
-
-    if (
-        !employeeId ||
-        !isLoggedIn
-    ) {
-
-        return;
-    }
-
-
-    if (
-        !navigator.onLine
-    ) {
-
-        clearUserSession(
-            "Mất kết nối mạng. Vui lòng đăng nhập lại."
-        );
-
-        return;
-    }
-
-
-    const userRef =
-        doc(
-            db,
-            "users",
-            employeeId
-        );
-
-
-    try {
-
-        await runTransaction(
-            db,
-            async transaction => {
-
-                const snapshot =
-                    await transaction.get(
-                        userRef
-                    );
-
-
-                if (
-                    !snapshot.exists()
-                ) {
-
-                    throw new Error(
-                        "Tài khoản không tồn tại."
-                    );
-                }
-
-
-                const user =
-                    snapshot.data();
-
-
-                /*
-                 * Device
-                 */
-
-                if (
-                    user.activeSession !==
-                    deviceId
-                ) {
-
-                    throw new Error(
-                        "Thiết bị này không còn quyền sử dụng tài khoản."
-                    );
-                }
-
-
-                /*
-                 * Active
-                 */
-
-                if (
-                    user.active !== true
-                ) {
-
-                    throw new Error(
-                        "Tài khoản đã bị khóa."
-                    );
-                }
-
-
-                /*
-                 * Đổi màu
-                 */
-
-                const newGreen =
-                    user.color !==
-                    "green";
-
-
-                /*
-                 * Reset timer
-                 */
-
-                transaction.update(
-                    userRef,
-                    {
-
-                        color:
-                            newGreen
-                                ? "green"
-                                : "yellow",
-
-                        timerStart:
-                            serverTimestamp(),
-
-                        updatedAt:
-                            serverTimestamp()
-
-                    }
-                );
-            }
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "TOGGLE ERROR:",
-            error
-        );
-
-
-        if (
-            !navigator.onLine
-        ) {
-
-            clearUserSession(
-                "Mất kết nối mạng. Vui lòng đăng nhập lại."
-            );
-
-            return;
-        }
-
-
-        alert(
-            error?.message ||
-            "Không thể đổi trạng thái."
-        );
+            "DEMO - YELLOW STATE";
     }
 }
 
@@ -1984,187 +671,17 @@ function startClock() {
         clearInterval(
             clockInterval
         );
+
     }
 
 
-    function updateClock() {
+    function update() {
 
         const now =
             new Date();
-
-
-        const formattedTime =
-            `${now.getFullYear()}-` +
-            `${String(
-                now.getMonth() + 1
-            ).padStart(2, "0")}-` +
-            `${String(
-                now.getDate()
-            ).padStart(2, "0")} ` +
-            `${pad(
-                now.getHours()
-            )}:` +
-            `${pad(
-                now.getMinutes()
-            )}:` +
-            `${pad(
-                now.getSeconds()
-            )}`;
 
 
         currentTime.textContent =
-            formattedTime;
-
-
-        updateTimer();
-    }
-
-
-    updateClock();
-
-
-    clockInterval =
-        setInterval(
-            updateClock,
-            1000
-        );
-}
-
-
-/* =====================================================
-   TIMER
-===================================================== */
-
-function updateTimer() {
-
-    if (
-        !timerStart
-    ) {
-
-        statusTimer.textContent =
-            "00:00:00";
-
-        return;
-    }
-
-
-    const elapsed =
-        Math.max(
-            0,
-            Math.floor(
-                (
-                    Date.now() -
-                    timerStart.getTime()
-                ) / 1000
-            )
-        );
-
-
-    const hours =
-        Math.floor(
-            elapsed / 3600
-        );
-
-
-    const minutes =
-        Math.floor(
-            (
-                elapsed % 3600
-            ) / 60
-        );
-
-
-    const seconds =
-        elapsed % 60;
-
-
-    statusTimer.textContent =
-        `${pad(hours)}:` +
-        `${pad(minutes)}:` +
-        `${pad(seconds)}`;
-}
-
-
-/* =====================================================
-   QR FROM FIREBASE
-===================================================== */
-
-window.generateQRCode =
-    generateQRCode;
-
-
-async function generateQRCode(
-    event
-) {
-
-    if (
-        event &&
-        event.currentTarget
-    ) {
-
-        event.currentTarget.blur();
-    }
-
-
-    if (
-        !employeeId ||
-        !navigator.onLine
-    ) {
-
-        return;
-    }
-
-
-    try {
-
-        const userRef =
-            doc(
-                db,
-                "users",
-                employeeId
-            );
-
-
-        const snapshot =
-            await getDoc(
-                userRef
-            );
-
-
-        if (
-            !snapshot.exists()
-        ) {
-
-            return;
-        }
-
-
-        const user =
-            snapshot.data();
-
-
-        /*
-         * Kiểm tra quyền
-         */
-
-        if (
-            user.activeSession !==
-            deviceId
-        ) {
-
-            clearUserSession(
-                "Thiết bị này không còn quyền đăng nhập."
-            );
-
-            return;
-        }
-
-
-        const now =
-            new Date();
-
-
-        const formattedTime =
             `${now.getFullYear()}-` +
             `${String(
                 now.getMonth() + 1
@@ -2181,296 +698,198 @@ async function generateQRCode(
             `${String(
                 now.getSeconds()
             ).padStart(2, "0")}`;
-
-
-        const employeeName =
-            user.name || "";
-
-
-        const uniqueToken =
-            Math.random()
-                .toString(36)
-                .substring(2) +
-            Date.now()
-                .toString(36);
-
-
-        const accessData =
-            `https://YOUR-AUTHORIZED-DOMAIN/access` +
-            `?id=${encodeURIComponent(
-                employeeId
-            )}` +
-            `&name=${encodeURIComponent(
-                employeeName
-            )}` +
-            `&time=${encodeURIComponent(
-                formattedTime
-            )}` +
-            `&token=${encodeURIComponent(
-                uniqueToken
-            )}`;
-
-
-        if (
-            !qrcodeElement
-        ) {
-
-            return;
-        }
-
-
-        qrcodeElement.innerHTML =
-            "";
-
-
-        const qr =
-            new QRCodeStyling(
-                {
-
-                    width:
-                        220,
-
-                    height:
-                        220,
-
-                    data:
-                        accessData,
-
-                    margin:
-                        0,
-
-                    qrOptions: {
-
-                        errorCorrectionLevel:
-                            "M"
-
-                    },
-
-                    dotsOptions: {
-
-                        type:
-                            "square",
-
-                        color:
-                            "#000000"
-
-                    },
-
-                    cornersSquareOptions: {
-
-                        type:
-                            "extra-rounded",
-
-                        color:
-                            "#000000"
-
-                    },
-
-                    cornersDotOptions: {
-
-                        type:
-                            "dot",
-
-                        color:
-                            "#000000"
-
-                    },
-
-                    backgroundOptions: {
-
-                        color:
-                            "#ffffff"
-
-                    }
-
-                }
-            );
-
-
-        qr.append(
-            qrcodeElement
-        );
-
-
-        /*
-         * Cập nhật cache sau khi Firebase xác nhận.
-         */
-
-        saveUserCache(
-            user
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "QR ERROR:",
-            error
-        );
-
-
-        /*
-         * QR cache vẫn có thể tiếp tục hiển thị
-         * nếu Firebase tạm thời chậm.
-         */
     }
-}
 
 
-/* =====================================================
-   REFRESH QR
-===================================================== */
+    update();
 
-if (
-    refreshQRCode
-) {
 
-    refreshQRCode.addEventListener(
-        "click",
-        event => {
-
-            generateQRCode(
-                event
-            );
-        }
+    clockInterval = setInterval(
+        update,
+        1000
     );
 }
 
 
 /* =====================================================
-   HOLD 5 SECONDS
+   TIMER
 ===================================================== */
 
-const HOLD_DURATION =
-    5000;
+function startTimer(start) {
 
-
-function startPress(event) {
-
-    /*
-     * Không kích hoạt trong card.
-     */
-
-    if (
-        event.target.closest(
-            ".card"
-        )
-    ) {
-
+    if (!start) {
+        statusTimer.textContent = "00:00:00";
         return;
     }
 
 
-    clearTimeout(
-        pressTimer
+    if (durationInterval) {
+        clearInterval(durationInterval);
+    }
+
+
+    function updateTimer() {
+
+        const elapsed =
+            Math.max(
+                0,
+                Math.floor(
+                    (
+                        Date.now() -
+                        start.getTime()
+                    ) / 1000
+                )
+            );
+
+
+        const h =
+            Math.floor(
+                elapsed / 3600
+            );
+
+
+        const m =
+            Math.floor(
+                (elapsed % 3600) / 60
+            );
+
+
+        const s =
+            elapsed % 60;
+
+
+        statusTimer.textContent =
+            `${pad(h)}:` +
+            `${pad(m)}:` +
+            `${pad(s)}`;
+    }
+
+
+    updateTimer();
+
+
+    durationInterval = setInterval(
+        updateTimer,
+        1000
     );
-
-
-    pressTimer =
-        setTimeout(
-            () => {
-
-                toggleHeaderColor();
-
-            },
-            HOLD_DURATION
-        );
 }
 
 
-function cancelPress() {
+function pad(value) {
 
-    if (
-        pressTimer
-    ) {
-
-        clearTimeout(
-            pressTimer
-        );
-
-        pressTimer =
-            null;
-    }
+    return String(value)
+        .padStart(2, "0");
 }
 
 
-/* TOUCH */
-
-document.addEventListener(
-    "touchstart",
-    startPress,
-    {
-        passive: true
-    }
-);
-
-
-document.addEventListener(
-    "touchend",
-    cancelPress
-);
-
-
-document.addEventListener(
-    "touchcancel",
-    cancelPress
-);
-
-
-/* MOUSE */
-
-document.addEventListener(
-    "mousedown",
-    startPress
-);
-
-
-document.addEventListener(
-    "mouseup",
-    cancelPress
-);
-
-
-document.addEventListener(
-    "mouseleave",
-    cancelPress
-);
-
-
 /* =====================================================
-   PREVENT PAGE SCROLL
+   QR DEMO
 ===================================================== */
 
-document.addEventListener(
-    "touchmove",
-    event => {
-
-        event.preventDefault();
-
-    },
-    {
-        passive: false
-    }
-);
-
-
-/* =====================================================
-   CLEAR USER SESSION
-===================================================== */
-
-function clearUserSession(
-    message = ""
+function generateDemoQR(
+    employeeId,
+    name
 ) {
 
-    console.warn(
-        "CLEAR USER SESSION:",
-        message
-    );
+    const data =
+        JSON.stringify({
+
+            type: "THOR-DEMO",
+
+            employeeId:
+                employeeId,
+
+            name:
+                name,
+
+            timestamp:
+                Date.now()
+
+        });
+
+
+    qrcode.innerHTML = "";
 
 
     /*
-     * Hủy realtime
+     * QR demo bằng dịch vụ tạo ảnh.
+     *
+     * Không dùng làm mã xác thực
+     * ra/vào thực tế.
      */
+
+    const img =
+        document.createElement(
+            "img"
+        );
+
+
+    img.alt =
+        "THOR Demo QR";
+
+
+    img.src =
+        "https://api.qrserver.com/v1/create-qr-code/" +
+        "?size=220x220&data=" +
+        encodeURIComponent(
+            data
+        );
+
+
+    qrcode.appendChild(
+        img
+    );
+}
+
+
+refreshButton.addEventListener(
+    "click",
+    async () => {
+
+        if (!employeeId) {
+            return;
+        }
+
+
+        const ref =
+            doc(
+                db,
+                "users",
+                employeeId
+            );
+
+
+        const snapshot =
+            await getDoc(
+                ref
+            );
+
+
+        if (
+            snapshot.exists()
+        ) {
+
+            const user =
+                snapshot.data();
+
+
+            generateDemoQR(
+                user.employeeId ||
+                employeeId,
+                user.name || ""
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function logout() {
 
     if (
         unsubscribeUser
@@ -2483,69 +902,31 @@ function clearUserSession(
     }
 
 
-    /*
-     * Dừng đồng hồ
-     */
-
-    if (
-        clockInterval
-    ) {
-
-        clearInterval(
-            clockInterval
-        );
-
-        clockInterval =
-            null;
+    if (clockInterval) {
+        clearInterval(clockInterval);
+        clockInterval = null;
     }
 
 
-    /*
-     * Hủy hold
-     */
-
-    cancelPress();
-
-
-    /*
-     * Xóa phiên local
-     */
-
-    employeeId =
-        null;
+    if (durationInterval) {
+        clearInterval(durationInterval);
+        durationInterval = null;
+    }
 
 
-    timerStart =
-        null;
+    employeeId = null;
+    sessionId = null;
 
-
-    isLoggedIn =
-        false;
-
-
-    /*
-     * Xóa employee
-     */
 
     localStorage.removeItem(
         EMPLOYEE_KEY
     );
 
 
-    /*
-     * Xóa cache.
-     *
-     * Rất quan trọng khi Admin Reset,
-     * để lần mở tiếp theo không hiện
-     * QR cũ.
-     */
+    localStorage.removeItem(
+        SESSION_KEY
+    );
 
-    clearUserCache();
-
-
-    /*
-     * UI
-     */
 
     appScreen.classList.add(
         "hidden"
@@ -2557,46 +938,28 @@ function clearUserSession(
     );
 
 
-    /*
-     * QR cũ
-
-     */
-
-    if (
-        qrcodeElement
-    ) {
-
-        qrcodeElement.innerHTML =
-            "";
-    }
-
-
-    /*
-     * Ẩn logout
-     */
-
-    if (
-        logoutButton
-    ) {
-
-        logoutButton.style.display =
-            "none";
-    }
-
-
-    /*
-     * Input
-
-     */
-
     employeeCodeInput.value =
         "";
 
 
-    /*
-     * Message
+    loginMessage.textContent =
+        "";
+}
 
-     */
+
+logoutButton.addEventListener(
+    "click",
+    logout
+);
+
+
+/* =====================================================
+   LOGIN ERROR
+===================================================== */
+
+function showLoginError(
+    message
+) {
 
     loginMessage.textContent =
         message;
@@ -2604,494 +967,65 @@ function clearUserSession(
 
 
 /* =====================================================
-   SHOW LOGIN
+   LOGIN BUTTON
 ===================================================== */
 
-function showLogin(
-    message = ""
-) {
-
-    /*
-     * Đây là màn hình login bình thường.
-     */
-
-    if (
-        unsubscribeUser
-    ) {
-
-        unsubscribeUser();
-
-        unsubscribeUser =
-            null;
-    }
-
-
-    if (
-        clockInterval
-    ) {
-
-        clearInterval(
-            clockInterval
-        );
-
-        clockInterval =
-            null;
-    }
-
-
-    cancelPress();
-
-
-    employeeId =
-        localStorage.getItem(
-            EMPLOYEE_KEY
-        );
-
-
-    /*
-     * Không xóa deviceId.
-     */
-
-    isLoggedIn =
-        false;
-
-
-    appScreen.classList.add(
-        "hidden"
-    );
-
-
-    loginScreen.classList.remove(
-        "hidden"
-    );
-
-
-    if (
-        logoutButton
-    ) {
-
-        logoutButton.style.display =
-            "none";
-    }
-
-
-    if (message) {
-
-        loginMessage.textContent =
-            message;
-    }
-}
-
-
-/* =====================================================
-   LOGIN MESSAGE
-===================================================== */
-
-function showLoginMessage(
-    message
-) {
-
-    if (
-        loginMessage
-    ) {
-
-        loginMessage.textContent =
-            message || "";
-    }
-}
-
-
-/* =====================================================
-   NETWORK
-===================================================== */
-
-window.addEventListener(
-    "offline",
-    () => {
-
-        /*
-         * Mất mạng:
-         * login ngay.
-         */
-
-        clearUserSession(
-            "Mất kết nối mạng. Vui lòng đăng nhập lại."
-        );
-    }
+loginButton.addEventListener(
+    "click",
+    login
 );
 
 
-window.addEventListener(
-    "online",
-    () => {
-
-        console.log(
-            "NETWORK ONLINE"
-        );
-    }
-);
-
-
-/* =====================================================
-   VISIBILITY
-===================================================== */
-
-/*
- * KHÔNG logout khi app xuống background.
- *
- * Khi mở lại:
- *
- * - QR cache vẫn còn.
- * - Firebase listener tiếp tục kiểm tra.
- */
-
-document.addEventListener(
-    "visibilitychange",
-    () => {
+employeeCodeInput.addEventListener(
+    "keydown",
+    event => {
 
         if (
-            document.visibilityState ===
-            "visible"
+            event.key === "Enter"
         ) {
 
-            /*
-             * Nếu mất mạng
-             */
+            login();
 
-            if (
-                !navigator.onLine
-            ) {
-
-                clearUserSession(
-                    "Mất kết nối mạng. Vui lòng đăng nhập lại."
-                );
-
-                return;
-            }
-
-
-            /*
-             * Nếu employeeId vẫn còn
-             * nhưng app chưa hiển thị
-             */
-
-            if (
-                employeeId &&
-                !isLoggedIn
-            ) {
-
-                showCachedAppImmediately();
-
-                verifyCurrentSession();
-            }
         }
+
     }
 );
 
 
 /* =====================================================
-   PAGESHOW
+   AUTHENTICATION
 ===================================================== */
 
-/*
- * Safari/iPhone có thể khôi phục trang
- * từ bfcache.
- *
- * Không logout.
- *
- * Hiện cache ngay.
- */
+async function ensureAnonymousSession() {
 
-window.addEventListener(
-    "pageshow",
-    () => {
-
-        /*
-         * Lấy lại employeeId
-         */
-
-        employeeId =
-            localStorage.getItem(
-                EMPLOYEE_KEY
-            );
-
-
-        if (
-            !employeeId
-        ) {
-
-            showLogin();
-
-            return;
-        }
-
-
-        /*
-         * Offline
-         */
-
-        if (
-            !navigator.onLine
-        ) {
-
-            clearUserSession(
-                "Mất kết nối mạng. Vui lòng đăng nhập lại."
-            );
-
-            return;
-        }
-
-
-        /*
-         * Hiện QR từ cache NGAY.
-         */
-
-        showCachedAppImmediately();
-
-
-        /*
-         * Firebase kiểm tra phía sau.
-         */
-
-        verifyCurrentSession();
+    if (auth.currentUser) {
+        return auth.currentUser;
     }
-);
 
 
-/* =====================================================
-   BOOT
-===================================================== */
+    if (!authReady) {
+        authReady = signInAnonymously(auth)
+            .then(result => result.user)
+            .catch(error => {
+                authReady = null;
+                throw error;
+            });
+    }
 
-async function start() {
 
-    /*
-     * Lấy employeeId mới nhất.
-     */
+    return authReady;
+}
 
-    employeeId =
-        localStorage.getItem(
-            EMPLOYEE_KEY
+
+ensureAnonymousSession()
+    .then(() => {
+        if (employeeId && sessionId) {
+            openApp();
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        showLoginError(
+            "Không thể kết nối. Hãy bật Anonymous Authentication trong Firebase."
         );
-
-
-    /*
-     * OFFLINE
-     */
-
-    if (
-        !navigator.onLine
-    ) {
-
-        showLogin(
-            "Mất kết nối mạng. Vui lòng đăng nhập lại."
-        );
-
-        return;
-    }
-
-
-    /*
-     * CHƯA ĐĂNG NHẬP
-     */
-
-    if (
-        !employeeId
-    ) {
-
-        showLogin();
-
-        return;
-    }
-
-
-    /*
-     * =================================================
-     * QUAN TRỌNG:
-     *
-     * Hiện QR từ cache NGAY.
-     * =================================================
-     */
-
-    const cacheShown =
-        showCachedAppImmediately();
-
-
-    /*
-     * Nếu chưa có cache:
-     * xác minh Firebase trước.
-     */
-
-    if (
-        !cacheShown
-    ) {
-
-        try {
-
-            await ensureFirebaseLogin();
-
-
-            const userRef =
-                doc(
-                    db,
-                    "users",
-                    employeeId
-                );
-
-
-            const snapshot =
-                await getDoc(
-                    userRef
-                );
-
-
-            if (
-                !snapshot.exists()
-            ) {
-
-                clearUserSession(
-                    "Tài khoản không còn tồn tại."
-                );
-
-                return;
-            }
-
-
-            const user =
-                snapshot.data();
-
-
-            checkEmployeeAccount(
-                user
-            );
-
-
-            if (
-                user.activeSession !==
-                deviceId
-            ) {
-
-                clearUserSession(
-                    "Thiết bị này không còn quyền đăng nhập."
-                );
-
-                return;
-            }
-
-
-            saveUserCache(
-                user
-            );
-
-
-            renderUser(
-                user
-            );
-
-
-            isLoggedIn =
-                true;
-
-
-            loginScreen.classList.add(
-                "hidden"
-            );
-
-
-            appScreen.classList.remove(
-                "hidden"
-            );
-
-
-            startClock();
-
-
-            generateQRCode();
-
-
-            loadUser();
-
-
-        } catch (error) {
-
-            console.error(
-                "BOOT ERROR:",
-                error
-            );
-
-
-            if (
-                !navigator.onLine
-            ) {
-
-                clearUserSession(
-                    "Mất kết nối mạng. Vui lòng đăng nhập lại."
-                );
-
-                return;
-            }
-
-
-            showLogin(
-                error?.message ||
-                "Không thể khôi phục phiên đăng nhập."
-            );
-        }
-
-
-        return;
-    }
-
-
-    /*
-     * =================================================
-     * ĐÃ CÓ CACHE
-     *
-     * QR đã hiện.
-     *
-     * Firebase kiểm tra phía sau.
-     * =================================================
-     */
-
-    verifyCurrentSession();
-}
-
-
-/* =====================================================
-   EVENTS LOGIN
-===================================================== */
-
-if (
-    loginButton
-) {
-
-    loginButton.addEventListener(
-        "click",
-        login
-    );
-}
-
-
-if (
-    employeeCodeInput
-) {
-
-    employeeCodeInput.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key === "Enter"
-            ) {
-
-                login();
-            }
-        }
-    );
-}
-
-
-/* =====================================================
-   START
-===================================================== */
-
-start();
+    });
