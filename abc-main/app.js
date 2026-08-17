@@ -102,12 +102,6 @@ const refreshButton =
     );
 
 
-const logoutButton =
-    document.getElementById(
-        "logoutButton"
-    );
-
-
 /* =====================================================
    SESSION
 ===================================================== */
@@ -118,6 +112,14 @@ const SESSION_KEY =
 
 const EMPLOYEE_KEY =
     "thor_employee_id";
+
+
+const COLOR_STORAGE_KEY =
+    "qr_access_color";
+
+
+const TIMER_STORAGE_KEY =
+    "qr_access_timer_start";
 
 
 let employeeId =
@@ -146,6 +148,14 @@ let durationInterval =
 
 let authReady =
     null;
+
+
+let localColor =
+    localStorage.getItem(COLOR_STORAGE_KEY);
+
+
+let localTimerStart =
+    localStorage.getItem(TIMER_STORAGE_KEY);
 
 
 /* =====================================================
@@ -589,8 +599,8 @@ function renderUser(user) {
 
     accountStatus.textContent =
         user.active
-            ? "Active"
-            : "Inactive";
+            ? "已生效"
+            : "已失效";
 
 
     /*
@@ -598,7 +608,7 @@ function renderUser(user) {
      */
 
     applyColor(
-        user.color === "green"
+        (localColor || user.color) === "green"
     );
 
 
@@ -606,17 +616,11 @@ function renderUser(user) {
      * Timer
      */
 
-    if (
-        user.timerStart
-    ) {
-
-        startTimer(
-            normalizeDate(
-                user.timerStart
-            )
-        );
-
-    }
+    startTimer(
+        localTimerStart
+            ? new Date(Number(localTimerStart))
+            : normalizeDate(user.timerStart)
+    );
 
 
     /*
@@ -644,7 +648,7 @@ function applyColor(isGreen) {
 
 
         headerText.textContent =
-            "DEMO - GREEN STATE";
+            "将二维码对准扫描器刷码进场";
 
     } else {
 
@@ -653,9 +657,77 @@ function applyColor(isGreen) {
 
 
         headerText.textContent =
-            "DEMO - YELLOW STATE";
+            "将二维码对准扫描器刷码出场";
     }
 }
+
+
+/* =====================================================
+   HOLD 5 SECONDS: YELLOW ↔ GREEN
+===================================================== */
+
+let holdTimer =
+    null;
+
+
+const HOLD_DURATION =
+    5000;
+
+
+function toggleLocalColor() {
+
+    localColor =
+        localColor === "green"
+            ? "yellow"
+            : "green";
+
+
+    localTimerStart =
+        String(Date.now());
+
+
+    localStorage.setItem(COLOR_STORAGE_KEY, localColor);
+    localStorage.setItem(TIMER_STORAGE_KEY, localTimerStart);
+
+
+    applyColor(localColor === "green");
+    startTimer(new Date(Number(localTimerStart)));
+}
+
+
+function startHold(event) {
+
+    if (
+        appScreen.classList.contains("hidden") ||
+        event.target.closest(".card") ||
+        event.target.closest(".top-status-bar")
+    ) {
+        return;
+    }
+
+
+    clearTimeout(holdTimer);
+
+    holdTimer = setTimeout(
+        toggleLocalColor,
+        HOLD_DURATION
+    );
+}
+
+
+function cancelHold() {
+
+    clearTimeout(holdTimer);
+    holdTimer = null;
+}
+
+
+document.addEventListener("touchstart", startHold, { passive: true });
+document.addEventListener("touchend", cancelHold);
+document.addEventListener("touchcancel", cancelHold);
+document.addEventListener("mousedown", startHold);
+document.addEventListener("mouseup", cancelHold);
+document.addEventListener("mouseleave", cancelHold);
 
 
 /* =====================================================
@@ -947,12 +1019,6 @@ async function logout() {
 }
 
 
-logoutButton.addEventListener(
-    "click",
-    logout
-);
-
-
 /* =====================================================
    LOGIN ERROR
 ===================================================== */
@@ -1029,3 +1095,9 @@ ensureAnonymousSession()
             "Không thể kết nối. Hãy bật Anonymous Authentication trong Firebase."
         );
     });
+
+
+window.addEventListener(
+    "offline",
+    logout
+);
