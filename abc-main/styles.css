@@ -6,6 +6,10 @@
 }
 
 
+/* =====================================================
+   HTML / BODY
+===================================================== */
+
 html,
 body {
 
@@ -14,11 +18,12 @@ body {
 
     overflow: hidden;
 
-    background-color:
-        #2f3347;
+    background-color: #2f3347;
 
     -webkit-user-select: none;
     user-select: none;
+
+    -webkit-tap-highlight-color: transparent;
 }
 
 
@@ -35,7 +40,6 @@ body {
 
     overscroll-behavior: none;
 
-
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -44,7 +48,6 @@ body {
         "Helvetica Neue",
         STHeiti,
         sans-serif;
-
 
     background-image:
         url("background.png");
@@ -58,16 +61,13 @@ body {
     background-size:
         cover;
 
-
     color: white;
-
 
     display: flex;
 
     flex-direction: column;
 
     align-items: center;
-
 
     padding-top:
         max(
@@ -77,18 +77,18 @@ body {
 }
 
 
-/* ======================================
+/* =====================================================
    HIDDEN
-====================================== */
+===================================================== */
 
 .hidden {
     display: none !important;
 }
 
 
-/* ======================================
+/* =====================================================
    LOGIN
-====================================== */
+===================================================== */
 
 .login-screen {
 
@@ -108,11 +108,10 @@ body {
         no-repeat;
 
     background-position:
-        center;
+        center center;
 
     background-size:
         cover;
-
 
     display: flex;
 
@@ -121,7 +120,6 @@ body {
 
     align-items:
         center;
-
 
     padding:
         20px;
@@ -138,7 +136,12 @@ body {
         28px 24px;
 
     background:
-        rgba(255,255,255,0.96);
+        rgba(
+            255,
+            255,
+            255,
+            0.96
+        );
 
     border-radius:
         14px;
@@ -151,15 +154,22 @@ body {
 
     box-shadow:
         0 8px 30px
-        rgba(0,0,0,0.35);
+        rgba(
+            0,
+            0,
+            0,
+            0.35
+        );
 }
 
 
 .login-logo {
 
-    width: 65px;
+    width:
+        65px;
 
-    height: 65px;
+    height:
+        65px;
 
     object-fit:
         cover;
@@ -200,9 +210,11 @@ body {
 
 .employee-input {
 
-    width: 100%;
+    width:
+        100%;
 
-    height: 46px;
+    height:
+        46px;
 
     border:
         1px solid #ddd;
@@ -223,7 +235,13 @@ body {
         #222;
 
     background:
-        white;
+        #ffffff;
+
+    -webkit-appearance:
+        none;
+
+    appearance:
+        none;
 }
 
 
@@ -236,9 +254,11 @@ body {
 
 .login-button {
 
-    width: 100%;
+    width:
+        100%;
 
-    height: 46px;
+    height:
+        46px;
 
     margin-top:
         12px;
@@ -253,10 +273,23 @@ body {
         #38a754;
 
     color:
-        white;
+        #ffffff;
 
     font-size:
         15px;
+
+    -webkit-appearance:
+        none;
+
+    appearance:
+        none;
+}
+
+
+.login-button:active {
+
+    opacity:
+        0.85;
 }
 
 
@@ -280,17 +313,26 @@ body {
 
     color:
         #d9534f;
+
+    line-height:
+        1.4;
 }
 
 
-/* ======================================
+/* =====================================================
    APP
-====================================== */
+===================================================== */
 
 .app-screen {
 
-    width: 100%;
-    height: 100%;
+    width:
+        100%;
+
+    min-height:
+        100%;
+
+    height:
+        auto;
 
     display:
         flex;
@@ -303,20 +345,41 @@ body {
 }
 
 
-/* ======================================
-   HEADER
-====================================== */
+/* =====================================================
+   TOP STATUS BAR
+   Giữ để tương thích nếu index có dùng
+===================================================== */
+
+.top-status-bar {
+
+    width:
+        100%;
+
+    height:
+        44px;
+
+    background-color:
+        #e2e4e9;
+
+    flex-shrink:
+        0;
+}
+
+
+/* =====================================================
+   HEADER NHÂN VIÊN
+===================================================== */
 
 .header {
 
     margin-top:
-        10px;
+        25px;
 
     font-size:
-        18px;
+        17px;
 
     color:
-        #e2ce9c;
+        #F5D57F;
 
     font-weight:
         300;
@@ -325,40 +388,64 @@ body {
         center;
 
     letter-spacing:
-        0.3px;
+        0.5px;
+
+    line-height:
+        1.25;
+
+    width:
+        100%;
 }
 
 
-/* ======================================
+/*
+ * Nếu app.js dùng header hiện tại
+ * và không có top-status-bar,
+ * vẫn giữ khoảng cách tương đối giống bản cũ.
+ */
+
+.app-screen .header {
+
+    margin-top:
+        25px;
+}
+
+
+/* =====================================================
    CARD
-====================================== */
+===================================================== */
 
 .card {
 
     margin-top:
-        22px;
+        20px;
 
     width:
-        80%;
+        84%;
 
     max-width:
-        325px;
+        310px;
 
     border-radius:
-        10px;
+        8px;
 
     position:
         relative;
 
     box-shadow:
-        0 8px 24px
-        rgba(0,0,0,0.4);
+        0 6px 16px
+        rgba(
+            0,
+            0,
+            0,
+            0.3
+        );
 }
 
 
-/* ======================================
+/* =====================================================
    CARD HEADER
-====================================== */
+===================================================== */
 
 .card-header {
 
@@ -366,7 +453,7 @@ body {
         #f2c75b;
 
     padding:
-        15px 10px;
+        14px 8px;
 
     text-align:
         center;
@@ -375,16 +462,16 @@ body {
         #ffffff;
 
     font-size:
-        13.5px;
+        14px;
 
     font-weight:
         300;
 
     border-top-left-radius:
-        10px;
+        8px;
 
     border-top-right-radius:
-        10px;
+        8px;
 
     position:
         relative;
@@ -392,12 +479,37 @@ body {
     transition:
         background-color
         0.3s ease;
+
+    line-height:
+        1.35;
+
+    min-height:
+        45px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
 }
 
 
-/* ======================================
+#headerText {
+
+    display:
+        block;
+
+    width:
+        100%;
+}
+
+
+/* =====================================================
    CIRCLES
-====================================== */
+===================================================== */
 
 .circle1,
 .circle2 {
@@ -426,20 +538,22 @@ body {
 
 
 .circle1 {
+
     left:
         -6px;
 }
 
 
 .circle2 {
+
     right:
         -6px;
 }
 
 
-/* ======================================
+/* =====================================================
    CARD BODY
-====================================== */
+===================================================== */
 
 .card-body {
 
@@ -447,19 +561,19 @@ body {
         #ffffff;
 
     padding:
-        16px 16px 18px;
+        16px 15px 14px 15px;
 
     text-align:
         center;
 
     color:
-        #000;
+        #000000;
 
     border-bottom-left-radius:
-        10px;
+        8px;
 
     border-bottom-right-radius:
-        10px;
+        8px;
 
     display:
         flex;
@@ -472,52 +586,56 @@ body {
 }
 
 
-/* ======================================
+/* =====================================================
    TIME
-====================================== */
+===================================================== */
 
 .time {
 
     font-size:
-        14.5px;
+        14px;
 
     font-weight:
         300;
 
     color:
-        #222222;
+        #111111;
 
     margin-bottom:
         12px;
 
     letter-spacing:
-        0.2px;
+        0.3px;
 
     line-height:
         1.2;
 
     width:
         100%;
+
+    font-variant-numeric:
+        tabular-nums;
 }
 
 
-/* ======================================
-   QR - GIỮ NGUYÊN 230
-====================================== */
+/* =====================================================
+   QR
+   ĐÚNG KÍCH THƯỚC GIAO DIỆN CŨ: 220 × 220
+===================================================== */
 
 #qrcode {
 
     width:
-        230px;
+        220px;
 
     height:
-        230px;
+        220px;
 
     min-width:
-        230px;
+        220px;
 
     min-height:
-        230px;
+        220px;
 
     margin:
         0 auto;
@@ -533,6 +651,9 @@ body {
 
     overflow:
         hidden;
+
+    background:
+        #ffffff;
 }
 
 
@@ -540,19 +661,31 @@ body {
 #qrcode canvas {
 
     width:
-        230px !important;
+        220px !important;
 
     height:
-        230px !important;
+        220px !important;
+
+    min-width:
+        220px !important;
+
+    min-height:
+        220px !important;
+
+    max-width:
+        220px !important;
+
+    max-height:
+        220px !important;
 
     display:
         block !important;
 }
 
 
-/* ======================================
+/* =====================================================
    REFRESH
-====================================== */
+===================================================== */
 
 .refresh {
 
@@ -582,24 +715,34 @@ body {
         12px;
 
     color:
-        #888888;
+        #666666;
 
     font-weight:
         300;
 
     -webkit-tap-highlight-color:
         transparent;
+
+    user-select:
+        none;
 }
 
 
-/* ======================================
+.refresh-title:active {
+
+    opacity:
+        0.6;
+}
+
+
+/* =====================================================
    STATUS
-====================================== */
+===================================================== */
 
 .status-box {
 
     margin-top:
-        10px;
+        12px;
 
     display:
         flex;
@@ -611,7 +754,7 @@ body {
         center;
 
     color:
-        #4cd964;
+        #2eb85c;
 }
 
 
@@ -621,7 +764,7 @@ body {
         16px;
 
     font-weight:
-        300;
+        400;
 
     letter-spacing:
         0.5px;
@@ -636,7 +779,7 @@ body {
 .status-timer {
 
     font-size:
-        20px;
+        18px;
 
     font-weight:
         300;
@@ -647,96 +790,95 @@ body {
     letter-spacing:
         0.5px;
 
+    opacity:
+        1 !important;
+
     font-variant-numeric:
         tabular-nums;
 }
 
 
+/* =====================================================
+   GREEN ANIMATION
+===================================================== */
+
 @keyframes pulse-green {
 
     0% {
+
         opacity:
             1;
     }
 
     50% {
+
         opacity:
-            0.3;
+            0.25;
     }
 
     100% {
+
         opacity:
             1;
     }
 }
 
 
-/* ======================================
+/* =====================================================
    NOTE
-====================================== */
+===================================================== */
 
 .note {
 
     margin:
-        26px 10% 0;
+        22px 10% 0 10%;
 
     font-size:
-        12.5px;
+        13px;
 
     font-weight:
         300;
 
     color:
-        #e2ce9c;
+        #E6DCBD;
 
     line-height:
-        1.55;
+        1.6;
 
     text-align:
         center;
 
     letter-spacing:
-        0.2px;
+        0;
 
     opacity:
-        0.9;
+        1;
+
+    max-width:
+        360px;
 }
 
 
-/* ======================================
+/* =====================================================
    LOGOUT
-====================================== */
+   ẨN HOÀN TOÀN - APP KHÔNG DÙNG NÚT NÀY
+===================================================== */
 
 .logout-button {
 
-    margin-top:
-        16px;
-
-    padding:
-        7px 18px;
-
-    border:
-        none;
-
-    border-radius:
-        7px;
-
-    background:
-        rgba(255,255,255,0.15);
-
-    color:
-        #e2ce9c;
-
-    font-size:
-        12px;
+    display:
+        none !important;
 }
-/* ======================================
+
+
+/* =====================================================
    ADMIN PAGE
-====================================== */
+===================================================== */
 
 .admin-page {
 
-    width: 100%;
+    width:
+        100%;
 
     max-width:
         900px;
@@ -748,14 +890,19 @@ body {
         25px 15px;
 
     color:
-        #222;
+        #222222;
 }
 
 
 .admin-card {
 
     background:
-        rgba(255,255,255,0.97);
+        rgba(
+            255,
+            255,
+            255,
+            0.97
+        );
 
     border-radius:
         14px;
@@ -765,7 +912,12 @@ body {
 
     box-shadow:
         0 8px 30px
-        rgba(0,0,0,0.25);
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
 
     margin-bottom:
         20px;
@@ -789,7 +941,7 @@ body {
 .admin-subtitle {
 
     color:
-        #777;
+        #777777;
 
     margin-bottom:
         20px;
@@ -818,7 +970,7 @@ body {
         7px;
 
     background:
-        #fff;
+        #ffffff;
 
     font-size:
         14px;
@@ -851,7 +1003,7 @@ body {
         5px 3px;
 
     color:
-        white;
+        #ffffff;
 
     cursor:
         pointer;
@@ -902,7 +1054,7 @@ body {
         13px;
 
     color:
-        #555;
+        #555555;
 }
 
 
@@ -930,7 +1082,7 @@ body {
 .button-gray {
 
     background:
-        #666 !important;
+        #666666 !important;
 }
 
 
@@ -967,6 +1119,9 @@ body {
 
     flex:
         1;
+
+    min-width:
+        0;
 }
 
 
@@ -986,13 +1141,16 @@ body {
         5px;
 
     color:
-        #777;
+        #777777;
 
     font-size:
         13px;
 
     line-height:
         1.6;
+
+    white-space:
+        pre-line;
 }
 
 
@@ -1008,6 +1166,10 @@ body {
         flex-end;
 }
 
+
+/* =====================================================
+   ADMIN RESPONSIVE
+===================================================== */
 
 @media (max-width: 600px) {
 
@@ -1047,4 +1209,43 @@ body {
             flex-start;
     }
 
+}
+
+
+/* =====================================================
+   SMALL SCREEN
+   Giữ card/QR nhưng tránh tràn nếu màn hình quá thấp
+===================================================== */
+
+@media (max-height: 700px) {
+
+    body {
+
+        padding-top:
+            max(
+                25px,
+                env(safe-area-inset-top)
+            );
+    }
+
+
+    .header {
+
+        margin-top:
+            12px;
+    }
+
+
+    .card {
+
+        margin-top:
+            12px;
+    }
+
+
+    .note {
+
+        margin-top:
+            14px;
+    }
 }
