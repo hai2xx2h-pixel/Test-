@@ -1204,3 +1204,67 @@ body {
     }
 
 }
+/* =====================================================
+   ADMIN ONLY
+   Cho phép trang Admin cuộn dọc
+   Không ảnh hưởng app nhân viên
+===================================================== */
+
+.admin-body {
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    height: auto;
+
+    overflow-y: auto !important;
+
+    overflow-x: hidden !important;
+
+    touch-action: pan-y !important;
+
+    -webkit-overflow-scrolling: touch;
+
+    overscroll-behavior-y: auto;
+
+    align-items: stretch;
+
+    padding-top: 0;
+}
+
+
+/* Chỉ Admin mới được vuốt dọc */
+
+.admin-body *,
+.admin-body *::before,
+.admin-body *::after {
+
+    touch-action: pan-y !important;
+}
+
+
+/* Cho phép danh sách dài */
+
+.admin-body .admin-page {
+
+    width: 100%;
+
+    max-width: 900px;
+
+    min-height: 100vh;
+
+    overflow: visible;
+
+    padding-bottom: 50px;
+}
+
+
+/* Danh sách nhân viên không bị khóa chiều cao */
+
+.admin-body .users-list {
+
+    width: 100%;
+
+    overflow: visible;
+}
