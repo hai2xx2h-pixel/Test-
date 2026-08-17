@@ -2,6 +2,7 @@
 <html lang="vi">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -9,51 +10,80 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>THOR ADMIN</title>
+    <meta
+        http-equiv="Cache-Control"
+        content="no-cache, no-store, must-revalidate"
+    >
+
+    <meta
+        http-equiv="Pragma"
+        content="no-cache"
+    >
+
+    <meta
+        http-equiv="Expires"
+        content="0"
+    >
+
+    <title>Quản lý nhân viên</title>
 
     <link
         rel="stylesheet"
         href="styles.css"
     >
+
 </head>
 
-<body>
+
+<body class="admin-body">
+
 
 <div class="admin-page">
 
-    <!-- ==================== ADMIN LOGIN ==================== -->
+
+    <!-- ==========================================
+         ADMIN LOGIN
+    =========================================== -->
 
     <div
         id="adminLogin"
         class="admin-card"
     >
 
-        <h1>THOR ADMIN</h1>
+        <h1>
+            Quản lý nhân viên
+        </h1>
+
 
         <p class="admin-subtitle">
-            Quản lý nhân viên
+            Đăng nhập quản trị
         </p>
+
 
         <input
             id="adminEmail"
             type="email"
-            autocomplete="username"
             placeholder="Email Admin"
+            autocomplete="username"
         >
+
 
         <input
             id="adminPassword"
             type="password"
-            autocomplete="current-password"
             placeholder="Mật khẩu"
+            autocomplete="current-password"
         >
+
 
         <button
             id="adminLoginButton"
+            class="button-green"
             type="button"
         >
             Đăng nhập
         </button>
+
 
         <div
             id="adminLoginMessage"
@@ -63,12 +93,18 @@
     </div>
 
 
-    <!-- ==================== ADMIN PANEL ==================== -->
+
+    <!-- ==========================================
+         ADMIN PANEL
+    =========================================== -->
 
     <div
         id="adminPanel"
         class="admin-card hidden"
     >
+
+
+        <!-- HEADER -->
 
         <div class="admin-title">
 
@@ -76,10 +112,11 @@
                 Quản lý nhân viên
             </h1>
 
+
             <button
                 id="adminLogout"
-                type="button"
                 class="button-gray"
+                type="button"
             >
                 Đăng xuất
             </button>
@@ -87,7 +124,10 @@
         </div>
 
 
-        <!-- ==================== FORM NHÂN VIÊN ==================== -->
+
+        <!-- ======================================
+             FORM
+        ======================================= -->
 
         <div class="admin-form">
 
@@ -95,19 +135,21 @@
                 Thêm / sửa nhân viên
             </h2>
 
+
             <input
                 id="employeeId"
-                type="text"
-                autocomplete="off"
                 placeholder="Mã nhân viên"
+                autocomplete="off"
+                autocapitalize="characters"
             >
+
 
             <input
                 id="employeeName"
-                type="text"
-                autocomplete="off"
                 placeholder="Tên nhân viên"
+                autocomplete="off"
             >
+
 
             <select id="employeeRole">
 
@@ -122,9 +164,10 @@
             </select>
 
 
-            <label for="startDate">
+            <label>
                 Ngày bắt đầu
             </label>
+
 
             <input
                 id="startDate"
@@ -132,9 +175,10 @@
             >
 
 
-            <label for="endDate">
+            <label>
                 Ngày hết hạn
             </label>
+
 
             <input
                 id="endDate"
@@ -159,16 +203,17 @@
 
                 <button
                     id="saveUser"
-                    type="button"
                     class="button-green"
+                    type="button"
                 >
                     Lưu nhân viên
                 </button>
 
+
                 <button
                     id="clearForm"
-                    type="button"
                     class="button-gray"
+                    type="button"
                 >
                     Xóa form
                 </button>
@@ -178,11 +223,15 @@
         </div>
 
 
-        <!-- ==================== DANH SÁCH ==================== -->
+
+        <!-- ======================================
+             USER LIST
+        ======================================= -->
 
         <h2>
             Danh sách nhân viên
         </h2>
+
 
         <div
             id="usersList"
@@ -191,17 +240,20 @@
             Đang tải...
         </div>
 
+
     </div>
+
 
 </div>
 
 
-<!-- ==================== JAVASCRIPT ==================== -->
 
 <script
     type="module"
     src="./admin.js"
 ></script>
 
+
 </body>
+
 </html>
