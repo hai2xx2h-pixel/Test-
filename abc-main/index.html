@@ -3,90 +3,88 @@
 
 <head>
 
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
 
-    <meta
-        name="viewport"
-        content="width=device-width,
-        initial-scale=1.0,
-        maximum-scale=1.0,
-        user-scalable=no,
-        viewport-fit=cover"
-    >
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
-    <meta
-        name="apple-mobile-web-app-capable"
-        content="yes"
-    >
+    <meta http-equiv="Cache-Control"
+        content="no-cache, no-store, must-revalidate" />
 
-    <meta
-        name="apple-mobile-web-app-status-bar-style"
-        content="default"
-    >
+    <meta http-equiv="Pragma"
+        content="no-cache" />
 
-    <meta
-        name="theme-color"
-        content="#e2e4e9"
-    >
+    <meta http-equiv="Expires"
+        content="0" />
 
-    <link
-        rel="apple-touch-icon"
-        href="icon.png"
-    >
+    <meta name="apple-mobile-web-app-capable"
+        content="yes">
+
+    <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+
+    <meta name="theme-color"
+        content="#2f3347">
+
+
+    <!-- QR GIỮ NGUYÊN -->
+
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+
+
+    <link rel="apple-touch-icon"
+        href="icon.png">
+
+
+    <link rel="stylesheet"
+        href="styles.css">
+
 
     <title>二维码通行</title>
-
-    <link
-        rel="stylesheet"
-        href="styles.css"
-    >
 
 </head>
 
 
 <body>
 
-    <div class="top-status-bar"></div>
 
+    <!-- ==============================
+         LOGIN
+    =============================== -->
 
-    <!-- LOGIN -->
-
-    <section
-        id="loginScreen"
-        class="login-screen"
-    >
+    <div id="loginScreen"
+         class="login-screen">
 
         <div class="login-box">
 
-            <div class="login-logo">
-                <img
-                    src="Logo.jpg"
-                    alt="Logo"
-                >
+            <img
+                src="Logo.jpg"
+                class="login-logo"
+                alt="Logo"
+            >
+
+            <div class="login-title">
+                THOR
             </div>
 
-
-            <h1>
-                THOR
-            </h1>
-
-
-            <p class="login-subtitle">
+            <div class="login-subtitle">
                 员工身份验证
-            </p>
+            </div>
 
 
             <input
                 id="employeeCodeInput"
+                class="employee-input"
                 type="text"
+                placeholder="请输入员工编号"
                 autocomplete="off"
                 autocapitalize="characters"
-                placeholder="请输入员工编号"
             >
 
 
             <button
                 id="loginButton"
+                class="login-button"
             >
                 确认
             </button>
@@ -99,26 +97,33 @@
 
         </div>
 
-    </section>
+    </div>
 
 
-    <!-- APP -->
 
-    <main
-        id="appScreen"
-        class="app-screen hidden"
-    >
+    <!-- ==============================
+         MAIN APP
+    =============================== -->
 
-        <div class="header">
+    <div id="appScreen"
+         class="app-screen hidden">
 
-            <span id="employeeHeader">
-                --
-            </span>
 
+        <!-- TÊN NHÂN VIÊN -->
+
+        <div
+            class="header"
+            id="employeeHeader"
+        >
+            --
         </div>
 
 
+
+        <!-- CARD -->
+
         <div class="card">
+
 
             <div
                 class="card-header"
@@ -131,12 +136,17 @@
 
 
                 <div class="circle1"></div>
+
                 <div class="circle2"></div>
 
             </div>
 
 
+
             <div class="card-body">
+
+
+                <!-- THỜI GIAN HIỆN TẠI -->
 
                 <div
                     class="time"
@@ -146,19 +156,18 @@
                 </div>
 
 
-                <div
-                    id="qrcode"
-                >
-                    <div class="qr-placeholder">
-                        QR DEMO
-                    </div>
-                </div>
+
+                <!-- ======================
+                     QR GIỮ NGUYÊN
+                ======================= -->
+
+                <div id="qrcode"></div>
 
 
                 <div class="refresh">
 
                     <span
-                        id="refreshButton"
+                        onclick="generateQRCode(event)"
                         class="refresh-title"
                     >
                         刷新二维码
@@ -166,6 +175,9 @@
 
                 </div>
 
+
+
+                <!-- TIMER -->
 
                 <div class="status-box">
 
@@ -183,25 +195,24 @@
 
                 </div>
 
+
             </div>
 
         </div>
 
 
+
+        <!-- NOTE -->
+
         <div class="note">
 
-            <span id="userName">
-                --
-            </span>
-
-            <br>
-
-            <span id="accountStatus">
-                --
-            </span>
+            尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
 
         </div>
 
+
+
+        <!-- LOGOUT -->
 
         <button
             id="logoutButton"
@@ -210,13 +221,16 @@
             退出登录
         </button>
 
-    </main>
+
+    </div>
+
 
 
     <script
         type="module"
         src="app.js"
     ></script>
+
 
 </body>
 
