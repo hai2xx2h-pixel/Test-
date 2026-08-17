@@ -2,7 +2,6 @@
 <html lang="vi">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -16,53 +15,45 @@
         rel="stylesheet"
         href="styles.css"
     >
-
 </head>
-
 
 <body>
 
-
 <div class="admin-page">
 
-
-    <!-- ADMIN LOGIN -->
+    <!-- ==================== ADMIN LOGIN ==================== -->
 
     <div
         id="adminLogin"
         class="admin-card"
     >
 
-        <h1>
-            THOR ADMIN
-        </h1>
-
+        <h1>THOR ADMIN</h1>
 
         <p class="admin-subtitle">
             Quản lý nhân viên
         </p>
 
-
         <input
             id="adminEmail"
             type="email"
+            autocomplete="username"
             placeholder="Email Admin"
         >
-
 
         <input
             id="adminPassword"
             type="password"
+            autocomplete="current-password"
             placeholder="Mật khẩu"
         >
 
-
         <button
             id="adminLoginButton"
+            type="button"
         >
             Đăng nhập
         </button>
-
 
         <div
             id="adminLoginMessage"
@@ -72,14 +63,12 @@
     </div>
 
 
-
-    <!-- ADMIN PANEL -->
+    <!-- ==================== ADMIN PANEL ==================== -->
 
     <div
         id="adminPanel"
         class="admin-card hidden"
     >
-
 
         <div class="admin-title">
 
@@ -87,9 +76,9 @@
                 Quản lý nhân viên
             </h1>
 
-
             <button
                 id="adminLogout"
+                type="button"
                 class="button-gray"
             >
                 Đăng xuất
@@ -98,8 +87,7 @@
         </div>
 
 
-
-        <!-- FORM -->
+        <!-- ==================== FORM NHÂN VIÊN ==================== -->
 
         <div class="admin-form">
 
@@ -107,22 +95,21 @@
                 Thêm / sửa nhân viên
             </h2>
 
-
             <input
                 id="employeeId"
+                type="text"
+                autocomplete="off"
                 placeholder="Mã nhân viên"
             >
 
-
             <input
                 id="employeeName"
+                type="text"
+                autocomplete="off"
                 placeholder="Tên nhân viên"
             >
 
-
-            <select
-                id="employeeRole"
-            >
+            <select id="employeeRole">
 
                 <option value="user">
                     User
@@ -135,10 +122,9 @@
             </select>
 
 
-            <label>
+            <label for="startDate">
                 Ngày bắt đầu
             </label>
-
 
             <input
                 id="startDate"
@@ -146,10 +132,9 @@
             >
 
 
-            <label>
+            <label for="endDate">
                 Ngày hết hạn
             </label>
-
 
             <input
                 id="endDate"
@@ -157,9 +142,7 @@
             >
 
 
-            <select
-                id="employeeColor"
-            >
+            <select id="employeeColor">
 
                 <option value="yellow">
                     Vàng
@@ -176,14 +159,15 @@
 
                 <button
                     id="saveUser"
+                    type="button"
                     class="button-green"
                 >
                     Lưu nhân viên
                 </button>
 
-
                 <button
                     id="clearForm"
+                    type="button"
                     class="button-gray"
                 >
                     Xóa form
@@ -194,13 +178,11 @@
         </div>
 
 
-
-        <!-- LIST -->
+        <!-- ==================== DANH SÁCH ==================== -->
 
         <h2>
             Danh sách nhân viên
         </h2>
-
 
         <div
             id="usersList"
@@ -209,19 +191,17 @@
             Đang tải...
         </div>
 
-
     </div>
 
 </div>
 
 
+<!-- ==================== JAVASCRIPT ==================== -->
 
 <script
     type="module"
-    src="admin.js"
+    src="./admin.js"
 ></script>
 
-
 </body>
-
 </html>
