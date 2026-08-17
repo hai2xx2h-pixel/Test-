@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html
+    lang="zh"
+    class="app-booting"
+>
 
 <head>
 
@@ -43,18 +46,23 @@
 
     <!-- =================================================
          BOOT
-         Tránh hiện LOGIN chớp lên trước khi app khôi phục
+         Ẩn trang trong lúc app khôi phục phiên
     ================================================== -->
 
     <style>
+
+        html.app-booting,
         html.app-booting body {
+
             visibility: hidden;
+
         }
+
     </style>
 
 
     <!-- =================================================
-         QR CODE
+         QR CODE LIBRARY
          GIỮ NGUYÊN
     ================================================== -->
 
@@ -63,11 +71,19 @@
     ></script>
 
 
+    <!-- =================================================
+         ICON
+    ================================================== -->
+
     <link
         rel="apple-touch-icon"
         href="icon.png"
     >
 
+
+    <!-- =================================================
+         CSS
+    ================================================== -->
 
     <link
         rel="stylesheet"
@@ -93,6 +109,7 @@
     >
 
         <div class="login-box">
+
 
             <img
                 src="Logo.jpg"
@@ -136,6 +153,7 @@
                 class="login-message"
             ></div>
 
+
         </div>
 
     </div>
@@ -153,7 +171,7 @@
 
 
         <!-- =================================================
-             NHÂN VIÊN
+             EMPLOYEE HEADER
         ================================================== -->
 
         <div
@@ -166,7 +184,7 @@
 
 
         <!-- =================================================
-             CARD
+             QR CARD
         ================================================== -->
 
         <div class="card">
@@ -197,7 +215,9 @@
             <div class="card-body">
 
 
-                <!-- THỜI GIAN -->
+                <!-- =================================================
+                     CURRENT TIME
+                ================================================== -->
 
                 <div
                     class="time"
@@ -209,11 +229,13 @@
 
 
                 <!-- =================================================
-                     QR CODE
-                     GIỮ NGUYÊN
+                     QR
+                     Kích thước CSS: 220 × 220
                 ================================================== -->
 
-                <div id="qrcode"></div>
+                <div
+                    id="qrcode"
+                ></div>
 
 
 
@@ -226,6 +248,7 @@
                     <span
                         id="refreshQRCode"
                         class="refresh-title"
+                        role="button"
                     >
                         刷新二维码
                     </span>
@@ -235,10 +258,11 @@
 
 
                 <!-- =================================================
-                     TIMER
+                     STATUS / TIMER
                 ================================================== -->
 
                 <div class="status-box">
+
 
                     <div class="status-label">
                         已生效
@@ -251,6 +275,7 @@
                     >
                         00:00:00
                     </div>
+
 
                 </div>
 
@@ -277,23 +302,27 @@
 
 
     <!-- =================================================
-         BOOTSTRAP
+         INITIAL BOOT
          
-         Kiểm tra nhanh localStorage trước khi app.js
-         chạy để tránh hiện màn hình LOGIN chớp lên.
+         Chỉ quyết định giao diện ban đầu dựa trên
+         employeeId đã lưu.
+         
+         Firebase vẫn được app.js kiểm tra phía sau.
     ================================================== -->
 
     <script>
+
         (function () {
 
             try {
 
-                const employeeKey =
+                const EMPLOYEE_KEY =
                     "thor_employee_id";
+
 
                 const savedEmployee =
                     localStorage.getItem(
-                        employeeKey
+                        EMPLOYEE_KEY
                     );
 
 
@@ -311,7 +340,7 @@
 
                 /*
                  * Không có mạng:
-                 * hiện LOGIN.
+                 * Hiện login.
                  */
 
                 if (
@@ -328,12 +357,17 @@
 
                 }
 
+
                 /*
-                 * Có employee:
-                 * tạm thời hiện APP.
+                 * Đã có employee:
                  *
-                 * app.js sẽ kiểm tra Firebase
-                 * và activeSession ngay sau đó.
+                 * Hiện app tạm thời.
+                 *
+                 * app.js sẽ:
+                 *
+                 * 1. Lấy cache
+                 * 2. Hiện QR ngay
+                 * 3. Kiểm tra Firebase
                  */
 
                 else if (
@@ -350,9 +384,9 @@
 
                 }
 
+
                 /*
-                 * Chưa có employee:
-                 * hiện LOGIN.
+                 * Chưa đăng nhập:
                  */
 
                 else {
@@ -364,6 +398,7 @@
                     appScreen.classList.add(
                         "hidden"
                     );
+
                 }
 
 
@@ -374,15 +409,55 @@
                     error
                 );
 
+
+                /*
+                 * An toàn:
+                 * nếu boot lỗi thì hiện login.
+                 */
+
+                const loginScreen =
+                    document.getElementById(
+                        "loginScreen"
+                    );
+
+
+                const appScreen =
+                    document.getElementById(
+                        "appScreen"
+                    );
+
+
+                if (
+                    loginScreen
+                ) {
+
+                    loginScreen.classList.remove(
+                        "hidden"
+                    );
+
+                }
+
+
+                if (
+                    appScreen
+                ) {
+
+                    appScreen.classList.add(
+                        "hidden"
+                    );
+
+                }
+
             }
 
         })();
+
     </script>
 
 
 
     <!-- =================================================
-         APP JAVASCRIPT
+         APP JS
     ================================================== -->
 
     <script
@@ -392,16 +467,10 @@
 
 
     <!-- =================================================
-         HIỆN TRANG SAU KHI BOOT
+         END BOOT
     ================================================== -->
 
     <script>
-        /*
-         * app.js sẽ xử lý việc chuyển LOGIN/APP.
-         *
-         * Ở đây chỉ bỏ trạng thái boot
-         * sau khi DOM đã sẵn sàng.
-         */
 
         window.addEventListener(
             "load",
@@ -409,10 +478,34 @@
 
                 document.documentElement
                     .classList
-                    .remove("app-booting");
+                    .remove(
+                        "app-booting"
+                    );
 
             }
         );
+
+
+        /*
+         * Fallback:
+         *
+         * Nếu load event không chạy do môi trường
+         * PWA/Safari đặc biệt, vẫn bỏ boot sau 5 giây.
+         */
+
+        setTimeout(
+            function () {
+
+                document.documentElement
+                    .classList
+                    .remove(
+                        "app-booting"
+                    );
+
+            },
+            5000
+        );
+
     </script>
 
 
