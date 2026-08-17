@@ -1,3 +1,7 @@
+/* =====================================================
+   GLOBAL
+===================================================== */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -6,19 +10,17 @@
 }
 
 
-/* =====================================================
-   HTML / BODY
-===================================================== */
-
 html,
 body {
-
     width: 100%;
     height: 100%;
 
     overflow: hidden;
 
-    background-color: #2f3347;
+    /*
+     * MÀU VÙNG TAI THỎ / STATUS BAR
+     */
+    background-color: #e3e4e9;
 
     -webkit-user-select: none;
     user-select: none;
@@ -28,7 +30,6 @@ body {
 
 
 body {
-
     position: absolute;
 
     top: 0;
@@ -49,6 +50,9 @@ body {
         STHeiti,
         sans-serif;
 
+    /*
+     * NỀN APP
+     */
     background-image:
         url("background.png");
 
@@ -61,17 +65,29 @@ body {
     background-size:
         cover;
 
-    color: white;
+    color:
+        white;
 
-    display: flex;
+    display:
+        flex;
 
-    flex-direction: column;
+    flex-direction:
+        column;
 
-    align-items: center;
+    align-items:
+        center;
 
+    /*
+     * ĐẨY NỘI DUNG LÊN CAO
+     *
+     * So với bản trước:
+     * max(50px, safe-area)
+     * ↓
+     * max(18px, safe-area)
+     */
     padding-top:
         max(
-            50px,
+            18px,
             env(safe-area-inset-top)
         );
 }
@@ -82,21 +98,24 @@ body {
 ===================================================== */
 
 .hidden {
-    display: none !important;
+    display:
+        none !important;
 }
 
 
 /* =====================================================
-   LOGIN
+   LOGIN SCREEN
 ===================================================== */
 
 .login-screen {
+    position:
+        fixed;
 
-    position: fixed;
+    inset:
+        0;
 
-    inset: 0;
-
-    z-index: 999;
+    z-index:
+        999;
 
     background:
         #2f3347;
@@ -113,7 +132,8 @@ body {
     background-size:
         cover;
 
-    display: flex;
+    display:
+        flex;
 
     justify-content:
         center;
@@ -127,10 +147,11 @@ body {
 
 
 .login-box {
+    width:
+        100%;
 
-    width: 100%;
-
-    max-width: 330px;
+    max-width:
+        330px;
 
     padding:
         28px 24px;
@@ -164,7 +185,6 @@ body {
 
 
 .login-logo {
-
     width:
         65px;
 
@@ -183,7 +203,6 @@ body {
 
 
 .login-title {
-
     font-size:
         27px;
 
@@ -193,7 +212,6 @@ body {
 
 
 .login-subtitle {
-
     margin-top:
         5px;
 
@@ -209,7 +227,6 @@ body {
 
 
 .employee-input {
-
     width:
         100%;
 
@@ -235,7 +252,7 @@ body {
         #222;
 
     background:
-        #ffffff;
+        #fff;
 
     -webkit-appearance:
         none;
@@ -246,14 +263,12 @@ body {
 
 
 .employee-input:focus {
-
     border-color:
         #38a754;
 }
 
 
 .login-button {
-
     width:
         100%;
 
@@ -273,7 +288,7 @@ body {
         #38a754;
 
     color:
-        #ffffff;
+        #fff;
 
     font-size:
         15px;
@@ -287,21 +302,18 @@ body {
 
 
 .login-button:active {
-
     opacity:
         0.85;
 }
 
 
 .login-button:disabled {
-
     opacity:
         0.6;
 }
 
 
 .login-message {
-
     min-height:
         20px;
 
@@ -324,15 +336,14 @@ body {
 ===================================================== */
 
 .app-screen {
-
     width:
+        100%;
+
+    height:
         100%;
 
     min-height:
         100%;
-
-    height:
-        auto;
 
     display:
         flex;
@@ -342,16 +353,17 @@ body {
 
     align-items:
         center;
+
+    padding-top:
+        0;
 }
 
 
 /* =====================================================
    TOP STATUS BAR
-   Giữ để tương thích nếu index có dùng
 ===================================================== */
 
 .top-status-bar {
-
     width:
         100%;
 
@@ -359,7 +371,7 @@ body {
         44px;
 
     background-color:
-        #e2e4e9;
+        #e3e4e9;
 
     flex-shrink:
         0;
@@ -367,13 +379,12 @@ body {
 
 
 /* =====================================================
-   HEADER NHÂN VIÊN
+   EMPLOYEE HEADER
 ===================================================== */
 
 .header {
-
     margin-top:
-        25px;
+        18px;
 
     font-size:
         17px;
@@ -398,27 +409,13 @@ body {
 }
 
 
-/*
- * Nếu app.js dùng header hiện tại
- * và không có top-status-bar,
- * vẫn giữ khoảng cách tương đối giống bản cũ.
- */
-
-.app-screen .header {
-
-    margin-top:
-        25px;
-}
-
-
 /* =====================================================
    CARD
 ===================================================== */
 
 .card {
-
     margin-top:
-        20px;
+        16px;
 
     width:
         84%;
@@ -448,7 +445,6 @@ body {
 ===================================================== */
 
 .card-header {
-
     background-color:
         #f2c75b;
 
@@ -459,7 +455,7 @@ body {
         center;
 
     color:
-        #ffffff;
+        #fff;
 
     font-size:
         14px;
@@ -498,7 +494,6 @@ body {
 
 
 #headerText {
-
     display:
         block;
 
@@ -513,7 +508,6 @@ body {
 
 .circle1,
 .circle2 {
-
     position:
         absolute;
 
@@ -538,14 +532,12 @@ body {
 
 
 .circle1 {
-
     left:
         -6px;
 }
 
 
 .circle2 {
-
     right:
         -6px;
 }
@@ -556,9 +548,8 @@ body {
 ===================================================== */
 
 .card-body {
-
     background-color:
-        #ffffff;
+        #fff;
 
     padding:
         16px 15px 14px 15px;
@@ -567,7 +558,7 @@ body {
         center;
 
     color:
-        #000000;
+        #000;
 
     border-bottom-left-radius:
         8px;
@@ -587,11 +578,10 @@ body {
 
 
 /* =====================================================
-   TIME
+   CURRENT TIME
 ===================================================== */
 
 .time {
-
     font-size:
         14px;
 
@@ -599,7 +589,7 @@ body {
         300;
 
     color:
-        #111111;
+        #111;
 
     margin-bottom:
         12px;
@@ -619,12 +609,11 @@ body {
 
 
 /* =====================================================
-   QR
-   ĐÚNG KÍCH THƯỚC GIAO DIỆN CŨ: 220 × 220
+   QR CODE
+   GIỮ ĐÚNG 220 × 220
 ===================================================== */
 
 #qrcode {
-
     width:
         220px;
 
@@ -635,6 +624,12 @@ body {
         220px;
 
     min-height:
+        220px;
+
+    max-width:
+        220px;
+
+    max-height:
         220px;
 
     margin:
@@ -653,13 +648,12 @@ body {
         hidden;
 
     background:
-        #ffffff;
+        #fff;
 }
 
 
 #qrcode img,
 #qrcode canvas {
-
     width:
         220px !important;
 
@@ -684,11 +678,10 @@ body {
 
 
 /* =====================================================
-   REFRESH
+   REFRESH QR
 ===================================================== */
 
 .refresh {
-
     margin-top:
         14px;
 
@@ -707,7 +700,6 @@ body {
 
 
 .refresh-title {
-
     cursor:
         pointer;
 
@@ -715,7 +707,7 @@ body {
         12px;
 
     color:
-        #666666;
+        #666;
 
     font-weight:
         300;
@@ -729,7 +721,6 @@ body {
 
 
 .refresh-title:active {
-
     opacity:
         0.6;
 }
@@ -740,7 +731,6 @@ body {
 ===================================================== */
 
 .status-box {
-
     margin-top:
         12px;
 
@@ -759,7 +749,6 @@ body {
 
 
 .status-label {
-
     font-size:
         16px;
 
@@ -777,7 +766,6 @@ body {
 
 
 .status-timer {
-
     font-size:
         18px;
 
@@ -799,25 +787,22 @@ body {
 
 
 /* =====================================================
-   GREEN ANIMATION
+   GREEN PULSE
 ===================================================== */
 
 @keyframes pulse-green {
 
     0% {
-
         opacity:
             1;
     }
 
     50% {
-
         opacity:
             0.25;
     }
 
     100% {
-
         opacity:
             1;
     }
@@ -829,7 +814,6 @@ body {
 ===================================================== */
 
 .note {
-
     margin:
         22px 10% 0 10%;
 
@@ -861,11 +845,10 @@ body {
 
 /* =====================================================
    LOGOUT
-   ẨN HOÀN TOÀN - APP KHÔNG DÙNG NÚT NÀY
+   ẨN HOÀN TOÀN
 ===================================================== */
 
 .logout-button {
-
     display:
         none !important;
 }
@@ -876,7 +859,6 @@ body {
 ===================================================== */
 
 .admin-page {
-
     width:
         100%;
 
@@ -890,12 +872,11 @@ body {
         25px 15px;
 
     color:
-        #222222;
+        #222;
 }
 
 
 .admin-card {
-
     background:
         rgba(
             255,
@@ -925,23 +906,20 @@ body {
 
 
 .admin-card h1 {
-
     margin-bottom:
         8px;
 }
 
 
 .admin-card h2 {
-
     margin:
         18px 0 12px;
 }
 
 
 .admin-subtitle {
-
     color:
-        #777777;
+        #777;
 
     margin-bottom:
         20px;
@@ -950,7 +928,6 @@ body {
 
 .admin-card input,
 .admin-card select {
-
     width:
         100%;
 
@@ -970,7 +947,7 @@ body {
         7px;
 
     background:
-        #ffffff;
+        #fff;
 
     font-size:
         14px;
@@ -982,14 +959,12 @@ body {
 
 .admin-card input:focus,
 .admin-card select:focus {
-
     border-color:
         #38a754;
 }
 
 
 .admin-card button {
-
     border:
         none;
 
@@ -1003,7 +978,7 @@ body {
         5px 3px;
 
     color:
-        #ffffff;
+        #fff;
 
     cursor:
         pointer;
@@ -1011,7 +986,6 @@ body {
 
 
 .admin-title {
-
     display:
         flex;
 
@@ -1027,7 +1001,6 @@ body {
 
 
 .admin-form {
-
     margin-top:
         20px;
 
@@ -1043,7 +1016,6 @@ body {
 
 
 .admin-form label {
-
     display:
         block;
 
@@ -1054,47 +1026,41 @@ body {
         13px;
 
     color:
-        #555555;
+        #555;
 }
 
 
 .admin-form-buttons {
-
     margin-top:
         10px;
 }
 
 
 .button-green {
-
     background:
         #38a754 !important;
 }
 
 
 .button-red {
-
     background:
         #d9534f !important;
 }
 
 
 .button-gray {
-
     background:
-        #666666 !important;
+        #666 !important;
 }
 
 
 .users-list {
-
     margin-top:
         10px;
 }
 
 
 .user-row {
-
     display:
         flex;
 
@@ -1116,7 +1082,6 @@ body {
 
 
 .user-info {
-
     flex:
         1;
 
@@ -1126,7 +1091,6 @@ body {
 
 
 .user-name {
-
     font-size:
         16px;
 
@@ -1136,12 +1100,11 @@ body {
 
 
 .user-details {
-
     margin-top:
         5px;
 
     color:
-        #777777;
+        #777;
 
     font-size:
         13px;
@@ -1155,7 +1118,6 @@ body {
 
 
 .user-actions {
-
     display:
         flex;
 
@@ -1168,20 +1130,18 @@ body {
 
 
 /* =====================================================
-   ADMIN RESPONSIVE
+   ADMIN MOBILE
 ===================================================== */
 
 @media (max-width: 600px) {
 
     .admin-card {
-
         padding:
             18px;
     }
 
 
     .admin-title {
-
         align-items:
             flex-start;
 
@@ -1191,7 +1151,6 @@ body {
 
 
     .user-row {
-
         flex-direction:
             column;
 
@@ -1201,7 +1160,6 @@ body {
 
 
     .user-actions {
-
         width:
             100%;
 
@@ -1214,38 +1172,35 @@ body {
 
 /* =====================================================
    SMALL SCREEN
-   Giữ card/QR nhưng tránh tràn nếu màn hình quá thấp
+   Điều chỉnh nhẹ để giống ảnh 2
 ===================================================== */
 
 @media (max-height: 700px) {
 
     body {
-
         padding-top:
             max(
-                25px,
+                12px,
                 env(safe-area-inset-top)
             );
     }
 
 
     .header {
-
         margin-top:
             12px;
     }
 
 
     .card {
-
         margin-top:
             12px;
     }
 
 
     .note {
-
         margin-top:
             14px;
     }
+
 }
