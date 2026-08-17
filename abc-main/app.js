@@ -1,5 +1,7 @@
 import {
-    db
+    db,
+    auth,
+    signInAnonymously
 } from "./firebase.js";
 
 
@@ -8,9 +10,10 @@ import {
     getDoc,
     updateDoc,
     onSnapshot,
+    runTransaction,
     serverTimestamp
 } from
-    "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+    "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 
 /* =====================================================
@@ -53,18 +56,6 @@ const employeeHeader =
     );
 
 
-const userName =
-    document.getElementById(
-        "userName"
-    );
-
-
-const accountStatus =
-    document.getElementById(
-        "accountStatus"
-    );
-
-
 const cardHeader =
     document.getElementById(
         "cardHeader"
@@ -89,18 +80,6 @@ const statusTimer =
     );
 
 
-const qrcode =
-    document.getElementById(
-        "qrcode"
-    );
-
-
-const refreshButton =
-    document.getElementById(
-        "refreshButton"
-    );
-
-
 const logoutButton =
     document.getElementById(
         "logoutButton"
@@ -108,15 +87,15 @@ const logoutButton =
 
 
 /* =====================================================
-   SESSION
+   SESSION STORAGE
 ===================================================== */
-
-const SESSION_KEY =
-    "thor_session_id";
-
 
 const EMPLOYEE_KEY =
     "thor_employee_id";
+
+
+const SESSION_KEY =
+    "thor_session_id";
 
 
 let employeeId =
@@ -135,27 +114,45 @@ let unsubscribeUser =
     null;
 
 
-let timerInterval =
+let clockInterval =
+    null;
+
+
+let timerStart =
     null;
 
 
 /* =====================================================
-   DEVICE SESSION ID
+   UTILITY
 ===================================================== */
 
-function createSessionId() {
+function pad(number) {
 
-    return (
-        crypto.randomUUID() +
-        "-" +
-        Date.now().toString(36)
-    );
+    return String(number)
+        .padStart(2, "0");
 }
 
 
-/* =====================================================
-   DATE
-===================================================== */
+function createSessionId() {
+
+    if (
+        crypto &&
+        crypto.randomUUID
+    ) {
+
+        return crypto.randomUUID();
+
+    }
+
+
+    return (
+        Date.now().toString(36) +
+        Math.random()
+            .toString(36)
+            .substring(2)
+    );
+}
+
 
 function normalizeDate(value) {
 
@@ -170,89 +167,48 @@ function normalizeDate(value) {
     ) {
 
         return value.toDate();
-
     }
 
 
-    if (value instanceof Date) {
-
-        return value;
-
-    }
-
-
-    const date =
+    const result =
         new Date(value);
 
 
     if (
         Number.isNaN(
-            date.getTime()
+            result.getTime()
         )
     ) {
 
         return null;
-
     }
 
 
-    return date;
+    return result;
 }
 
 
 /* =====================================================
-   CHECK DATE
+   FIREBASE ANONYMOUS LOGIN
 ===================================================== */
 
-function checkDateRange(user) {
-
-    const now =
-        new Date();
-
-
-    const start =
-        normalizeDate(
-            user.startDate
-        );
-
-
-    const end =
-        normalizeDate(
-            user.endDate
-        );
-
+async function ensureFirebaseLogin() {
 
     if (
-        start &&
-        now < start
+        auth.currentUser
     ) {
 
-        return {
-            ok: false,
-            message:
-                "Tài khoản chưa đến thời gian sử dụng."
-        };
-
+        return auth.currentUser;
     }
 
 
-    if (
-        end &&
-        now > end
-    ) {
-
-        return {
-            ok: false,
-            message:
-                "Tài khoản đã hết hạn."
-        };
-
-    }
+    const result =
+        await signInAnonymously(
+            auth
+        );
 
 
-    return {
-        ok: true
-    };
+    return result.user;
 }
 
 
@@ -270,7 +226,7 @@ async function login() {
 
     if (!code) {
 
-        showLoginError(
+        showLoginMessage(
             "请输入员工编号"
         );
 
@@ -282,11 +238,15 @@ async function login() {
         true;
 
 
-    loginMessage.textContent =
-        "正在验证...";
+    showLoginMessage(
+        "正在验证..."
+    );
 
 
     try {
+
+        await ensureFirebaseLogin();
+
 
         const userRef =
             doc(
@@ -309,7 +269,6 @@ async function login() {
             throw new Error(
                 "Mã nhân viên không tồn tại."
             );
-
         }
 
 
@@ -322,51 +281,123 @@ async function login() {
         ) {
 
             throw new Error(
-                "Tài khoản đã bị vô hiệu hóa."
+                "Tài khoản đã bị khóa."
             );
-
         }
 
 
-        const dateCheck =
-            checkDateRange(
-                user
+        const now =
+            new Date();
+
+
+        const start =
+            normalizeDate(
+                user.startDate
+            );
+
+
+        const end =
+            normalizeDate(
+                user.endDate
             );
 
 
         if (
-            !dateCheck.ok
+            start &&
+            now < start
         ) {
 
             throw new Error(
-                dateCheck.message
+                "Tài khoản chưa đến thời gian sử dụng."
             );
+        }
 
+
+        if (
+            end &&
+            now > end
+        ) {
+
+            throw new Error(
+                "Tài khoản đã hết hạn."
+            );
         }
 
 
         /*
-         * Mỗi lần đăng nhập tạo
-         * session ID mới.
+         * MỖI MÃ CHỈ 1 THIẾT BỊ
          *
-         * Nếu thiết bị khác đăng nhập
-         * bằng cùng mã, session cũ
-         * sẽ không còn hợp lệ.
+         * Nếu activeSession đã tồn tại
+         * và không phải session hiện tại
+         * thì từ chối thiết bị mới.
          */
 
         const newSession =
             createSessionId();
 
 
-        await updateDoc(
-            userRef,
-            {
+        await runTransaction(
+            db,
+            async transaction => {
 
-                activeSession:
-                    newSession,
+                const fresh =
+                    await transaction.get(
+                        userRef
+                    );
 
-                lastLogin:
-                    serverTimestamp()
+
+                if (
+                    !fresh.exists()
+                ) {
+
+                    throw new Error(
+                        "Nhân viên không tồn tại."
+                    );
+                }
+
+
+                const freshUser =
+                    fresh.data();
+
+
+                if (
+                    freshUser.active !== true
+                ) {
+
+                    throw new Error(
+                        "Tài khoản đã bị khóa."
+                    );
+                }
+
+
+                const currentSession =
+                    freshUser.activeSession ||
+                    null;
+
+
+                if (
+                    currentSession &&
+                    currentSession !== sessionId
+                ) {
+
+                    throw new Error(
+                        "Mã nhân viên này đang được sử dụng trên thiết bị khác."
+                    );
+                }
+
+
+                transaction.update(
+                    userRef,
+                    {
+
+                        activeSession:
+                            newSession,
+
+                        lastLogin:
+                            serverTimestamp()
+
+                    }
+                );
 
             }
         );
@@ -392,22 +423,26 @@ async function login() {
         );
 
 
+        loginMessage.textContent =
+            "";
+
+
         openApp();
+
 
     } catch (error) {
 
         console.error(error);
 
-        showLoginError(
+        showLoginMessage(
             error.message ||
-            "Không thể đăng nhập."
+            "Đăng nhập thất bại."
         );
 
     } finally {
 
         loginButton.disabled =
             false;
-
     }
 }
 
@@ -428,16 +463,15 @@ async function openApp() {
     );
 
 
-    await loadUser();
-
-
     startClock();
 
+
+    await loadUser();
 }
 
 
 /* =====================================================
-   LOAD USER
+   LOAD USER REALTIME
 ===================================================== */
 
 async function loadUser() {
@@ -447,7 +481,7 @@ async function loadUser() {
         !sessionId
     ) {
 
-        logout();
+        showLogin();
 
         return;
     }
@@ -461,12 +495,13 @@ async function loadUser() {
         );
 
 
-    /*
-     * realtime listener
-     *
-     * Admin thay đổi dữ liệu
-     * → app nhận thay đổi.
-     */
+    if (
+        unsubscribeUser
+    ) {
+
+        unsubscribeUser();
+    }
+
 
     unsubscribeUser =
         onSnapshot(
@@ -477,7 +512,9 @@ async function loadUser() {
                     !snapshot.exists()
                 ) {
 
-                    logout();
+                    forceLogout(
+                        "Tài khoản không còn tồn tại."
+                    );
 
                     return;
                 }
@@ -488,7 +525,7 @@ async function loadUser() {
 
 
                 /*
-                 * Kiểm tra session
+                 * KIỂM TRA SESSION
                  */
 
                 if (
@@ -496,53 +533,71 @@ async function loadUser() {
                     sessionId
                 ) {
 
-                    alert(
-                        "Phiên đăng nhập đã được sử dụng trên thiết bị khác."
+                    forceLogout(
+                        "Phiên đăng nhập đã bị thu hồi hoặc mã đã được sử dụng trên thiết bị khác."
                     );
-
-                    logout();
 
                     return;
                 }
 
 
                 /*
-                 * Kiểm tra active
+                 * KIỂM TRA ACTIVE
                  */
 
                 if (
                     user.active !== true
                 ) {
 
-                    alert(
+                    forceLogout(
                         "Tài khoản đã bị khóa."
                     );
-
-                    logout();
 
                     return;
                 }
 
 
                 /*
-                 * Kiểm tra thời gian
+                 * KIỂM TRA HẠN
                  */
 
-                const dateCheck =
-                    checkDateRange(
-                        user
+                const now =
+                    new Date();
+
+
+                const start =
+                    normalizeDate(
+                        user.startDate
+                    );
+
+
+                const end =
+                    normalizeDate(
+                        user.endDate
                     );
 
 
                 if (
-                    !dateCheck.ok
+                    start &&
+                    now < start
                 ) {
 
-                    alert(
-                        dateCheck.message
+                    forceLogout(
+                        "Tài khoản chưa đến thời gian sử dụng."
                     );
 
-                    logout();
+                    return;
+                }
+
+
+                if (
+                    end &&
+                    now > end
+                ) {
+
+                    forceLogout(
+                        "Tài khoản đã hết hạn."
+                    );
 
                     return;
                 }
@@ -553,9 +608,11 @@ async function loadUser() {
                 );
 
             },
+
             error => {
 
                 console.error(
+                    "Firestore:",
                     error
                 );
 
@@ -575,69 +632,80 @@ function renderUser(user) {
         `(${user.name || ""})`;
 
 
-    userName.textContent =
-        user.name ||
-        "";
-
-
-    accountStatus.textContent =
-        user.active
-            ? "Active"
-            : "Inactive";
-
-
     /*
-     * Màu được lưu trên server.
+     * MÀU
      */
 
-    applyColor(
-        user.color === "green"
+    const green =
+        user.color === "green";
+
+
+    applyHeaderColor(
+        green
     );
 
 
     /*
-     * Timer
+     * TIMER
      */
 
-    if (
-        user.timerStart
-    ) {
-
-        startTimer(
-            normalizeDate(
-                user.timerStart
-            )
+    timerStart =
+        normalizeDate(
+            user.timerStart
         );
 
+
+    if (
+        !timerStart
+    ) {
+
+        timerStart =
+            new Date();
+
+
+        /*
+         * Trường hợp user cũ chưa có
+         * timerStart.
+         */
+
+        updateDoc(
+            doc(
+                db,
+                "users",
+                employeeId
+            ),
+            {
+
+                timerStart:
+                    timerStart
+
+            }
+        ).catch(
+            console.error
+        );
     }
 
 
-    /*
-     * QR demo
-     */
-
-    generateDemoQR(
-        user.employeeId ||
-        employeeId,
-        user.name || ""
-    );
+    updateTimer();
 }
 
 
 /* =====================================================
-   COLOR
+   HEADER COLOR
 ===================================================== */
 
-function applyColor(isGreen) {
+function applyHeaderColor(
+    green
+) {
 
-    if (isGreen) {
+    if (green) {
 
         cardHeader.style.backgroundColor =
             "#38a754";
 
 
         headerText.textContent =
-            "DEMO - GREEN STATE";
+            "将二维码对准扫描器刷码进场";
 
     } else {
 
@@ -646,7 +714,117 @@ function applyColor(isGreen) {
 
 
         headerText.textContent =
-            "DEMO - YELLOW STATE";
+            "将二维码对准扫描器刷码出场";
+    }
+}
+
+
+/* =====================================================
+   TOGGLE COLOR
+===================================================== */
+
+async function toggleHeaderColor() {
+
+    if (
+        !employeeId ||
+        !sessionId
+    ) {
+
+        return;
+    }
+
+
+    const userRef =
+        doc(
+            db,
+            "users",
+            employeeId
+        );
+
+
+    try {
+
+        await runTransaction(
+            db,
+            async transaction => {
+
+                const snapshot =
+                    await transaction.get(
+                        userRef
+                    );
+
+
+                if (
+                    !snapshot.exists()
+                ) {
+
+                    throw new Error(
+                        "Tài khoản không tồn tại."
+                    );
+                }
+
+
+                const user =
+                    snapshot.data();
+
+
+                /*
+                 * Không cho phiên cũ
+                 * đổi trạng thái.
+                 */
+
+                if (
+                    user.activeSession !==
+                    sessionId
+                ) {
+
+                    throw new Error(
+                        "Phiên đã hết hiệu lực."
+                    );
+                }
+
+
+                const newGreen =
+                    user.color !==
+                    "green";
+
+
+                /*
+                 * QUAN TRỌNG:
+                 *
+                 * Mỗi lần vàng ↔ xanh
+                 * timerStart được reset.
+                 */
+
+                transaction.update(
+                    userRef,
+                    {
+
+                        color:
+                            newGreen
+                                ? "green"
+                                : "yellow",
+
+                        timerStart:
+                            serverTimestamp(),
+
+                        updatedAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            error.message
+        );
     }
 }
 
@@ -658,49 +836,46 @@ function applyColor(isGreen) {
 function startClock() {
 
     if (
-        timerInterval
+        clockInterval
     ) {
 
         clearInterval(
-            timerInterval
+            clockInterval
         );
-
     }
 
 
-    function update() {
+    function updateClock() {
 
         const now =
             new Date();
 
 
-        currentTime.textContent =
+        const formattedTime =
             `${now.getFullYear()}-` +
-            `${String(
-                now.getMonth() + 1
-            ).padStart(2, "0")}-` +
-            `${String(
-                now.getDate()
-            ).padStart(2, "0")} ` +
-            `${String(
-                now.getHours()
-            ).padStart(2, "0")}:` +
-            `${String(
-                now.getMinutes()
-            ).padStart(2, "0")}:` +
-            `${String(
-                now.getSeconds()
-            ).padStart(2, "0")}`;
+            `${now.getMonth() + 1}-` +
+            `${now.getDate()} ` +
+            `${pad(now.getHours())}:` +
+            `${pad(now.getMinutes())}:` +
+            `${pad(now.getSeconds())}`;
+
+
+        currentTime.textContent =
+            formattedTime;
+
+
+        updateTimer();
     }
 
 
-    update();
+    updateClock();
 
 
-    setInterval(
-        update,
-        1000
-    );
+    clockInterval =
+        setInterval(
+            updateClock,
+            1000
+        );
 }
 
 
@@ -708,166 +883,315 @@ function startClock() {
    TIMER
 ===================================================== */
 
-function startTimer(start) {
+function updateTimer() {
 
-    if (!start) {
+    if (
+        !timerStart
+    ) {
+
+        statusTimer.textContent =
+            "00:00:00";
+
         return;
     }
 
 
-    function updateTimer() {
-
-        const elapsed =
-            Math.max(
-                0,
-                Math.floor(
-                    (
-                        Date.now() -
-                        start.getTime()
-                    ) / 1000
-                )
-            );
-
-
-        const h =
+    const elapsed =
+        Math.max(
+            0,
             Math.floor(
-                elapsed / 3600
-            );
+                (
+                    Date.now() -
+                    timerStart.getTime()
+                ) / 1000
+            )
+        );
 
 
-        const m =
-            Math.floor(
-                (elapsed % 3600) / 60
-            );
+    const hours =
+        Math.floor(
+            elapsed / 3600
+        );
 
 
-        const s =
-            elapsed % 60;
+    const minutes =
+        Math.floor(
+            (elapsed % 3600) / 60
+        );
 
 
-        statusTimer.textContent =
-            `${pad(h)}:` +
-            `${pad(m)}:` +
-            `${pad(s)}`;
-    }
+    const seconds =
+        elapsed % 60;
 
 
-    updateTimer();
-
-
-    setInterval(
-        updateTimer,
-        1000
-    );
-}
-
-
-function pad(value) {
-
-    return String(value)
-        .padStart(2, "0");
+    statusTimer.textContent =
+        `${pad(hours)}:` +
+        `${pad(minutes)}:` +
+        `${pad(seconds)}`;
 }
 
 
 /* =====================================================
-   QR DEMO
+   QR
+   GIỮ NGUYÊN CƠ CHẾ CỦA FILE GỐC
 ===================================================== */
 
-function generateDemoQR(
-    employeeId,
-    name
-) {
-
-    const data =
-        JSON.stringify({
-
-            type: "THOR-DEMO",
-
-            employeeId:
-                employeeId,
-
-            name:
-                name,
-
-            timestamp:
-                Date.now()
-
-        });
+window.generateQRCode =
+    generateQRCode;
 
 
-    qrcode.innerHTML = "";
+function generateQRCode(event) {
+
+    if (
+        event &&
+        event.currentTarget
+    ) {
+
+        event.currentTarget.blur();
+    }
+
+
+    const now =
+        new Date();
+
+
+    const formattedTime =
+        `${now.getFullYear()}-` +
+        `${String(
+            now.getMonth() + 1
+        ).padStart(2, "0")}-` +
+        `${String(
+            now.getDate()
+        ).padStart(2, "0")} ` +
+        `${String(
+            now.getHours()
+        ).padStart(2, "0")}:` +
+        `${String(
+            now.getMinutes()
+        ).padStart(2, "0")}:` +
+        `${String(
+            now.getSeconds()
+        ).padStart(2, "0")}`;
 
 
     /*
-     * QR demo bằng dịch vụ tạo ảnh.
+     * QR GIỮ NGUYÊN CẤU TRÚC.
      *
-     * Không dùng làm mã xác thực
-     * ra/vào thực tế.
+     * employeeId/name lấy từ user
+     * thay vì cố định V25111639.
      */
 
-    const img =
-        document.createElement(
-            "img"
-        );
+    let employeeName =
+        "";
 
 
-    img.alt =
-        "THOR Demo QR";
-
-
-    img.src =
-        "https://api.qrserver.com/v1/create-qr-code/" +
-        "?size=220x220&data=" +
-        encodeURIComponent(
-            data
-        );
-
-
-    qrcode.appendChild(
-        img
-    );
-}
-
-
-refreshButton.addEventListener(
-    "click",
-    async () => {
-
-        if (!employeeId) {
-            return;
-        }
-
-
-        const ref =
-            doc(
+    const userRef =
+        employeeId
+            ? doc(
                 db,
                 "users",
                 employeeId
-            );
+            )
+            : null;
 
 
-        const snapshot =
-            await getDoc(
-                ref
-            );
+    if (!userRef) {
+
+        return;
+    }
 
 
-        if (
-            snapshot.exists()
-        ) {
+    getDoc(userRef)
+        .then(snapshot => {
+
+            if (
+                !snapshot.exists()
+            ) {
+
+                return;
+            }
+
 
             const user =
                 snapshot.data();
 
 
-            generateDemoQR(
-                user.employeeId ||
-                employeeId,
-                user.name || ""
+            employeeName =
+                user.name || "";
+
+
+            const uniqueToken =
+                Math.random()
+                    .toString(36)
+                    .substring(2) +
+                Date.now()
+                    .toString(36);
+
+
+            const accessData =
+                `https://YOUR-AUTHORIZED-DOMAIN/access` +
+                `?id=${encodeURIComponent(employeeId)}` +
+                `&name=${encodeURIComponent(employeeName)}` +
+                `&time=${encodeURIComponent(formattedTime)}` +
+                `&token=${encodeURIComponent(uniqueToken)}`;
+
+
+            const qrcodeElement =
+                document.getElementById(
+                    "qrcode"
+                );
+
+
+            qrcodeElement.innerHTML =
+                "";
+
+
+            new QRCode(
+                qrcodeElement,
+                {
+
+                    text:
+                        accessData,
+
+                    width:
+                        230,
+
+                    height:
+                        230,
+
+                    colorDark:
+                        "#000000",
+
+                    colorLight:
+                        "#ffffff",
+
+                    correctLevel:
+                        QRCode.CorrectLevel.M
+
+                }
             );
 
-        }
+        })
+        .catch(
+            console.error
+        );
+}
 
+
+/* =====================================================
+   HOLD 5 SECONDS
+===================================================== */
+
+let pressTimer =
+    null;
+
+
+const HOLD_DURATION =
+    5000;
+
+
+function startPress(event) {
+
+    /*
+     * Không kích hoạt khi chạm
+     * vào card/QR.
+     */
+
+    if (
+        event.target.closest(
+            ".card"
+        )
+    ) {
+
+        return;
+    }
+
+
+    clearTimeout(
+        pressTimer
+    );
+
+
+    pressTimer =
+        setTimeout(
+            () => {
+
+                toggleHeaderColor();
+
+            },
+            HOLD_DURATION
+        );
+}
+
+
+function cancelPress() {
+
+    if (
+        pressTimer
+    ) {
+
+        clearTimeout(
+            pressTimer
+        );
+
+        pressTimer =
+            null;
+    }
+}
+
+
+document.addEventListener(
+    "touchstart",
+    startPress,
+    {
+        passive: true
+    }
+);
+
+
+document.addEventListener(
+    "touchend",
+    cancelPress
+);
+
+
+document.addEventListener(
+    "touchcancel",
+    cancelPress
+);
+
+
+document.addEventListener(
+    "mousedown",
+    startPress
+);
+
+
+document.addEventListener(
+    "mouseup",
+    cancelPress
+);
+
+
+document.addEventListener(
+    "mouseleave",
+    cancelPress
+);
+
+
+/* =====================================================
+   PREVENT SCROLL
+===================================================== */
+
+document.addEventListener(
+    "touchmove",
+    event => {
+
+        event.preventDefault();
+
+    },
+    {
+        passive: false
     }
 );
 
@@ -876,7 +1200,98 @@ refreshButton.addEventListener(
    LOGOUT
 ===================================================== */
 
-async function logout() {
+logoutButton.addEventListener(
+    "click",
+    async () => {
+
+        /*
+         * Chỉ xóa session nếu session hiện tại
+         * vẫn là session của thiết bị này.
+         */
+
+        try {
+
+            if (
+                employeeId &&
+                sessionId
+            ) {
+
+                const userRef =
+                    doc(
+                        db,
+                        "users",
+                        employeeId
+                    );
+
+
+                const snapshot =
+                    await getDoc(
+                        userRef
+                    );
+
+
+                if (
+                    snapshot.exists()
+                ) {
+
+                    const user =
+                        snapshot.data();
+
+
+                    if (
+                        user.activeSession ===
+                        sessionId
+                    ) {
+
+                        await updateDoc(
+                            userRef,
+                            {
+
+                                activeSession:
+                                    null
+
+                            }
+                        );
+
+                    }
+                }
+            }
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+        }
+
+
+        showLogin();
+    }
+);
+
+
+/* =====================================================
+   FORCE LOGOUT
+===================================================== */
+
+function forceLogout(
+    message
+) {
+
+    alert(
+        message
+    );
+
+
+    showLogin();
+}
+
+
+/* =====================================================
+   SHOW LOGIN
+===================================================== */
+
+function showLogin() {
 
     if (
         unsubscribeUser
@@ -889,8 +1304,29 @@ async function logout() {
     }
 
 
-    employeeId = null;
-    sessionId = null;
+    if (
+        clockInterval
+    ) {
+
+        clearInterval(
+            clockInterval
+        );
+
+        clockInterval =
+            null;
+    }
+
+
+    employeeId =
+        null;
+
+
+    sessionId =
+        null;
+
+
+    timerStart =
+        null;
 
 
     localStorage.removeItem(
@@ -922,17 +1358,11 @@ async function logout() {
 }
 
 
-logoutButton.addEventListener(
-    "click",
-    logout
-);
-
-
 /* =====================================================
-   LOGIN ERROR
+   LOGIN MESSAGE
 ===================================================== */
 
-function showLoginError(
+function showLoginMessage(
     message
 ) {
 
@@ -942,7 +1372,7 @@ function showLoginError(
 
 
 /* =====================================================
-   LOGIN BUTTON
+   EVENTS
 ===================================================== */
 
 loginButton.addEventListener(
@@ -960,8 +1390,56 @@ employeeCodeInput.addEventListener(
         ) {
 
             login();
-
         }
-
     }
 );
+
+
+/* =====================================================
+   AUTO LOGIN
+===================================================== */
+
+async function start() {
+
+    /*
+     * Nếu đã có session cũ,
+     * kiểm tra lại Firebase.
+     */
+
+    if (
+        employeeId &&
+        sessionId
+    ) {
+
+        try {
+
+            await ensureFirebaseLogin();
+
+            await loadUser();
+
+            loginScreen.classList.add(
+                "hidden"
+            );
+
+            appScreen.classList.remove(
+                "hidden"
+            );
+
+            startClock();
+
+            return;
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+            showLogin();
+
+        }
+    }
+}
+
+
+start();
