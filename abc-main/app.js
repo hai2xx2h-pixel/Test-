@@ -64,7 +64,7 @@ const DEVICE_KEY =
 
 
 /* =====================================================
-   GLOBAL STATE
+   STATE
 ===================================================== */
 
 let employeeId =
@@ -85,33 +85,27 @@ let timerStart =
 let loginInProgress =
     false;
 
-let networkLogout =
+let appReady =
+    false;
+
+let offlineHandled =
     false;
 
 
 /* =====================================================
    DEVICE ID
-   QUAN TRỌNG
 ===================================================== */
 
 /*
- * Device ID chỉ tạo MỘT LẦN.
+ * DEVICE ID chỉ tạo 1 lần.
  *
- * Không được tạo lại mỗi lần reload.
+ * Không được xóa khi:
+ * - reload
+ * - vuốt trang
+ * - đăng nhập lại
+ * - mất mạng
  *
- * Vì vậy:
- *
- * Cùng trình duyệt
- *      ↓
- * cùng deviceId
- *
- * Reload / vuốt lại trang
- *      ↓
- * vẫn cùng deviceId
- *
- * Thiết bị khác
- *      ↓
- * deviceId khác
+ * Nhờ vậy Firebase biết đây vẫn là cùng một thiết bị.
  */
 
 function createDeviceId() {
@@ -138,10 +132,6 @@ function createDeviceId() {
     );
 }
 
-
-/* =====================================================
-   INIT DEVICE ID
-===================================================== */
 
 if (!deviceId) {
 
@@ -209,98 +199,22 @@ function normalizeDate(value) {
 
 
 /* =====================================================
-   NETWORK
-===================================================== */
-
-/*
- * Mất mạng:
- *
- * KHÔNG chờ Firebase timeout.
- *
- * Trình duyệt báo offline
- *      ↓
- * chuyển màn login NGAY.
- */
-
-function handleOffline() {
-
-    console.warn(
-        "NETWORK OFFLINE"
-    );
-
-
-    networkLogout =
-        true;
-
-
-    /*
-     * Không cần update Firebase
-     * vì hiện tại đang mất mạng.
-     */
-
-    showLogin();
-
-
-    showLoginMessage(
-        "Mạng đã bị ngắt. Vui lòng kết nối lại và đăng nhập."
-    );
-}
-
-
-/*
- * Khi có mạng lại:
- *
- * KHÔNG tự đăng nhập.
- *
- * Người dùng nhập mã nhân viên
- * và bấm đăng nhập.
- */
-
-function handleOnline() {
-
-    console.log(
-        "NETWORK ONLINE"
-    );
-}
-
-
-/* =====================================================
-   NETWORK EVENTS
-===================================================== */
-
-window.addEventListener(
-    "offline",
-    handleOffline
-);
-
-
-window.addEventListener(
-    "online",
-    handleOnline
-);
-
-
-/* =====================================================
-   FIREBASE LOGIN
+   FIREBASE AUTH
 ===================================================== */
 
 async function ensureFirebaseLogin() {
 
-    if (
-        !navigator.onLine
-    ) {
+    if (auth.currentUser) {
 
-        throw new Error(
-            "Không có kết nối mạng."
-        );
+        return auth.currentUser;
     }
 
 
-    if (
-        auth.currentUser
-    ) {
+    if (!navigator.onLine) {
 
-        return auth.currentUser;
+        throw new Error(
+            "OFFLINE"
+        );
     }
 
 
@@ -318,9 +232,15 @@ async function ensureFirebaseLogin() {
    GET EMPLOYEE
 ===================================================== */
 
-async function getEmployee(
-    code
-) {
+async function getEmployee(code) {
+
+    if (!navigator.onLine) {
+
+        throw new Error(
+            "OFFLINE"
+        );
+    }
+
 
     const userRef =
         doc(
@@ -336,9 +256,7 @@ async function getEmployee(
         );
 
 
-    if (
-        !snapshot.exists()
-    ) {
+    if (!snapshot.exists()) {
 
         throw new Error(
             "Mã nhân viên không tồn tại."
@@ -347,13 +265,8 @@ async function getEmployee(
 
 
     return {
-
-        ref:
-            userRef,
-
-        data:
-            snapshot.data()
-
+        ref: userRef,
+        data: snapshot.data()
     };
 }
 
@@ -362,9 +275,7 @@ async function getEmployee(
    CHECK ACCOUNT
 ===================================================== */
 
-function checkEmployeeAccount(
-    user
-) {
+function checkEmployeeAccount(user) {
 
     if (
         user.active !== true
@@ -416,29 +327,21 @@ function checkEmployeeAccount(
 
 
 /* =====================================================
-   EMPLOYEE LOGIN
+   LOGIN
 ===================================================== */
 
 async function login() {
 
-    if (
-        loginInProgress
-    ) {
+    if (loginInProgress) {
 
         return;
     }
 
 
-    /*
-     * Nếu đang mất mạng
-     */
-
-    if (
-        !navigator.onLine
-    ) {
+    if (!navigator.onLine) {
 
         showLoginMessage(
-            "Không có kết nối mạng."
+            "当前无网络连接"
         );
 
         return;
@@ -477,14 +380,14 @@ async function login() {
     try {
 
         /*
-         * Firebase Auth
+         * Firebase
          */
 
         await ensureFirebaseLogin();
 
 
         /*
-         * Lấy employee
+         * Lấy user
          */
 
         const result =
@@ -498,7 +401,7 @@ async function login() {
 
 
         /*
-         * Kiểm tra tài khoản
+         * Kiểm tra account
          */
 
         checkEmployeeAccount(
@@ -507,9 +410,23 @@ async function login() {
 
 
         /*
-         * =========================================
+         * =============================================
          * KIỂM TRA DEVICE
-         * =========================================
+         * =============================================
+         *
+         * activeSession lưu DEVICE ID.
+         *
+         * Cùng device:
+         *
+         * activeSession === deviceId
+         *
+         * => cho phép đăng nhập lại.
+         *
+         * Device khác:
+         *
+         * activeSession !== deviceId
+         *
+         * => từ chối.
          */
 
         await runTransaction(
@@ -536,32 +453,10 @@ async function login() {
                     freshSnapshot.data();
 
 
-                /*
-                 * ACTIVE
-                 */
-
-                if (
-                    freshUser.active !== true
-                ) {
-
-                    throw new Error(
-                        "Tài khoản đã bị khóa."
-                    );
-                }
-
-
-                /*
-                 * TIME
-                 */
-
                 checkEmployeeAccount(
                     freshUser
                 );
 
-
-                /*
-                 * Session hiện tại
-                 */
 
                 const currentDevice =
                     freshUser.activeSession ||
@@ -569,14 +464,7 @@ async function login() {
 
 
                 /*
-                 * =================================
-                 * CÙNG THIẾT BỊ
-                 * =================================
-                 *
-                 * Nếu activeSession bằng
-                 * deviceId hiện tại:
-                 *
-                 * => cho đăng nhập lại.
+                 * Đang có thiết bị khác
                  */
 
                 if (
@@ -591,9 +479,7 @@ async function login() {
 
 
                 /*
-                 * =================================
-                 * GHI DEVICE ID
-                 * =================================
+                 * Cùng thiết bị hoặc chưa có thiết bị
                  */
 
                 transaction.update(
@@ -611,7 +497,6 @@ async function login() {
 
                     }
                 );
-
             }
         );
 
@@ -630,7 +515,7 @@ async function login() {
         );
 
 
-        networkLogout =
+        offlineHandled =
             false;
 
 
@@ -649,46 +534,51 @@ async function login() {
     } catch (error) {
 
         console.error(
-            "EMPLOYEE LOGIN ERROR:",
+            "LOGIN ERROR:",
             error
         );
 
 
-        let message =
-            error?.message ||
-            "Đăng nhập thất bại.";
-
-
         if (
-            error?.code ===
+            error.message ===
+            "OFFLINE"
+        ) {
+
+            showLoginMessage(
+                "当前无网络连接"
+            );
+
+        } else if (
+            error.code ===
             "permission-denied"
         ) {
 
-            message =
-                "Firebase từ chối quyền truy cập Firestore. Hãy kiểm tra Firestore Rules.";
-        }
+            showLoginMessage(
+                "Firebase 无权限访问，请检查 Firestore Rules"
+            );
 
-
-        if (
-            error?.code ===
+        } else if (
+            error.code ===
             "auth/operation-not-allowed"
         ) {
 
-            message =
-                "Firebase Anonymous Authentication chưa được bật.";
+            showLoginMessage(
+                "Firebase Anonymous Authentication 未开启"
+            );
+
+        } else {
+
+            showLoginMessage(
+                error.message ||
+                "登录失败"
+            );
         }
-
-
-        showLoginMessage(
-            message
-        );
 
 
     } finally {
 
         loginInProgress =
             false;
-
 
         loginButton.disabled =
             false;
@@ -702,18 +592,10 @@ async function login() {
 
 async function openApp() {
 
-    /*
-     * Nếu mất mạng giữa lúc login
-     */
+    if (!navigator.onLine) {
 
-    if (
-        !navigator.onLine
-    ) {
-
-        showLogin();
-
-        showLoginMessage(
-            "Mạng đã bị ngắt."
+        showLogin(
+            "当前无网络连接"
         );
 
         return;
@@ -730,28 +612,47 @@ async function openApp() {
     );
 
 
+    appReady =
+        true;
+
+
     startClock();
 
 
     await loadUser();
 
 
-    generateQRCode();
+    if (
+        employeeId &&
+        navigator.onLine
+    ) {
+
+        generateQRCode();
+    }
 }
 
 
 /* =====================================================
-   LOAD USER REALTIME
+   LOAD USER
 ===================================================== */
 
 async function loadUser() {
 
     if (
-        !employeeId ||
-        !deviceId
+        !employeeId
     ) {
 
         showLogin();
+
+        return;
+    }
+
+
+    if (!navigator.onLine) {
+
+        showLogin(
+            "当前无网络连接"
+        );
 
         return;
     }
@@ -780,6 +681,10 @@ async function loadUser() {
     }
 
 
+    /*
+     * REALTIME
+     */
+
     unsubscribeUser =
         onSnapshot(
 
@@ -787,10 +692,14 @@ async function loadUser() {
 
             snapshot => {
 
+                if (!navigator.onLine) {
+
+                    return;
+                }
+
+
                 /*
-                 * =================================
-                 * USER KHÔNG TỒN TẠI
-                 * =================================
+                 * User bị xóa
                  */
 
                 if (
@@ -810,9 +719,7 @@ async function loadUser() {
 
 
                 /*
-                 * =================================
-                 * DEVICE CHECK
-                 * =================================
+                 * KIỂM TRA DEVICE
                  */
 
                 if (
@@ -821,7 +728,7 @@ async function loadUser() {
                 ) {
 
                     forceLogout(
-                        "Mã nhân viên này đang được sử dụng trên thiết bị khác."
+                        "Thiết bị này không còn giữ quyền đăng nhập."
                     );
 
                     return;
@@ -829,9 +736,7 @@ async function loadUser() {
 
 
                 /*
-                 * =================================
                  * ACTIVE
-                 * =================================
                  */
 
                 if (
@@ -847,9 +752,7 @@ async function loadUser() {
 
 
                 /*
-                 * =================================
-                 * TIME
-                 * =================================
+                 * DATE
                  */
 
                 try {
@@ -869,57 +772,41 @@ async function loadUser() {
 
 
                 /*
-                 * =================================
-                 * RENDER
-                 * =================================
+                 * Render
                  */
 
                 renderUser(
                     user
                 );
-
             },
 
             error => {
 
                 console.error(
-                    "Firestore realtime error:",
+                    "FIRESTORE ERROR:",
                     error
                 );
 
 
                 /*
-                 * Nếu mất mạng thì
-                 * browser offline event
-                 * sẽ xử lý ngay.
+                 * Nếu đang offline,
+                 * xử lý bằng event offline.
                  */
 
-                if (
-                    !navigator.onLine
-                ) {
-
-                    handleOffline();
+                if (!navigator.onLine) {
 
                     return;
                 }
 
 
-                if (
-                    error?.code ===
-                    "permission-denied"
-                ) {
+                /*
+                 * Không tự logout chỉ vì
+                 * Firebase tạm thời lỗi mạng.
+                 */
 
-                    showLoginMessage(
-                        "Firestore từ chối quyền truy cập."
-                    );
-
-                } else {
-
-                    showLoginMessage(
-                        "Không thể kết nối dữ liệu Firebase."
-                    );
-                }
-
+                console.warn(
+                    "Firestore connection temporarily unavailable."
+                );
             }
         );
 }
@@ -929,9 +816,7 @@ async function loadUser() {
    RENDER USER
 ===================================================== */
 
-function renderUser(
-    user
-) {
+function renderUser(user) {
 
     employeeHeader.textContent =
         `${user.employeeId || employeeId} (${user.name || ""})`;
@@ -960,13 +845,7 @@ function renderUser(
         );
 
 
-    /*
-     * Nếu chưa có timer
-     */
-
-    if (
-        !timerStart
-    ) {
+    if (!timerStart) {
 
         timerStart =
             new Date();
@@ -991,10 +870,9 @@ function renderUser(
             error => {
 
                 console.error(
-                    "Không thể tạo timerStart:",
+                    "TIMER ERROR:",
                     error
                 );
-
             }
         );
     }
@@ -1008,9 +886,7 @@ function renderUser(
    HEADER COLOR
 ===================================================== */
 
-function applyHeaderColor(
-    green
-) {
+function applyHeaderColor(green) {
 
     if (green) {
 
@@ -1041,18 +917,8 @@ async function toggleHeaderColor() {
 
     if (
         !employeeId ||
-        !deviceId
-    ) {
-
-        return;
-    }
-
-
-    if (
         !navigator.onLine
     ) {
-
-        handleOffline();
 
         return;
     }
@@ -1122,16 +988,12 @@ async function toggleHeaderColor() {
 
 
                 /*
-                 * Đổi màu
+                 * ĐỔI MÀU
                  */
 
                 const newGreen =
                     user.color !== "green";
 
-
-                /*
-                 * Reset timer
-                 */
 
                 transaction.update(
                     userRef,
@@ -1150,10 +1012,8 @@ async function toggleHeaderColor() {
 
                     }
                 );
-
             }
         );
-
 
     } catch (error) {
 
@@ -1164,19 +1024,14 @@ async function toggleHeaderColor() {
 
 
         if (
-            !navigator.onLine
+            navigator.onLine
         ) {
 
-            handleOffline();
-
-            return;
+            alert(
+                error.message ||
+                "Không thể đổi trạng thái."
+            );
         }
-
-
-        alert(
-            error.message ||
-            "Không thể đổi trạng thái."
-        );
     }
 }
 
@@ -1247,9 +1102,7 @@ function startClock() {
 
 function updateTimer() {
 
-    if (
-        !timerStart
-    ) {
+    if (!timerStart) {
 
         statusTimer.textContent =
             "00:00:00";
@@ -1295,16 +1148,13 @@ function updateTimer() {
 
 /* =====================================================
    QR CODE
-   GIỮ NGUYÊN
 ===================================================== */
 
 window.generateQRCode =
     generateQRCode;
 
 
-async function generateQRCode(
-    event
-) {
+async function generateQRCode(event) {
 
     if (
         event &&
@@ -1316,18 +1166,9 @@ async function generateQRCode(
 
 
     if (
-        !employeeId
-    ) {
-
-        return;
-    }
-
-
-    if (
+        !employeeId ||
         !navigator.onLine
     ) {
-
-        handleOffline();
 
         return;
     }
@@ -1376,10 +1217,6 @@ async function generateQRCode(
             !snapshot.exists()
         ) {
 
-            forceLogout(
-                "Tài khoản không còn tồn tại."
-            );
-
             return;
         }
 
@@ -1389,7 +1226,7 @@ async function generateQRCode(
 
 
         /*
-         * DEVICE CHECK
+         * Kiểm tra thiết bị
          */
 
         if (
@@ -1398,7 +1235,7 @@ async function generateQRCode(
         ) {
 
             forceLogout(
-                "Mã nhân viên này đang được sử dụng trên thiết bị khác."
+                "Thiết bị này không còn quyền đăng nhập."
             );
 
             return;
@@ -1418,7 +1255,7 @@ async function generateQRCode(
 
 
         /*
-         * QR GIỮ NGUYÊN
+         * GIỮ NGUYÊN CƠ CHẾ QR
          */
 
         const accessData =
@@ -1480,21 +1317,12 @@ async function generateQRCode(
             }
         );
 
-
     } catch (error) {
 
         console.error(
             "QR ERROR:",
             error
         );
-
-
-        if (
-            !navigator.onLine
-        ) {
-
-            handleOffline();
-        }
     }
 }
 
@@ -1503,9 +1331,7 @@ async function generateQRCode(
    REFRESH QR
 ===================================================== */
 
-if (
-    refreshQRCode
-) {
+if (refreshQRCode) {
 
     refreshQRCode.addEventListener(
         "click",
@@ -1514,7 +1340,6 @@ if (
             generateQRCode(
                 event
             );
-
         }
     );
 }
@@ -1527,23 +1352,14 @@ if (
 let pressTimer =
     null;
 
-
 const HOLD_DURATION =
     5000;
 
 
-function startPress(
-    event
-) {
-
-    /*
-     * Không kích hoạt khi chạm card.
-     */
+function startPress(event) {
 
     if (
-        event.target.closest(
-            ".card"
-        )
+        event.target.closest(".card")
     ) {
 
         return;
@@ -1569,14 +1385,11 @@ function startPress(
 
 function cancelPress() {
 
-    if (
-        pressTimer
-    ) {
+    if (pressTimer) {
 
         clearTimeout(
             pressTimer
         );
-
 
         pressTimer =
             null;
@@ -1648,9 +1461,7 @@ document.addEventListener(
    FORCE LOGOUT
 ===================================================== */
 
-function forceLogout(
-    message
-) {
+function forceLogout(message) {
 
     console.warn(
         "FORCE LOGOUT:",
@@ -1658,10 +1469,7 @@ function forceLogout(
     );
 
 
-    showLogin();
-
-
-    showLoginMessage(
+    showLogin(
         message
     );
 }
@@ -1671,10 +1479,10 @@ function forceLogout(
    SHOW LOGIN
 ===================================================== */
 
-function showLogin() {
+function showLogin(message = "") {
 
     /*
-     * Hủy realtime listener
+     * Hủy listener
      */
 
     if (
@@ -1706,46 +1514,25 @@ function showLogin() {
 
 
     /*
-     * Hủy hold
-     */
-
-    cancelPress();
-
-
-    /*
-     * Reset state
+     * Reset
      */
 
     employeeId =
         null;
 
-
     timerStart =
         null;
 
+    appReady =
+        false;
+
 
     /*
-     * =========================================
-     * QUAN TRỌNG
-     * =========================================
+     * QUAN TRỌNG:
      *
-     * XÓA employeeId
+     * Chỉ xóa employeeId.
      *
-     * NHƯNG KHÔNG XÓA deviceId.
-     *
-     * Vì vậy:
-     *
-     * Cùng máy
-     *   ↓
-     * deviceId vẫn giữ nguyên
-     *   ↓
-     * đăng nhập lại được.
-     *
-     * Máy khác
-     *   ↓
-     * deviceId khác
-     *   ↓
-     * bị Firebase chặn.
+     * KHÔNG xóa deviceId.
      */
 
     localStorage.removeItem(
@@ -1769,6 +1556,11 @@ function showLogin() {
 
     employeeCodeInput.value =
         "";
+
+
+    showLoginMessage(
+        message
+    );
 }
 
 
@@ -1776,81 +1568,191 @@ function showLogin() {
    LOGIN MESSAGE
 ===================================================== */
 
-function showLoginMessage(
-    message
-) {
+function showLoginMessage(message) {
+
+    loginMessage.textContent =
+        message || "";
+}
+
+
+/* =====================================================
+   NETWORK
+   MẤT MẠNG => ĐĂNG XUẤT NGAY
+===================================================== */
+
+function handleOffline() {
 
     if (
-        loginMessage
+        offlineHandled
     ) {
 
-        loginMessage.textContent =
-            message;
+        return;
+    }
+
+
+    offlineHandled =
+        true;
+
+
+    console.warn(
+        "NETWORK OFFLINE"
+    );
+
+
+    /*
+     * Đưa về login ngay lập tức.
+     *
+     * Không chờ Firebase 15 giây.
+     */
+
+    if (
+        employeeId
+    ) {
+
+        showLogin(
+            "网络连接已断开，请重新连接网络后登录"
+        );
+
+    } else {
+
+        showLoginMessage(
+            "网络连接已断开"
+        );
     }
 }
 
 
+function handleOnline() {
+
+    offlineHandled =
+        false;
+
+
+    /*
+     * Không tự login khi vừa có mạng.
+     *
+     * Nếu user đang ở login:
+     * user tự nhập mã.
+     *
+     * Nếu app vẫn đang mở:
+     * Firebase realtime tiếp tục hoạt động.
+     */
+
+    console.log(
+        "NETWORK ONLINE"
+    );
+}
+
+
+window.addEventListener(
+    "offline",
+    handleOffline
+);
+
+
+window.addEventListener(
+    "online",
+    handleOnline
+);
+
+
 /* =====================================================
-   EVENTS
+   PAGE VISIBILITY
 ===================================================== */
 
-if (
-    loginButton
-) {
+document.addEventListener(
+    "visibilitychange",
+    () => {
 
-    loginButton.addEventListener(
-        "click",
-        login
-    );
-}
+        /*
+         * Khi quay lại trang,
+         * nếu mất mạng => login ngay.
+         */
 
+        if (
+            !document.hidden &&
+            !navigator.onLine
+        ) {
 
-if (
-    employeeCodeInput
-) {
+            handleOffline();
 
-    employeeCodeInput.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key === "Enter"
-            ) {
-
-                login();
-            }
-
+            return;
         }
-    );
-}
+
+
+        /*
+         * Nếu online và employeeId còn,
+         * kiểm tra lại user.
+         */
+
+        if (
+            !document.hidden &&
+            navigator.onLine &&
+            employeeId &&
+            !unsubscribeUser
+        ) {
+
+            loadUser();
+        }
+    }
+);
 
 
 /* =====================================================
-   AUTO LOGIN
+   BEFORE UNLOAD
 ===================================================== */
 
 /*
- * Đây là phần quan trọng nhất
- * để sửa lỗi:
+ * KHÔNG logout khi reload / vuốt / đóng trang.
  *
- * "Vuốt/reload trang lại bắt đăng nhập"
+ * Đây là điểm rất quan trọng.
+ *
+ * Không được gọi showLogin()
+ * ở beforeunload.
  */
+
+
+/* =====================================================
+   LOGIN EVENTS
+===================================================== */
+
+loginButton.addEventListener(
+    "click",
+    login
+);
+
+
+employeeCodeInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            login();
+        }
+    }
+);
+
+
+/* =====================================================
+   START
+===================================================== */
 
 async function start() {
 
     /*
-     * Nếu hiện tại offline
-     * => màn login.
+     * Nếu hiện tại offline:
+     * vào thẳng màn login.
      */
 
     if (
         !navigator.onLine
     ) {
 
-        showLogin();
-
-        showLoginMessage(
-            "Không có kết nối mạng."
+        showLogin(
+            "当前无网络连接"
         );
 
         return;
@@ -1859,7 +1761,6 @@ async function start() {
 
     /*
      * Không có employee
-     * => login.
      */
 
     if (
@@ -1872,28 +1773,17 @@ async function start() {
     }
 
 
-    try {
+    /*
+     * Có employee cũ:
+     * thử khôi phục phiên.
+     *
+     * KHÔNG tạo deviceId mới.
+     */
 
-        /*
-         * Firebase Auth
-         */
+    try {
 
         await ensureFirebaseLogin();
 
-
-        /*
-         * =========================================
-         * KIỂM TRA USER TRỰC TIẾP
-         * =========================================
-         *
-         * Không mở app trước.
-         *
-         * Phải kiểm tra:
-         *
-         * activeSession === deviceId
-         *
-         * rồi mới mở app.
-         */
 
         const userRef =
             doc(
@@ -1910,16 +1800,14 @@ async function start() {
 
 
         /*
-         * User không tồn tại
+         * Không tìm thấy user
          */
 
         if (
             !snapshot.exists()
         ) {
 
-            showLogin();
-
-            showLoginMessage(
+            showLogin(
                 "Tài khoản không còn tồn tại."
             );
 
@@ -1932,30 +1820,7 @@ async function start() {
 
 
         /*
-         * =========================================
-         * DEVICE CHECK
-         * =========================================
-         */
-
-        if (
-            user.activeSession !==
-            deviceId
-        ) {
-
-            showLogin();
-
-            showLoginMessage(
-                "Mã nhân viên này đang được sử dụng trên thiết bị khác."
-            );
-
-            return;
-        }
-
-
-        /*
-         * =========================================
-         * ACCOUNT CHECK
-         * =========================================
+         * Kiểm tra account
          */
 
         checkEmployeeAccount(
@@ -1965,15 +1830,31 @@ async function start() {
 
         /*
          * =========================================
-         * ĐÚNG THIẾT BỊ
-         * =========================================
+         * QUAN TRỌNG
          *
-         * Vào thẳng app.
+         * Nếu activeSession chính là device này
+         * => KHÔNG bắt đăng nhập lại.
+         *
+         * Đây là phần sửa lỗi vuốt/reload.
+         * =========================================
          */
 
-        networkLogout =
-            false;
+        if (
+            user.activeSession !==
+            deviceId
+        ) {
 
+            showLogin(
+                "Thiết bị này không còn giữ quyền đăng nhập."
+            );
+
+            return;
+        }
+
+
+        /*
+         * Mở app
+         */
 
         loginScreen.classList.add(
             "hidden"
@@ -1985,35 +1866,44 @@ async function start() {
         );
 
 
+        appReady =
+            true;
+
+
         startClock();
 
 
         await loadUser();
 
 
-        generateQRCode();
+        if (
+            employeeId &&
+            navigator.onLine
+        ) {
+
+            generateQRCode();
+        }
 
 
     } catch (error) {
 
         console.error(
-            "AUTO LOGIN ERROR:",
+            "START ERROR:",
             error
         );
 
 
         /*
-         * Nếu lỗi do mất mạng
+         * Nếu mất mạng
          */
 
         if (
-            !navigator.onLine
+            !navigator.onLine ||
+            error.message === "OFFLINE"
         ) {
 
-            showLogin();
-
-            showLoginMessage(
-                "Mạng đã bị ngắt. Vui lòng kết nối lại và đăng nhập."
+            showLogin(
+                "当前无网络连接"
             );
 
             return;
@@ -2021,15 +1911,12 @@ async function start() {
 
 
         /*
-         * Nếu tài khoản bị lỗi
+         * Session không còn hợp lệ
          */
 
-        showLogin();
-
-
-        showLoginMessage(
-            error?.message ||
-            "Không thể khôi phục phiên đăng nhập."
+        showLogin(
+            error.message ||
+            "Phiên đăng nhập không hợp lệ."
         );
     }
 }
