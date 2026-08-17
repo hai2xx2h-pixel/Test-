@@ -1,31 +1,31 @@
 import { initializeApp } from
-    "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 
 import { getAuth, signInAnonymously } from
-    "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
 import { getFirestore } from
-    "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 
 const firebaseConfig = {
 
-    apiKey: "DAN_API_KEY_CUA_BAN",
+    apiKey: "AIzaSyDqVgpx9OSwEl_NQIR-KflGD-B0FIysZhc",
 
     authDomain:
-        "DAN_PROJECT_ID.firebaseapp.com",
+        "du-an-cua-hai.firebaseapp.com",
 
     projectId:
-        "DAN_PROJECT_ID",
+        "du-an-cua-hai",
 
     storageBucket:
-        "DAN_PROJECT_ID.firebasestorage.app",
+        "du-an-cua-hai.firebasestorage.app",
 
     messagingSenderId:
-        "DAN_MESSAGING_SENDER_ID",
+        "924184286263",
 
     appId:
-        "DAN_APP_ID"
+        "1:924184286263:web:3d7b6b94e74fef87585bb2"
 };
 
 
