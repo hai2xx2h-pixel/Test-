@@ -6,6 +6,11 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+
+    /*
+     * APP NHÂN VIÊN KHÔNG CHO CUỘN
+     * Admin sẽ override riêng ở cuối file.
+     */
     touch-action: none;
 }
 
@@ -79,11 +84,6 @@ body {
 
     /*
      * ĐẨY NỘI DUNG LÊN CAO
-     *
-     * So với bản trước:
-     * max(50px, safe-area)
-     * ↓
-     * max(18px, safe-area)
      */
     padding-top:
         max(
@@ -610,7 +610,8 @@ body {
 
 /* =====================================================
    QR CODE
-   GIỮ ĐÚNG 220 × 220
+   GIỮ NGUYÊN 220 × 220
+   GÓC VUÔNG HOÀN TOÀN
 ===================================================== */
 
 #qrcode {
@@ -649,6 +650,12 @@ body {
 
     background:
         #fff;
+
+    /*
+     * Góc vuông
+     */
+    border-radius:
+        0 !important;
 }
 
 
@@ -674,6 +681,12 @@ body {
 
     display:
         block !important;
+
+    /*
+     * Góc vuông
+     */
+    border-radius:
+        0 !important;
 }
 
 
@@ -1172,7 +1185,6 @@ body {
 
 /* =====================================================
    SMALL SCREEN
-   Điều chỉnh nhẹ để giống ảnh 2
 ===================================================== */
 
 @media (max-height: 700px) {
@@ -1204,67 +1216,97 @@ body {
     }
 
 }
+
+
 /* =====================================================
    ADMIN ONLY
-   Cho phép trang Admin cuộn dọc
-   Không ảnh hưởng app nhân viên
+   CHỈ TRANG ADMIN ĐƯỢC VUỐT DỌC
+   APP NHÂN VIÊN KHÔNG BỊ ẢNH HƯỞNG
 ===================================================== */
 
 .admin-body {
 
-    width: 100%;
+    width:
+        100%;
 
-    min-height: 100vh;
+    min-height:
+        100vh;
 
-    height: auto;
+    height:
+        auto;
 
-    overflow-y: auto !important;
+    overflow-y:
+        auto !important;
 
-    overflow-x: hidden !important;
+    overflow-x:
+        hidden !important;
 
-    touch-action: pan-y !important;
+    touch-action:
+        pan-y !important;
 
-    -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling:
+        touch;
 
-    overscroll-behavior-y: auto;
+    overscroll-behavior-y:
+        auto;
 
-    align-items: stretch;
+    align-items:
+        stretch;
 
-    padding-top: 0;
+    padding-top:
+        0;
 }
 
 
-/* Chỉ Admin mới được vuốt dọc */
+/*
+ * Cho phép toàn bộ phần tử bên trong
+ * trang Admin nhận thao tác vuốt dọc.
+ */
 
 .admin-body *,
 .admin-body *::before,
 .admin-body *::after {
 
-    touch-action: pan-y !important;
+    touch-action:
+        pan-y !important;
 }
 
 
-/* Cho phép danh sách dài */
+/*
+ * Trang Admin có thể dài.
+ */
 
 .admin-body .admin-page {
 
-    width: 100%;
+    width:
+        100%;
 
-    max-width: 900px;
+    max-width:
+        900px;
 
-    min-height: 100vh;
+    min-height:
+        100vh;
 
-    overflow: visible;
+    height:
+        auto;
 
-    padding-bottom: 50px;
+    overflow:
+        visible;
+
+    padding-bottom:
+        50px;
 }
 
 
-/* Danh sách nhân viên không bị khóa chiều cao */
+/*
+ * Danh sách nhân viên.
+ */
 
 .admin-body .users-list {
 
-    width: 100%;
+    width:
+        100%;
 
-    overflow: visible;
+    overflow:
+        visible;
 }
