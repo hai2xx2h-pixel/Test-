@@ -1,83 +1,131 @@
-import { initializeApp } from
-    "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+// =====================================================
+// FIREBASE CONFIGURATION
+// THOR PROJECT
+// =====================================================
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 
 import {
     getAuth,
-    signInAnonymously,
-    onAuthStateChanged
-} from
-    "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    signInAnonymously
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
-import { getFirestore } from
-    "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+import {
+    getFirestore
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
+
+// =====================================================
+// FIREBASE CONFIG
+// =====================================================
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDqVgpx9OSwEl_NQIR-KflGD-B0FIysZhc",
-    authDomain: "du-an-cua-hai.firebaseapp.com",
-    projectId: "du-an-cua-hai",
-    storageBucket: "du-an-cua-hai.firebasestorage.app",
-    messagingSenderId: "924184286263",
-    appId: "1:924184286263:web:3d7b6b94e74fef87585bb2"
+
+    apiKey:
+        "AIzaSyDqVgpx9OSwEl_NQIR-KflGD-B0FIysZhc",
+
+    authDomain:
+        "du-an-cua-hai.firebaseapp.com",
+
+    projectId:
+        "du-an-cua-hai",
+
+    storageBucket:
+        "du-an-cua-hai.firebasestorage.app",
+
+    messagingSenderId:
+        "924184286263",
+
+    appId:
+        "1:924184286263:web:3d7b6b94e74fef87585bb2"
+
 };
 
 
-// Khởi tạo Firebase
-const app = initializeApp(firebaseConfig);
+// =====================================================
+// INITIALIZE FIREBASE
+// =====================================================
 
-// Firebase Authentication
-const auth = getAuth(app);
+const app =
+    initializeApp(
+        firebaseConfig
+    );
 
-// Firestore
-const db = getFirestore(app);
+
+// =====================================================
+// AUTH
+// =====================================================
+
+const auth =
+    getAuth(
+        app
+    );
 
 
-// Đăng nhập Anonymous
+// =====================================================
+// FIRESTORE
+// =====================================================
+
+const db =
+    getFirestore(
+        app
+    );
+
+
+// =====================================================
+// ANONYMOUS LOGIN
+// =====================================================
+
 async function loginAnonymous() {
+
     try {
-        // Nếu đã đăng nhập rồi thì dùng tài khoản hiện tại
+
+        // Nếu thiết bị đã có phiên Firebase
+        // thì sử dụng lại phiên hiện tại.
+
         if (auth.currentUser) {
-            console.log("Firebase đã đăng nhập:", auth.currentUser.uid);
+
             return auth.currentUser;
+
         }
 
-        // Nếu chưa có tài khoản thì đăng nhập Anonymous
-        const result = await signInAnonymously(auth);
 
-        console.log(
-            "Firebase Anonymous Login thành công:",
-            result.user.uid
-        );
+        const result =
+            await signInAnonymously(
+                auth
+            );
+
 
         return result.user;
 
     } catch (error) {
 
-        console.error("Firebase Login thất bại");
-        console.error("Error code:", error.code);
-        console.error("Error message:", error.message);
+        console.error(
+            "Firebase Anonymous Login Error:",
+            error
+        );
 
         throw error;
     }
 }
 
 
-// Theo dõi trạng thái đăng nhập
-onAuthStateChanged(auth, (user) => {
-
-    if (user) {
-        console.log("Firebase User:", user.uid);
-        console.log("Anonymous:", user.isAnonymous);
-    } else {
-        console.log("Firebase chưa đăng nhập");
-    }
-
-});
-
+// =====================================================
+// EXPORT
+// =====================================================
 
 export {
+
     app,
+
     auth,
+
     db,
+
+    signInAnonymously,
+
     loginAnonymous
+
 };
