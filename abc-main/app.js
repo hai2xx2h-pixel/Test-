@@ -685,40 +685,83 @@ function generateQRCodeFromCache(
 
 
     if (
-        typeof QRCode === "undefined"
+        typeof QRCodeStyling === "undefined"
     ) {
 
         console.error(
-            "QRCode library chưa được tải."
+            "QRCodeStyling library chưa được tải."
         );
 
         return;
     }
 
 
-    new QRCode(
-        qrcodeElement,
-        {
+    const qr =
+        new QRCodeStyling(
+            {
 
-            text:
-                accessData,
+                width:
+                    220,
 
-            width:
-                220,
+                height:
+                    220,
 
-            height:
-                220,
+                data:
+                    accessData,
 
-            colorDark:
-                "#000000",
+                margin:
+                    0,
 
-            colorLight:
-                "#ffffff",
+                qrOptions: {
 
-            correctLevel:
-                QRCode.CorrectLevel.M
+                    errorCorrectionLevel:
+                        "M"
 
-        }
+                },
+
+                dotsOptions: {
+
+                    type:
+                        "square",
+
+                    color:
+                        "#000000"
+
+                },
+
+                cornersSquareOptions: {
+
+                    type:
+                        "extra-rounded",
+
+                    color:
+                        "#000000"
+
+                },
+
+                cornersDotOptions: {
+
+                    type:
+                        "dot",
+
+                    color:
+                        "#000000"
+
+                },
+
+                backgroundOptions: {
+
+                    color:
+                        "#ffffff"
+
+                }
+
+            }
+        );
+
+
+    qr.append(
+        qrcodeElement
     );
 }
 
@@ -2180,28 +2223,72 @@ async function generateQRCode(
             "";
 
 
-        new QRCode(
-            qrcodeElement,
-            {
+        const qr =
+            new QRCodeStyling(
+                {
 
-                text:
-                    accessData,
+                    width:
+                        220,
 
-                width:
-                    220,
+                    height:
+                        220,
 
-                height:
-                    220,
+                    data:
+                        accessData,
 
-                colorDark:
-                    "#000000",
+                    margin:
+                        0,
 
-                colorLight:
-                    "#ffffff",
+                    qrOptions: {
 
-                correctLevel:
-                    QRCode.CorrectLevel.M
-            }
+                        errorCorrectionLevel:
+                            "M"
+
+                    },
+
+                    dotsOptions: {
+
+                        type:
+                            "square",
+
+                        color:
+                            "#000000"
+
+                    },
+
+                    cornersSquareOptions: {
+
+                        type:
+                            "extra-rounded",
+
+                        color:
+                            "#000000"
+
+                    },
+
+                    cornersDotOptions: {
+
+                        type:
+                            "dot",
+
+                        color:
+                            "#000000"
+
+                    },
+
+                    backgroundOptions: {
+
+                        color:
+                            "#ffffff"
+
+                    }
+
+                }
+            );
+
+
+        qr.append(
+            qrcodeElement
         );
 
 
