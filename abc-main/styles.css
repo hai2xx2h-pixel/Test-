@@ -57,12 +57,15 @@ body {
 .app-screen {
     position: fixed;
 
-    top: 14px;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
 
     width: 100%;
+
+    /* Bù lại 14px để bố cục bên trong KHÔNG dịch */
+    padding-top: 14px;
 
     display: flex;
     flex-direction: column;
@@ -71,13 +74,9 @@ body {
     overflow: hidden;
 
     background-color: #30364f;
-
     background-image: url("background.png");
-
     background-repeat: no-repeat;
-
     background-position: center center;
-
     background-size: cover;
 }
 
