@@ -252,14 +252,6 @@ function normalizeDate(value) {
    CACHE USER
 ===================================================== */
 
-/*
- * Lưu thông tin cần thiết để có thể
- * hiển thị app/QR ngay lập tức khi mở lại.
- *
- * QR chỉ có tác dụng hiển thị theo yêu cầu
- * hiện tại của bạn.
- */
-
 function saveUserCache(user) {
 
     try {
@@ -463,18 +455,6 @@ function checkEmployeeAccount(user) {
    SHOW APP IMMEDIATELY FROM CACHE
 ===================================================== */
 
-/*
- * Đây là phần giúp loại bỏ delay 2-3 giây.
- *
- * Không chờ:
- *
- * Firebase Auth
- * Firebase Firestore
- *
- * Mà lấy dữ liệu đã lưu trên máy
- * và vẽ QR ngay.
- */
-
 function showCachedAppImmediately() {
 
     if (
@@ -497,11 +477,6 @@ function showCachedAppImmediately() {
     }
 
 
-    /*
-     * Nếu cache thuộc mã khác
-     * thì không sử dụng.
-     */
-
     if (
         cached.employeeId &&
         cached.employeeId !== employeeId
@@ -513,36 +488,20 @@ function showCachedAppImmediately() {
 
     try {
 
-        /*
-         * Nhân viên
-         */
-
         employeeHeader.textContent =
             `${cached.employeeId || employeeId} (${cached.name || ""})`;
 
-
-        /*
-         * Màu
-         */
 
         applyHeaderColor(
             cached.color === "green"
         );
 
 
-        /*
-         * Timer
-         */
-
         timerStart =
             normalizeDate(
                 cached.timerStart
             );
 
-
-        /*
-         * Hiện app NGAY
-         */
 
         loginScreen.classList.add(
             "hidden"
@@ -554,26 +513,12 @@ function showCachedAppImmediately() {
         );
 
 
-        /*
-         * Đánh dấu đang hiển thị app
-         */
-
         isLoggedIn =
             true;
 
 
-        /*
-         * Chạy đồng hồ ngay
-         */
-
         startClock();
 
-
-        /*
-         * QR ngay
-         *
-         * Không chờ Firebase.
-         */
 
         generateQRCodeFromCache(
             cached
@@ -620,11 +565,6 @@ function generateQRCodeFromCache(
     }
 
 
-    /*
-     * QR vẫn tạo ngay cả khi Firebase
-     * đang xác minh ở phía sau.
-     */
-
     const now =
         new Date();
 
@@ -660,10 +600,6 @@ function generateQRCodeFromCache(
             .toString(36);
 
 
-    /*
-     * GIỮ NGUYÊN CƠ CHẾ QR
-     */
-
     const accessData =
         `https://YOUR-AUTHORIZED-DOMAIN/access` +
         `?id=${encodeURIComponent(
@@ -696,6 +632,12 @@ function generateQRCodeFromCache(
     }
 
 
+    /*
+     * QUAN TRỌNG:
+     * Tạo QR trực tiếp 220 × 220.
+     * Không tạo 230 rồi CSS thu nhỏ.
+     */
+
     new QRCode(
         qrcodeElement,
         {
@@ -704,10 +646,10 @@ function generateQRCodeFromCache(
                 accessData,
 
             width:
-                230,
+                220,
 
             height:
-                230,
+                220,
 
             colorDark:
                 "#000000",
@@ -824,16 +766,8 @@ async function login() {
 
     try {
 
-        /*
-         * Firebase Authentication
-         */
-
         await ensureFirebaseLogin();
 
-
-        /*
-         * Lấy user
-         */
 
         const result =
             await getEmployee(
@@ -845,20 +779,10 @@ async function login() {
             result.ref;
 
 
-        /*
-         * Kiểm tra account
-         */
-
         checkEmployeeAccount(
             result.data
         );
 
-
-        /*
-         * =============================================
-         * KIỂM TRA 1 THIẾT BỊ
-         * =============================================
-         */
 
         await runTransaction(
             db,
@@ -884,29 +808,15 @@ async function login() {
                     freshSnapshot.data();
 
 
-                /*
-                 * Kiểm tra account lại
-                 */
-
                 checkEmployeeAccount(
                     user
                 );
 
 
-                /*
-                 * Thiết bị đang giữ mã
-                 */
-
                 const currentDevice =
                     user.activeSession ||
                     null;
 
-
-                /*
-                 * =======================================
-                 * CHƯA CÓ THIẾT BỊ
-                 * =======================================
-                 */
 
                 if (
                     !currentDevice
@@ -932,12 +842,6 @@ async function login() {
                     return;
                 }
 
-
-                /*
-                 * =======================================
-                 * CÙNG THIẾT BỊ
-                 * =======================================
-                 */
 
                 if (
                     currentDevice ===
@@ -965,24 +869,12 @@ async function login() {
                 }
 
 
-                /*
-                 * =======================================
-                 * THIẾT BỊ KHÁC
-                 * =======================================
-                 */
-
                 throw new Error(
                     "Mã nhân viên này đang được sử dụng trên thiết bị khác."
                 );
             }
         );
 
-
-        /*
-         * =========================================
-         * LƯU USER
-         * =========================================
-         */
 
         employeeId =
             code;
@@ -993,10 +885,6 @@ async function login() {
             employeeId
         );
 
-
-        /*
-         * Lưu cache ngay.
-         */
 
         saveUserCache({
             employeeId:
@@ -1024,10 +912,6 @@ async function login() {
             ""
         );
 
-
-        /*
-         * Vào app
-         */
 
         await openApp();
 
@@ -1125,18 +1009,8 @@ async function openApp() {
     }
 
 
-    /*
-     * Nếu có cache:
-     * hiện ngay.
-     */
-
     showCachedAppImmediately();
 
-
-    /*
-     * Nếu offline:
-     * về login theo yêu cầu.
-     */
 
     if (
         !navigator.onLine
@@ -1150,24 +1024,13 @@ async function openApp() {
     }
 
 
-    /*
-     * Firebase chạy phía sau.
-     */
-
     await verifyCurrentSession();
-
 }
 
 
 /* =====================================================
    VERIFY CURRENT SESSION
 ===================================================== */
-
-/*
- * Firebase xác minh ở phía sau.
- *
- * Không chặn việc hiển thị QR.
- */
 
 async function verifyCurrentSession() {
 
@@ -1184,10 +1047,6 @@ async function verifyCurrentSession() {
         await ensureFirebaseLogin();
 
 
-        /*
-         * User document
-         */
-
         const userRef =
             doc(
                 db,
@@ -1201,10 +1060,6 @@ async function verifyCurrentSession() {
                 userRef
             );
 
-
-        /*
-         * User bị xóa
-         */
 
         if (
             !snapshot.exists()
@@ -1222,20 +1077,10 @@ async function verifyCurrentSession() {
             snapshot.data();
 
 
-        /*
-         * Account
-         */
-
         checkEmployeeAccount(
             user
         );
 
-
-        /*
-         * =========================================
-         * DEVICE / ADMIN RESET
-         * =========================================
-         */
 
         if (
             user.activeSession !==
@@ -1250,27 +1095,15 @@ async function verifyCurrentSession() {
         }
 
 
-        /*
-         * Cập nhật cache
-         */
-
         saveUserCache(
             user
         );
 
 
-        /*
-         * Render dữ liệu mới
-         */
-
         renderUser(
             user
         );
 
-
-        /*
-         * QR cập nhật theo dữ liệu mới
-         */
 
         if (
             isLoggedIn
@@ -1279,10 +1112,6 @@ async function verifyCurrentSession() {
             generateQRCode();
         }
 
-
-        /*
-         * Theo dõi realtime
-         */
 
         loadUser();
 
@@ -1298,11 +1127,6 @@ async function verifyCurrentSession() {
         );
 
 
-        /*
-         * Mất mạng:
-         * login ngay.
-         */
-
         if (
             !navigator.onLine
         ) {
@@ -1314,13 +1138,6 @@ async function verifyCurrentSession() {
             return false;
         }
 
-
-        /*
-         * Nếu Firebase lỗi tạm thời,
-         * KHÔNG đá người dùng ra ngay.
-         *
-         * QR cache vẫn đang hiển thị.
-         */
 
         if (
             error?.code ===
@@ -1340,10 +1157,6 @@ async function verifyCurrentSession() {
         );
 
 
-        /*
-         * Giữ app đang hiển thị.
-         */
-
         return true;
     }
 }
@@ -1353,13 +1166,6 @@ async function verifyCurrentSession() {
    RESTORE APP
 ===================================================== */
 
-/*
- * Được gọi khi reload / mở lại app.
- *
- * QR từ cache hiện trước.
- * Firebase kiểm tra sau.
- */
-
 async function restoreApp() {
 
     employeeId =
@@ -1367,10 +1173,6 @@ async function restoreApp() {
             EMPLOYEE_KEY
         );
 
-
-    /*
-     * Không có employee
-     */
 
     if (
         !employeeId
@@ -1381,10 +1183,6 @@ async function restoreApp() {
         return;
     }
 
-
-    /*
-     * Không có mạng
-     */
 
     if (
         !navigator.onLine
@@ -1398,27 +1196,11 @@ async function restoreApp() {
     }
 
 
-    /*
-     * ==========================================
-     * HIỆN QR NGAY
-     * ==========================================
-     */
-
     const cacheShown =
         showCachedAppImmediately();
 
 
-    /*
-     * Nếu có cache, người dùng sẽ
-     * thấy QR ngay lập tức.
-     */
-
     if (!cacheShown) {
-
-        /*
-         * Chưa có cache:
-         * phải xác minh Firebase.
-         */
 
         loginScreen.classList.remove(
             "hidden"
@@ -1429,10 +1211,6 @@ async function restoreApp() {
         );
     }
 
-
-    /*
-     * Firebase xác minh phía sau.
-     */
 
     await verifyCurrentSession();
 }
@@ -1464,10 +1242,6 @@ async function loadUser() {
         );
 
 
-    /*
-     * Hủy listener cũ
-     */
-
     if (
         unsubscribeUser
     ) {
@@ -1479,20 +1253,12 @@ async function loadUser() {
     }
 
 
-    /*
-     * Realtime listener
-     */
-
     unsubscribeUser =
         onSnapshot(
 
             userRef,
 
             snapshot => {
-
-                /*
-                 * User bị xóa
-                 */
 
                 if (
                     !snapshot.exists()
@@ -1505,10 +1271,6 @@ async function loadUser() {
                     return;
                 }
 
-
-                /*
-                 * User hiện tại khác
-                 */
 
                 if (
                     employeeId !==
@@ -1523,14 +1285,6 @@ async function loadUser() {
                     snapshot.data();
 
 
-                /*
-                 * ========================================
-                 * ACTIVE SESSION
-                 *
-                 * Admin Reset cũng vào đây.
-                 * ========================================
-                 */
-
                 if (
                     user.activeSession !==
                     deviceId
@@ -1544,10 +1298,6 @@ async function loadUser() {
                 }
 
 
-                /*
-                 * ACTIVE
-                 */
-
                 if (
                     user.active !== true
                 ) {
@@ -1559,10 +1309,6 @@ async function loadUser() {
                     return;
                 }
 
-
-                /*
-                 * DATE
-                 */
 
                 try {
 
@@ -1580,18 +1326,10 @@ async function loadUser() {
                 }
 
 
-                /*
-                 * Cập nhật cache
-                 */
-
                 saveUserCache(
                     user
                 );
 
-
-                /*
-                 * Render
-                 */
 
                 renderUser(
                     user
@@ -1607,11 +1345,6 @@ async function loadUser() {
                 );
 
 
-                /*
-                 * Mất mạng:
-                 * logout ngay.
-                 */
-
                 if (
                     !navigator.onLine
                 ) {
@@ -1623,10 +1356,6 @@ async function loadUser() {
                     return;
                 }
 
-
-                /*
-                 * Permission denied
-                 */
 
                 if (
                     error?.code ===
@@ -1640,11 +1369,6 @@ async function loadUser() {
                     return;
                 }
 
-
-                /*
-                 * Lỗi tạm thời:
-                 * giữ QR.
-                 */
 
                 console.warn(
                     "Firestore realtime tạm thời không kết nối."
@@ -1662,45 +1386,25 @@ function renderUser(
     user
 ) {
 
-    /*
-     * Lưu cache trước
-     */
-
     saveUserCache(
         user
     );
 
 
-    /*
-     * Employee name
-     */
-
     employeeHeader.textContent =
         `${user.employeeId || employeeId} (${user.name || ""})`;
 
-
-    /*
-     * Color
-     */
 
     applyHeaderColor(
         user.color === "green"
     );
 
 
-    /*
-     * Timer
-     */
-
     timerStart =
         normalizeDate(
             user.timerStart
         );
 
-
-    /*
-     * Nếu chưa có timerStart
-     */
 
     if (
         !timerStart
@@ -1837,10 +1541,6 @@ async function toggleHeaderColor() {
                     snapshot.data();
 
 
-                /*
-                 * Device
-                 */
-
                 if (
                     user.activeSession !==
                     deviceId
@@ -1852,10 +1552,6 @@ async function toggleHeaderColor() {
                 }
 
 
-                /*
-                 * Active
-                 */
-
                 if (
                     user.active !== true
                 ) {
@@ -1866,18 +1562,10 @@ async function toggleHeaderColor() {
                 }
 
 
-                /*
-                 * Đổi màu
-                 */
-
                 const newGreen =
                     user.color !==
                     "green";
 
-
-                /*
-                 * Reset timer
-                 */
 
                 transaction.update(
                     userRef,
@@ -2100,10 +1788,6 @@ async function generateQRCode(
             snapshot.data();
 
 
-        /*
-         * Kiểm tra quyền
-         */
-
         if (
             user.activeSession !==
             deviceId
@@ -2180,6 +1864,11 @@ async function generateQRCode(
             "";
 
 
+        /*
+         * QR FIREBASE
+         * GIỮ ĐÚNG 220 × 220
+         */
+
         new QRCode(
             qrcodeElement,
             {
@@ -2188,10 +1877,10 @@ async function generateQRCode(
                     accessData,
 
                 width:
-                    230,
+                    220,
 
                 height:
-                    230,
+                    220,
 
                 colorDark:
                     "#000000",
@@ -2205,10 +1894,6 @@ async function generateQRCode(
         );
 
 
-        /*
-         * Cập nhật cache sau khi Firebase xác nhận.
-         */
-
         saveUserCache(
             user
         );
@@ -2220,12 +1905,6 @@ async function generateQRCode(
             "QR ERROR:",
             error
         );
-
-
-        /*
-         * QR cache vẫn có thể tiếp tục hiển thị
-         * nếu Firebase tạm thời chậm.
-         */
     }
 }
 
@@ -2259,10 +1938,6 @@ const HOLD_DURATION =
 
 
 function startPress(event) {
-
-    /*
-     * Không kích hoạt trong card.
-     */
 
     if (
         event.target.closest(
@@ -2307,8 +1982,6 @@ function cancelPress() {
 }
 
 
-/* TOUCH */
-
 document.addEventListener(
     "touchstart",
     startPress,
@@ -2329,8 +2002,6 @@ document.addEventListener(
     cancelPress
 );
 
-
-/* MOUSE */
 
 document.addEventListener(
     "mousedown",
@@ -2381,10 +2052,6 @@ function clearUserSession(
     );
 
 
-    /*
-     * Hủy realtime
-     */
-
     if (
         unsubscribeUser
     ) {
@@ -2395,10 +2062,6 @@ function clearUserSession(
             null;
     }
 
-
-    /*
-     * Dừng đồng hồ
-     */
 
     if (
         clockInterval
@@ -2413,16 +2076,8 @@ function clearUserSession(
     }
 
 
-    /*
-     * Hủy hold
-     */
-
     cancelPress();
 
-
-    /*
-     * Xóa phiên local
-     */
 
     employeeId =
         null;
@@ -2436,29 +2091,13 @@ function clearUserSession(
         false;
 
 
-    /*
-     * Xóa employee
-     */
-
     localStorage.removeItem(
         EMPLOYEE_KEY
     );
 
 
-    /*
-     * Xóa cache.
-     *
-     * Rất quan trọng khi Admin Reset,
-     * để lần mở tiếp theo không hiện
-     * QR cũ.
-     */
-
     clearUserCache();
 
-
-    /*
-     * UI
-     */
 
     appScreen.classList.add(
         "hidden"
@@ -2470,11 +2109,6 @@ function clearUserSession(
     );
 
 
-    /*
-     * QR cũ
-
-     */
-
     if (
         qrcodeElement
     ) {
@@ -2483,10 +2117,6 @@ function clearUserSession(
             "";
     }
 
-
-    /*
-     * Ẩn logout
-     */
 
     if (
         logoutButton
@@ -2497,19 +2127,9 @@ function clearUserSession(
     }
 
 
-    /*
-     * Input
-
-     */
-
     employeeCodeInput.value =
         "";
 
-
-    /*
-     * Message
-
-     */
 
     loginMessage.textContent =
         message;
@@ -2523,10 +2143,6 @@ function clearUserSession(
 function showLogin(
     message = ""
 ) {
-
-    /*
-     * Đây là màn hình login bình thường.
-     */
 
     if (
         unsubscribeUser
@@ -2560,10 +2176,6 @@ function showLogin(
             EMPLOYEE_KEY
         );
 
-
-    /*
-     * Không xóa deviceId.
-     */
 
     isLoggedIn =
         false;
@@ -2622,11 +2234,6 @@ window.addEventListener(
     "offline",
     () => {
 
-        /*
-         * Mất mạng:
-         * login ngay.
-         */
-
         clearUserSession(
             "Mất kết nối mạng. Vui lòng đăng nhập lại."
         );
@@ -2649,15 +2256,6 @@ window.addEventListener(
    VISIBILITY
 ===================================================== */
 
-/*
- * KHÔNG logout khi app xuống background.
- *
- * Khi mở lại:
- *
- * - QR cache vẫn còn.
- * - Firebase listener tiếp tục kiểm tra.
- */
-
 document.addEventListener(
     "visibilitychange",
     () => {
@@ -2666,10 +2264,6 @@ document.addEventListener(
             document.visibilityState ===
             "visible"
         ) {
-
-            /*
-             * Nếu mất mạng
-             */
 
             if (
                 !navigator.onLine
@@ -2682,11 +2276,6 @@ document.addEventListener(
                 return;
             }
 
-
-            /*
-             * Nếu employeeId vẫn còn
-             * nhưng app chưa hiển thị
-             */
 
             if (
                 employeeId &&
@@ -2706,22 +2295,9 @@ document.addEventListener(
    PAGESHOW
 ===================================================== */
 
-/*
- * Safari/iPhone có thể khôi phục trang
- * từ bfcache.
- *
- * Không logout.
- *
- * Hiện cache ngay.
- */
-
 window.addEventListener(
     "pageshow",
     () => {
-
-        /*
-         * Lấy lại employeeId
-         */
 
         employeeId =
             localStorage.getItem(
@@ -2739,10 +2315,6 @@ window.addEventListener(
         }
 
 
-        /*
-         * Offline
-         */
-
         if (
             !navigator.onLine
         ) {
@@ -2755,16 +2327,8 @@ window.addEventListener(
         }
 
 
-        /*
-         * Hiện QR từ cache NGAY.
-         */
-
         showCachedAppImmediately();
 
-
-        /*
-         * Firebase kiểm tra phía sau.
-         */
 
         verifyCurrentSession();
     }
@@ -2777,19 +2341,11 @@ window.addEventListener(
 
 async function start() {
 
-    /*
-     * Lấy employeeId mới nhất.
-     */
-
     employeeId =
         localStorage.getItem(
             EMPLOYEE_KEY
         );
 
-
-    /*
-     * OFFLINE
-     */
 
     if (
         !navigator.onLine
@@ -2803,10 +2359,6 @@ async function start() {
     }
 
 
-    /*
-     * CHƯA ĐĂNG NHẬP
-     */
-
     if (
         !employeeId
     ) {
@@ -2817,22 +2369,9 @@ async function start() {
     }
 
 
-    /*
-     * =================================================
-     * QUAN TRỌNG:
-     *
-     * Hiện QR từ cache NGAY.
-     * =================================================
-     */
-
     const cacheShown =
         showCachedAppImmediately();
 
-
-    /*
-     * Nếu chưa có cache:
-     * xác minh Firebase trước.
-     */
 
     if (
         !cacheShown
@@ -2954,16 +2493,6 @@ async function start() {
         return;
     }
 
-
-    /*
-     * =================================================
-     * ĐÃ CÓ CACHE
-     *
-     * QR đã hiện.
-     *
-     * Firebase kiểm tra phía sau.
-     * =================================================
-     */
 
     verifyCurrentSession();
 }
