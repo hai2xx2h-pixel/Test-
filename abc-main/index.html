@@ -1,26 +1,64 @@
 <!DOCTYPE html>
-<html lang="zh" class="app-booting">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
 
+    <!-- =================================================
+         VIEWPORT
+         viewport-fit=cover cần cho safe area trên iPhone
+    ================================================== -->
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"
+        content="width=device-width,
+                 initial-scale=1.0,
+                 maximum-scale=1.0,
+                 user-scalable=no,
+                 viewport-fit=cover"
     >
 
-    <meta name="theme-color" content="#e4e5ea">
 
+    <!-- =================================================
+         IOS PWA
+    ================================================== -->
     <meta
         name="apple-mobile-web-app-capable"
         content="yes"
     >
 
     <meta
+        name="mobile-web-app-capable"
+        content="yes"
+    >
+
+
+    <!--
+        QUAN TRỌNG:
+
+        default =
+        status bar sáng/trắng
+        chữ + giờ + wifi + pin màu đen
+
+        KHÔNG dùng black-translucent.
+    -->
+    <meta
         name="apple-mobile-web-app-status-bar-style"
         content="default"
     >
 
+
+    <!--
+        Màu vùng giao diện hệ thống phía trên
+    -->
+    <meta
+        name="theme-color"
+        content="#f5f5f5"
+    >
+
+
+    <!-- =================================================
+         APP NAME
+    ================================================== -->
     <meta
         name="apple-mobile-web-app-title"
         content="员工码"
@@ -28,18 +66,40 @@
 
     <title>员工码</title>
 
+
+    <!-- =================================================
+         ICON
+    ================================================== -->
+    <link
+        rel="apple-touch-icon"
+        href="icon.png"
+    >
+
+
+    <!-- =================================================
+         CSS
+    ================================================== -->
     <link
         rel="stylesheet"
         href="styles.css"
     >
+
+
+    <!-- =================================================
+         QR CODE LIBRARY
+    ================================================== -->
+    <script
+        src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"
+    ></script>
 </head>
 
 
 <body>
 
-    <!-- =====================================================
+
+    <!-- =================================================
          LOGIN SCREEN
-    ====================================================== -->
+    ================================================== -->
 
     <div
         id="loginScreen"
@@ -49,37 +109,41 @@
         <div class="login-box">
 
             <img
-                src="logo.png"
+                src="icon.png"
+                alt=""
                 class="login-logo"
-                alt="Logo"
             >
 
+
             <div class="login-title">
-                THOR
+                员工码
             </div>
 
+
             <div class="login-subtitle">
-                员工身份验证
+                请输入员工编号
             </div>
+
 
             <input
                 id="employeeCodeInput"
                 class="employee-input"
                 type="text"
-                placeholder="请输入员工编号"
+                placeholder="员工编号"
                 autocomplete="off"
-                autocorrect="off"
                 autocapitalize="characters"
                 spellcheck="false"
             >
+
 
             <button
                 id="loginButton"
                 class="login-button"
                 type="button"
             >
-                确认
+                登录
             </button>
+
 
             <div
                 id="loginMessage"
@@ -91,34 +155,43 @@
     </div>
 
 
-    <!-- =====================================================
-         EMPLOYEE APP
-    ====================================================== -->
 
-    <div
+    <!-- =================================================
+         EMPLOYEE APP
+    ================================================== -->
+
+    <main
         id="appScreen"
         class="app-screen hidden"
     >
 
-        <!-- Employee ID + Name -->
+
+        <!-- =============================================
+             EMPLOYEE NAME
+
+             JS sẽ tự đưa:
+             Vxxxxxxx(Tên nhân viên)
+
+             KHÔNG hard-code dữ liệu ảnh mẫu.
+        ============================================== -->
+
         <div
             id="employeeHeader"
             class="header"
-        >
-            --
-        </div>
+        ></div>
 
 
-        <!-- =================================================
-             MAIN CARD
-        ================================================== -->
+
+        <!-- =============================================
+             QR CARD
+        ============================================== -->
 
         <div class="card">
 
 
-            <!-- =============================================
+            <!-- =========================================
                  CARD HEADER
-            ============================================== -->
+            ========================================== -->
 
             <div
                 id="cardHeader"
@@ -129,27 +202,31 @@
                     将二维码对准扫描器刷码出场
                 </span>
 
-                <span class="circle1"></span>
-                <span class="circle2"></span>
+
+                <div class="circle1"></div>
+
+                <div class="circle2"></div>
 
             </div>
 
 
-            <!-- =============================================
+
+            <!-- =========================================
                  CARD BODY
-            ============================================== -->
+            ========================================== -->
 
             <div class="card-body">
 
 
-                <!-- Current Date / Time -->
+                <!-- CURRENT TIME -->
 
                 <div
                     id="currentTime"
                     class="time"
                 >
-                    ----
+                    -- 
                 </div>
+
 
 
                 <!-- QR -->
@@ -157,27 +234,21 @@
                 <div id="qrcode"></div>
 
 
-                <!-- =========================================
-                     ACTION ROW
+
+                <!-- =====================================
+                     QR ACTIONS
 
                      YELLOW:
-                     刷新二维码
+                         刷新二维码
 
                      GREEN:
-                     申请离场    刷新二维码
-                ========================================== -->
+                         申请离场   刷新二维码
+                ====================================== -->
 
                 <div
                     id="qrActions"
                     class="refresh"
                 >
-
-                    <!--
-                        ẨN mặc định.
-
-                        app.js sẽ hiện mục này
-                        khi trạng thái chuyển sang GREEN.
-                    -->
 
                     <span
                         id="leaveAction"
@@ -197,18 +268,17 @@
                 </div>
 
 
-                <!-- =========================================
+
+                <!-- =====================================
                      STATUS
-                ========================================== -->
+                ====================================== -->
 
                 <div class="status-box">
 
-                    <div
-                        id="statusLabel"
-                        class="status-label"
-                    >
+                    <div class="status-label">
                         已生效
                     </div>
+
 
                     <div
                         id="statusTimer"
@@ -224,16 +294,24 @@
         </div>
 
 
-        <!-- =================================================
+
+        <!-- =============================================
              SECURITY NOTE
-        ================================================== -->
+        ============================================== -->
 
         <div class="note">
             尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
         </div>
 
 
-        <!-- Logout luôn ẩn -->
+
+        <!-- =============================================
+             LOGOUT
+
+             Giữ element để app.js cũ không lỗi.
+             CSS + JS đều ẩn nó.
+        ============================================== -->
+
         <button
             id="logoutButton"
             class="logout-button"
@@ -242,112 +320,18 @@
             退出登录
         </button>
 
-    </div>
+    </main>
 
 
-    <!-- =====================================================
-         QR CODE LIBRARY
-    ====================================================== -->
+
+    <!-- =================================================
+         APP JAVASCRIPT
+    ================================================== -->
 
     <script
-        src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"
+        type="module"
+        src="app.js"
     ></script>
-
-
-    <!-- =====================================================
-         APP
-    ====================================================== -->
-
-    <script type="module" src="app.js"></script>
-
-
-    <!-- =====================================================
-         QUICK BOOT
-         Có cache thì hiện APP trước để tránh nháy login.
-         app.js vẫn kiểm tra Firebase sau đó.
-    ====================================================== -->
-
-    <script>
-        (function () {
-
-            try {
-
-                const employeeId =
-                    localStorage.getItem(
-                        "thor_employee_id"
-                    );
-
-                const loginScreen =
-                    document.getElementById(
-                        "loginScreen"
-                    );
-
-                const appScreen =
-                    document.getElementById(
-                        "appScreen"
-                    );
-
-
-                if (
-                    employeeId &&
-                    navigator.onLine
-                ) {
-
-                    if (loginScreen) {
-                        loginScreen.classList.add(
-                            "hidden"
-                        );
-                    }
-
-                    if (appScreen) {
-                        appScreen.classList.remove(
-                            "hidden"
-                        );
-                    }
-
-                }
-
-            } catch (error) {
-
-                console.warn(
-                    "Boot cache error:",
-                    error
-                );
-
-            }
-
-
-            window.addEventListener(
-                "load",
-                function () {
-
-                    document
-                        .documentElement
-                        .classList
-                        .remove(
-                            "app-booting"
-                        );
-
-                }
-            );
-
-
-            setTimeout(
-                function () {
-
-                    document
-                        .documentElement
-                        .classList
-                        .remove(
-                            "app-booting"
-                        );
-
-                },
-                5000
-            );
-
-        })();
-    </script>
 
 </body>
 
