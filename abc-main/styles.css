@@ -6,11 +6,6 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-
-    /*
-     * APP NHÂN VIÊN KHÔNG CUỘN
-     * Admin sẽ override riêng ở cuối file.
-     */
     touch-action: none;
 }
 
@@ -22,9 +17,6 @@ body {
 
     overflow: hidden;
 
-    /*
-     * MÀU VÙNG TAI THỎ / STATUS BAR
-     */
     background-color: #e3e4e9;
 
     -webkit-user-select: none;
@@ -67,21 +59,21 @@ body {
     background-size:
         cover;
 
-    color:
-        white;
+    color: white;
 
-    display:
-        flex;
+    display: flex;
 
-    flex-direction:
-        column;
+    flex-direction: column;
 
-    align-items:
-        center;
+    align-items: center;
 
+    /*
+     * Giữ giao diện lên cao
+     * gần ảnh gốc.
+     */
     padding-top:
         max(
-            18px,
+            12px,
             env(safe-area-inset-top)
         );
 }
@@ -92,8 +84,7 @@ body {
 ===================================================== */
 
 .hidden {
-    display:
-        none !important;
+    display: none !important;
 }
 
 
@@ -102,17 +93,13 @@ body {
 ===================================================== */
 
 .login-screen {
-    position:
-        fixed;
+    position: fixed;
 
-    inset:
-        0;
+    inset: 0;
 
-    z-index:
-        999;
+    z-index: 999;
 
-    background:
-        #2f3347;
+    background: #2f3347;
 
     background-image:
         url("background.png");
@@ -126,8 +113,7 @@ body {
     background-size:
         cover;
 
-    display:
-        flex;
+    display: flex;
 
     justify-content:
         center;
@@ -141,14 +127,13 @@ body {
 
 
 .login-box {
-    width:
-        100%;
+    width: 100%;
 
     max-width:
-        330px;
+        320px;
 
     padding:
-        28px 24px;
+        26px 22px;
 
     background:
         rgba(
@@ -159,7 +144,7 @@ body {
         );
 
     border-radius:
-        14px;
+        12px;
 
     text-align:
         center;
@@ -168,37 +153,37 @@ body {
         #222;
 
     box-shadow:
-        0 8px 30px
+        0 8px 28px
         rgba(
             0,
             0,
             0,
-            0.35
+            0.32
         );
 }
 
 
 .login-logo {
     width:
-        65px;
+        62px;
 
     height:
-        65px;
+        62px;
 
     object-fit:
         cover;
 
     border-radius:
-        12px;
+        10px;
 
     margin-bottom:
-        12px;
+        10px;
 }
 
 
 .login-title {
     font-size:
-        27px;
+        25px;
 
     font-weight:
         400;
@@ -207,16 +192,16 @@ body {
 
 .login-subtitle {
     margin-top:
-        5px;
+        4px;
 
     margin-bottom:
-        23px;
+        20px;
 
     color:
         #777;
 
     font-size:
-        14px;
+        13px;
 }
 
 
@@ -225,13 +210,13 @@ body {
         100%;
 
     height:
-        46px;
+        44px;
 
     border:
         1px solid #ddd;
 
     border-radius:
-        8px;
+        7px;
 
     outline:
         none;
@@ -240,7 +225,7 @@ body {
         center;
 
     font-size:
-        15px;
+        14px;
 
     color:
         #222;
@@ -267,16 +252,16 @@ body {
         100%;
 
     height:
-        46px;
+        44px;
 
     margin-top:
-        12px;
+        11px;
 
     border:
         none;
 
     border-radius:
-        8px;
+        7px;
 
     background:
         #38a754;
@@ -285,19 +270,13 @@ body {
         #fff;
 
     font-size:
-        15px;
+        14px;
 
     -webkit-appearance:
         none;
 
     appearance:
         none;
-}
-
-
-.login-button:active {
-    opacity:
-        0.85;
 }
 
 
@@ -309,13 +288,13 @@ body {
 
 .login-message {
     min-height:
-        20px;
+        18px;
 
     margin-top:
-        12px;
+        10px;
 
     font-size:
-        13px;
+        12px;
 
     color:
         #d9534f;
@@ -330,26 +309,18 @@ body {
 ===================================================== */
 
 .app-screen {
-    width:
-        100%;
+    width: 100%;
+    height: 100%;
 
-    height:
-        100%;
+    min-height: 100%;
 
-    min-height:
-        100%;
+    display: flex;
 
-    display:
-        flex;
+    flex-direction: column;
 
-    flex-direction:
-        column;
+    align-items: center;
 
-    align-items:
-        center;
-
-    padding-top:
-        0;
+    padding-top: 0;
 }
 
 
@@ -358,8 +329,7 @@ body {
 ===================================================== */
 
 .top-status-bar {
-    width:
-        100%;
+    width: 100%;
 
     height:
         44px;
@@ -374,14 +344,15 @@ body {
 
 /* =====================================================
    EMPLOYEE HEADER
+   GIỐNG ẢNH GỐC HƠN
 ===================================================== */
 
 .header {
     margin-top:
-        18px;
+        12px;
 
     font-size:
-        17px;
+        15px;
 
     color:
         #F5D57F;
@@ -393,10 +364,10 @@ body {
         center;
 
     letter-spacing:
-        0.5px;
+        0.2px;
 
     line-height:
-        1.25;
+        1.2;
 
     width:
         100%;
@@ -405,31 +376,35 @@ body {
 
 /* =====================================================
    CARD
+   NHỎ HƠN ẢNH HIỆN TẠI
 ===================================================== */
 
 .card {
     margin-top:
-        16px;
+        12px;
 
     width:
-        84%;
+        72%;
 
     max-width:
-        310px;
+        270px;
+
+    min-width:
+        250px;
 
     border-radius:
-        8px;
+        5px;
 
     position:
         relative;
 
     box-shadow:
-        0 6px 16px
+        0 4px 12px
         rgba(
             0,
             0,
             0,
-            0.3
+            0.25
         );
 }
 
@@ -440,10 +415,10 @@ body {
 
 .card-header {
     background-color:
-        #f2c75b;
+        #efbf32;
 
     padding:
-        14px 8px;
+        10px 7px;
 
     text-align:
         center;
@@ -452,16 +427,16 @@ body {
         #fff;
 
     font-size:
-        14px;
+        12px;
 
     font-weight:
         300;
 
     border-top-left-radius:
-        8px;
+        5px;
 
     border-top-right-radius:
-        8px;
+        5px;
 
     position:
         relative;
@@ -471,10 +446,10 @@ body {
         0.3s ease;
 
     line-height:
-        1.35;
+        1.25;
 
     min-height:
-        45px;
+        37px;
 
     display:
         flex;
@@ -509,16 +484,16 @@ body {
         #2f3347;
 
     width:
-        12px;
+        9px;
 
     height:
-        12px;
+        9px;
 
     border-radius:
         50%;
 
     bottom:
-        -6px;
+        -4.5px;
 
     z-index:
         10;
@@ -527,13 +502,13 @@ body {
 
 .circle1 {
     left:
-        -6px;
+        -4.5px;
 }
 
 
 .circle2 {
     right:
-        -6px;
+        -4.5px;
 }
 
 
@@ -546,7 +521,7 @@ body {
         #fff;
 
     padding:
-        16px 15px 14px 15px;
+        10px 12px 11px 12px;
 
     text-align:
         center;
@@ -555,10 +530,10 @@ body {
         #000;
 
     border-bottom-left-radius:
-        8px;
+        5px;
 
     border-bottom-right-radius:
-        8px;
+        5px;
 
     display:
         flex;
@@ -577,22 +552,22 @@ body {
 
 .time {
     font-size:
-        14px;
+        12px;
 
     font-weight:
-        300;
+        400;
 
     color:
         #111;
 
     margin-bottom:
-        12px;
+        5px;
 
     letter-spacing:
-        0.3px;
+        0;
 
     line-height:
-        1.2;
+        1.15;
 
     width:
         100%;
@@ -604,28 +579,27 @@ body {
 
 /* =====================================================
    QR CODE
-   GIỮ NGUYÊN 220 × 220
-   GÓC VUÔNG, KHÔNG BO
+   THEO TỶ LỆ ẢNH GỐC
 ===================================================== */
 
 #qrcode {
     width:
-        220px;
+        180px;
 
     height:
-        220px;
+        180px;
 
     min-width:
-        220px;
+        180px;
 
     min-height:
-        220px;
+        180px;
 
     max-width:
-        220px;
+        180px;
 
     max-height:
-        220px;
+        180px;
 
     margin:
         0 auto;
@@ -643,7 +617,7 @@ body {
         hidden;
 
     background-color:
-        #ffffff;
+        #fff;
 
     border:
         0 !important;
@@ -662,86 +636,25 @@ body {
 }
 
 
-/* =====================================================
-   QR IMAGE
-===================================================== */
-
-#qrcode img {
-    width:
-        220px !important;
-
-    height:
-        220px !important;
-
-    min-width:
-        220px !important;
-
-    min-height:
-        220px !important;
-
-    max-width:
-        220px !important;
-
-    max-height:
-        220px !important;
-
-    display:
-        block !important;
-
-    margin:
-        0 !important;
-
-    padding:
-        0 !important;
-
-    border:
-        0 !important;
-
-    border-radius:
-        0 !important;
-
-    -webkit-border-radius:
-        0 !important;
-
-    box-shadow:
-        none !important;
-
-    transform:
-        none !important;
-
-    filter:
-        none !important;
-
-    object-fit:
-        fill !important;
-
-    image-rendering:
-        pixelated;
-}
-
-
-/* =====================================================
-   QR CANVAS
-===================================================== */
-
+#qrcode img,
 #qrcode canvas {
     width:
-        220px !important;
+        180px !important;
 
     height:
-        220px !important;
+        180px !important;
 
     min-width:
-        220px !important;
+        180px !important;
 
     min-height:
-        220px !important;
+        180px !important;
 
     max-width:
-        220px !important;
+        180px !important;
 
     max-height:
-        220px !important;
+        180px !important;
 
     display:
         block !important;
@@ -777,15 +690,14 @@ body {
 
 /* =====================================================
    QR TABLE
-   PHÒNG TRƯỜNG HỢP QRCode.js RENDER TABLE
 ===================================================== */
 
 #qrcode table {
     width:
-        220px !important;
+        180px !important;
 
     height:
-        220px !important;
+        180px !important;
 
     margin:
         0 !important;
@@ -804,28 +716,11 @@ body {
 
     border-radius:
         0 !important;
-
-    -webkit-border-radius:
-        0 !important;
 }
 
 
 #qrcode tbody,
-#qrcode tr {
-    margin:
-        0 !important;
-
-    padding:
-        0 !important;
-
-    border:
-        0 !important;
-
-    border-spacing:
-        0 !important;
-}
-
-
+#qrcode tr,
 #qrcode td {
     margin:
         0 !important;
@@ -838,9 +733,6 @@ body {
 
     border-radius:
         0 !important;
-
-    -webkit-border-radius:
-        0 !important;
 }
 
 
@@ -850,7 +742,7 @@ body {
 
 .refresh {
     margin-top:
-        14px;
+        8px;
 
     width:
         100%;
@@ -871,10 +763,10 @@ body {
         pointer;
 
     font-size:
-        12px;
+        10px;
 
     color:
-        #666;
+        #777;
 
     font-weight:
         300;
@@ -887,19 +779,13 @@ body {
 }
 
 
-.refresh-title:active {
-    opacity:
-        0.6;
-}
-
-
 /* =====================================================
    STATUS
 ===================================================== */
 
 .status-box {
     margin-top:
-        12px;
+        7px;
 
     display:
         flex;
@@ -911,7 +797,7 @@ body {
         center;
 
     color:
-        #2eb85c;
+        #28bf59;
 }
 
 
@@ -923,7 +809,7 @@ body {
         400;
 
     letter-spacing:
-        0.5px;
+        0.3px;
 
     animation:
         pulse-green
@@ -934,16 +820,16 @@ body {
 
 .status-timer {
     font-size:
-        18px;
+        15px;
 
     font-weight:
         300;
 
     margin-top:
-        2px;
+        1px;
 
     letter-spacing:
-        0.5px;
+        0.3px;
 
     opacity:
         1 !important;
@@ -960,18 +846,15 @@ body {
 @keyframes pulse-green {
 
     0% {
-        opacity:
-            1;
+        opacity: 1;
     }
 
     50% {
-        opacity:
-            0.25;
+        opacity: 0.25;
     }
 
     100% {
-        opacity:
-            1;
+        opacity: 1;
     }
 }
 
@@ -982,10 +865,16 @@ body {
 
 .note {
     margin:
-        22px 10% 0 10%;
+        18px auto 0;
+
+    width:
+        70%;
+
+    max-width:
+        270px;
 
     font-size:
-        13px;
+        11px;
 
     font-weight:
         300;
@@ -994,7 +883,7 @@ body {
         #E6DCBD;
 
     line-height:
-        1.6;
+        1.55;
 
     text-align:
         center;
@@ -1004,15 +893,11 @@ body {
 
     opacity:
         1;
-
-    max-width:
-        360px;
 }
 
 
 /* =====================================================
    LOGOUT
-   ẨN HOÀN TOÀN
 ===================================================== */
 
 .logout-button {
@@ -1346,7 +1231,7 @@ body {
     body {
         padding-top:
             max(
-                12px,
+                8px,
                 env(safe-area-inset-top)
             );
     }
@@ -1354,13 +1239,13 @@ body {
 
     .header {
         margin-top:
-            12px;
+            8px;
     }
 
 
     .card {
         margin-top:
-            12px;
+            9px;
     }
 
 
@@ -1374,7 +1259,6 @@ body {
 
 /* =====================================================
    ADMIN ONLY
-   CHỈ ADMIN ĐƯỢC CUỘN
 ===================================================== */
 
 .admin-body {
@@ -1410,8 +1294,6 @@ body {
 }
 
 
-/* Cho phép vuốt dọc riêng trong Admin */
-
 .admin-body *,
 .admin-body *::before,
 .admin-body *::after {
@@ -1419,8 +1301,6 @@ body {
         pan-y !important;
 }
 
-
-/* Trang Admin dài được */
 
 .admin-body .admin-page {
     width:
@@ -1442,8 +1322,6 @@ body {
         50px;
 }
 
-
-/* Danh sách Admin không bị cắt */
 
 .admin-body .users-list {
     width:
