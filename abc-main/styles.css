@@ -21,13 +21,21 @@ body {
     user-select: none;
 }
 
+
+/* =====================================================
+   BODY
+===================================================== */
+
 body {
     position: fixed;
     inset: 0;
 
+    width: 100%;
+    height: 100%;
+
     overflow: hidden;
 
-    background: #f5f5f5;
+    background: #30364f;
 
     font-family:
         -apple-system,
@@ -43,6 +51,11 @@ body {
     overscroll-behavior: none;
 }
 
+
+/* =====================================================
+   HIDDEN
+===================================================== */
+
 .hidden {
     display: none !important;
 }
@@ -51,7 +64,10 @@ body {
 /* =====================================================
    EMPLOYEE APP
 
-   14px tạo vùng sáng phía trên gần ảnh gốc.
+   QUAN TRỌNG:
+   - top = 0
+   - nền xanh chạy lên trên
+   - không còn khoảng trắng 14px do CSS tạo ra
 ===================================================== */
 
 .app-screen {
@@ -63,9 +79,9 @@ body {
     bottom: 0;
 
     width: 100%;
+    height: 100%;
 
-    /* Bù lại 14px để bố cục bên trong KHÔNG dịch */
-    padding-top: 14px;
+    padding: 0;
 
     display: flex;
     flex-direction: column;
@@ -74,25 +90,42 @@ body {
     overflow: hidden;
 
     background-color: #30364f;
-    background-image: url("background.png");
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
+
+    background-image:
+        url("background.png");
+
+    background-repeat:
+        no-repeat;
+
+    background-position:
+        center center;
+
+    background-size:
+        cover;
 }
 
 
 /* =====================================================
-   EMPLOYEE NAME
+   EMPLOYEE HEADER
+
+   Trước:
+       app-screen top = 14px
+       header margin = 16px
+
+   Bây giờ:
+       app-screen top = 0
+       header margin = 30px
+
+   => vị trí tên/card/QR vẫn giữ nguyên.
 ===================================================== */
 
 .header {
     width: 100%;
 
-    margin-top: 16px;
+    margin-top: 30px;
 
-    padding: 0 10px;
-
-    text-align: center;
+    padding:
+        0 10px;
 
     color: #F5D57F;
 
@@ -104,15 +137,14 @@ body {
 
     letter-spacing: 0;
 
+    text-align: center;
+
     white-space: nowrap;
 }
 
 
 /* =====================================================
-   CARD
-
-   GIỮ 68%.
-   Phần này hiện tại đã gần đúng ảnh gốc.
+   MAIN CARD
 ===================================================== */
 
 .card {
@@ -130,14 +162,17 @@ body {
 
     box-shadow:
         0 4px 14px
-        rgba(0, 0, 0, 0.25);
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
 }
 
 
 /* =====================================================
    CARD HEADER
-
-   69px -> 64px
 ===================================================== */
 
 .card-header {
@@ -147,15 +182,16 @@ body {
 
     min-height: 64px;
 
-    padding: 12px 8px;
+    padding:
+        12px 8px;
 
     position: relative;
 
     display: flex;
 
-    justify-content: center;
-
     align-items: center;
+
+    justify-content: center;
 
     text-align: center;
 
@@ -202,6 +238,7 @@ body {
     position: absolute;
 
     width: 12px;
+
     height: 12px;
 
     bottom: -6px;
@@ -254,7 +291,7 @@ body {
 
 
 /* =====================================================
-   TIME
+   CURRENT TIME
 ===================================================== */
 
 .time {
@@ -281,9 +318,8 @@ body {
 
 
 /* =====================================================
-   QR
-
-   220 -> 210
+   QR CODE
+   GIỮ 210 × 210
 ===================================================== */
 
 #qrcode {
@@ -299,7 +335,8 @@ body {
 
     max-height: 210px;
 
-    margin: 0 auto;
+    margin:
+        0 auto;
 
     padding: 0;
 
@@ -428,11 +465,9 @@ body {
 }
 
 
-/*
-   GREEN
-
-   申请离场   刷新二维码
-*/
+/* =====================================================
+   GREEN ACTION ROW
+===================================================== */
 
 .refresh.has-leave {
     justify-content: center;
@@ -496,8 +531,6 @@ body {
 
 /* =====================================================
    TIMER
-
-   18px -> 16px
 ===================================================== */
 
 .status-timer {
@@ -537,10 +570,7 @@ body {
 
 
 /* =====================================================
-   NOTE
-
-   BẢN HIỆN TẠI ĐÃ XUỐNG ĐÚNG 3 DÒNG.
-   GIỮ CẤU TRÚC NÀY.
+   SECURITY NOTE
 ===================================================== */
 
 .note {
@@ -585,7 +615,7 @@ body {
 
 
 /* =====================================================
-   LOGIN
+   LOGIN SCREEN
 ===================================================== */
 
 .login-screen {
@@ -759,7 +789,7 @@ body {
 
 
 /* =====================================================
-   ADMIN
+   ADMIN BODY
 ===================================================== */
 
 .admin-body {
@@ -802,6 +832,10 @@ body {
 }
 
 
+/* =====================================================
+   ADMIN PAGE
+===================================================== */
+
 .admin-page {
     width: 100%;
 
@@ -813,7 +847,9 @@ body {
         0 auto;
 
     padding:
-        25px 15px 50px;
+        25px
+        15px
+        50px;
 
     color: #222222;
 
@@ -871,9 +907,11 @@ body {
 
     height: 44px;
 
-    margin: 6px 0;
+    margin:
+        6px 0;
 
-    padding: 0 12px;
+    padding:
+        0 12px;
 
     border:
         1px solid #dddddd;
@@ -895,9 +933,11 @@ body {
 
 
 .admin-card button {
-    margin: 5px 3px;
+    margin:
+        5px 3px;
 
-    padding: 10px 15px;
+    padding:
+        10px 15px;
 
     border: 0;
 
@@ -986,7 +1026,8 @@ body {
 
     gap: 15px;
 
-    padding: 15px 0;
+    padding:
+        15px 0;
 
     border-bottom:
         1px solid #eeeeee;
@@ -1016,7 +1057,8 @@ body {
 
     line-height: 1.6;
 
-    white-space: pre-line;
+    white-space:
+        pre-line;
 }
 
 
@@ -1029,6 +1071,10 @@ body {
         flex-end;
 }
 
+
+/* =====================================================
+   ADMIN MOBILE
+===================================================== */
 
 @media (max-width: 600px) {
 
