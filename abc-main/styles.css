@@ -59,7 +59,7 @@ body {
     background-size:
         cover;
 
-    color: white;
+    color: #fff;
 
     display: flex;
 
@@ -69,7 +69,7 @@ body {
 
     padding-top:
         max(
-            12px,
+            10px,
             env(safe-area-inset-top)
         );
 }
@@ -111,11 +111,9 @@ body {
 
     display: flex;
 
-    justify-content:
-        center;
+    justify-content: center;
 
-    align-items:
-        center;
+    align-items: center;
 
     padding: 20px;
 }
@@ -126,7 +124,8 @@ body {
 
     max-width: 330px;
 
-    padding: 28px 24px;
+    padding:
+        28px 24px;
 
     background:
         rgba(
@@ -155,6 +154,7 @@ body {
 
 .login-logo {
     width: 65px;
+
     height: 65px;
 
     object-fit: cover;
@@ -174,6 +174,7 @@ body {
 
 .login-subtitle {
     margin-top: 5px;
+
     margin-bottom: 23px;
 
     color: #777;
@@ -202,9 +203,9 @@ body {
 
     background: #fff;
 
-    appearance: none;
-
     -webkit-appearance: none;
+
+    appearance: none;
 }
 
 
@@ -230,14 +231,9 @@ body {
 
     font-size: 15px;
 
-    appearance: none;
-
     -webkit-appearance: none;
-}
 
-
-.login-button:active {
-    opacity: 0.85;
+    appearance: none;
 }
 
 
@@ -260,7 +256,7 @@ body {
 
 
 /* =====================================================
-   APP SCREEN
+   APP
 ===================================================== */
 
 .app-screen {
@@ -280,28 +276,15 @@ body {
 
 
 /* =====================================================
-   TOP STATUS BAR
-===================================================== */
-
-.top-status-bar {
-    width: 100%;
-
-    height: 44px;
-
-    background-color: #e3e4e9;
-
-    flex-shrink: 0;
-}
-
-
-/* =====================================================
    EMPLOYEE HEADER
 ===================================================== */
 
 .header {
     width: 100%;
 
-    margin-top: 12px;
+    margin-top: 13px;
+
+    color: #F5D57F;
 
     font-size: 15px;
 
@@ -309,9 +292,7 @@ body {
 
     line-height: 1.2;
 
-    letter-spacing: 0.2px;
-
-    color: #F5D57F;
+    letter-spacing: 0.15px;
 
     text-align: center;
 }
@@ -319,16 +300,17 @@ body {
 
 /* =====================================================
    CARD
+   TỶ LỆ GẦN ẢNH GỐC
 ===================================================== */
 
 .card {
-    width: 68%;
+    width: 66%;
 
-    max-width: 265px;
+    max-width: 260px;
 
-    min-width: 250px;
+    min-width: 245px;
 
-    margin-top: 12px;
+    margin-top: 13px;
 
     position: relative;
 
@@ -352,9 +334,10 @@ body {
 .card-header {
     width: 100%;
 
-    min-height: 55px;
+    min-height: 52px;
 
-    padding: 11px 8px;
+    padding:
+        10px 8px;
 
     display: flex;
 
@@ -364,7 +347,7 @@ body {
 
     position: relative;
 
-    background-color: #f2c75b;
+    background-color: #f2c23b;
 
     color: #fff;
 
@@ -433,9 +416,7 @@ body {
     width: 100%;
 
     padding:
-        13px
-        14px
-        15px;
+        13px 13px 15px;
 
     display: flex;
 
@@ -443,7 +424,7 @@ body {
 
     align-items: center;
 
-    background-color: #fff;
+    background: #fff;
 
     color: #000;
 
@@ -462,7 +443,7 @@ body {
 .time {
     width: 100%;
 
-    margin-bottom: 7px;
+    margin-bottom: 6px;
 
     color: #111;
 
@@ -482,24 +463,25 @@ body {
 
 
 /* =====================================================
-   QR CODE
-   212 × 212
+   QR
+   GẦN TỶ LỆ ẢNH GỐC
 ===================================================== */
 
 #qrcode {
-    width: 212px;
+    width: 208px;
 
-    height: 212px;
+    height: 208px;
 
-    min-width: 212px;
+    min-width: 208px;
 
-    min-height: 212px;
+    min-height: 208px;
 
-    max-width: 212px;
+    max-width: 208px;
 
-    max-height: 212px;
+    max-height: 208px;
 
-    margin: 0 auto;
+    margin:
+        0 auto;
 
     padding: 0 !important;
 
@@ -518,23 +500,24 @@ body {
     -webkit-border-radius:
         0 !important;
 
-    box-shadow: none !important;
+    box-shadow:
+        none !important;
 }
 
 
 #qrcode img,
 #qrcode canvas {
-    width: 212px !important;
+    width: 208px !important;
 
-    height: 212px !important;
+    height: 208px !important;
 
-    min-width: 212px !important;
+    min-width: 208px !important;
 
-    min-height: 212px !important;
+    min-height: 208px !important;
 
-    max-width: 212px !important;
+    max-width: 208px !important;
 
-    max-height: 212px !important;
+    max-height: 208px !important;
 
     display: block !important;
 
@@ -555,8 +538,7 @@ body {
 
     filter: none !important;
 
-    image-rendering:
-        pixelated;
+    image-rendering: pixelated;
 }
 
 
@@ -565,9 +547,9 @@ body {
 ===================================================== */
 
 #qrcode table {
-    width: 212px !important;
+    width: 208px !important;
 
-    height: 212px !important;
+    height: 208px !important;
 
     margin: 0 !important;
 
@@ -575,11 +557,11 @@ body {
 
     border: 0 !important;
 
-    border-spacing:
-        0 !important;
-
     border-collapse:
         collapse !important;
+
+    border-spacing:
+        0 !important;
 
     border-radius:
         0 !important;
@@ -601,13 +583,13 @@ body {
 
 
 /* =====================================================
-   REFRESH
+   REFRESH QR
 ===================================================== */
 
 .refresh {
     width: 100%;
 
-    margin-top: 9px;
+    margin-top: 8px;
 
     display: flex;
 
@@ -624,12 +606,14 @@ body {
 
     font-weight: 300;
 
-    cursor: pointer;
+    line-height: 1.2;
 
-    user-select: none;
+    cursor: pointer;
 
     -webkit-tap-highlight-color:
         transparent;
+
+    user-select: none;
 }
 
 
@@ -643,7 +627,7 @@ body {
 ===================================================== */
 
 .status-box {
-    margin-top: 7px;
+    margin-top: 8px;
 
     display: flex;
 
@@ -651,7 +635,7 @@ body {
 
     align-items: center;
 
-    color: #2eb85c;
+    color: #2ec65e;
 }
 
 
@@ -662,7 +646,7 @@ body {
 
     line-height: 1.2;
 
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
 
     animation:
         pulse-green
@@ -681,7 +665,7 @@ body {
 
     line-height: 1.15;
 
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
 
     opacity: 1 !important;
 
@@ -689,10 +673,6 @@ body {
         tabular-nums;
 }
 
-
-/* =====================================================
-   GREEN PULSE
-===================================================== */
 
 @keyframes pulse-green {
 
@@ -712,50 +692,43 @@ body {
 
 /* =====================================================
    NOTE
-   CÂN THEO ẢNH GỐC
-
-   ĐIỂM SỬA CHÍNH:
-   - chữ 13px
-   - rộng 265px
-   - line-height 1.6
-   - tự xuống dòng
+   CỐ ĐỊNH ĐÚNG 3 DÒNG GIỐNG ẢNH GỐC
 ===================================================== */
 
 .note {
-    width: 265px;
+    width: 270px;
 
-    max-width: 68%;
+    max-width: 74%;
 
     margin:
-        19px auto 0;
+        20px auto 0;
 
     padding: 0;
 
     color: #E6DCBD;
 
-    font-size: 13px;
+    font-size: 12px;
 
     font-weight: 300;
 
-    line-height: 1.6;
+    line-height: 1.72;
 
     letter-spacing: 0;
 
     text-align: center;
 
     opacity: 1;
+}
 
-    /*
-     * KHÔNG ép nowrap.
-     * Cho chữ tự xuống dòng giống ảnh gốc.
-     */
-    white-space: normal;
 
-    word-break: normal;
+.note-line {
+    display: block;
 
-    overflow-wrap: normal;
+    width: 100%;
 
-    text-wrap: wrap;
+    white-space: nowrap;
+
+    text-align: center;
 }
 
 
@@ -777,7 +750,8 @@ body {
 
     max-width: 900px;
 
-    margin: 0 auto;
+    margin:
+        0 auto;
 
     padding:
         25px 15px;
@@ -1016,8 +990,7 @@ body {
 
 
     .user-row {
-        flex-direction:
-            column;
+        flex-direction: column;
 
         align-items:
             flex-start;
@@ -1042,30 +1015,30 @@ body {
     body {
         padding-top:
             max(
-                8px,
+                7px,
                 env(safe-area-inset-top)
             );
     }
 
 
     .header {
-        margin-top: 8px;
-    }
-
-
-    .card {
         margin-top: 9px;
     }
 
 
+    .card {
+        margin-top: 10px;
+    }
+
+
     .note {
-        margin-top: 14px;
+        margin-top: 16px;
     }
 }
 
 
 /* =====================================================
-   ADMIN ONLY SCROLL
+   ADMIN SCROLL
 ===================================================== */
 
 .admin-body {
