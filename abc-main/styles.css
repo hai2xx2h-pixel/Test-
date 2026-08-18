@@ -10,6 +10,7 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+
 html,
 body {
     width: 100%;
@@ -25,7 +26,7 @@ body {
 /* =====================================================
    BODY
 
-   Màu trắng dùng cho vùng status bar iPhone.
+   NỀN TRẮNG ĐỂ PHẦN STATUS BAR IPHONE MÀU TRẮNG
 ===================================================== */
 
 body {
@@ -37,7 +38,7 @@ body {
 
     overflow: hidden;
 
-    background: #f5f5f5;
+    background-color: #f5f5f5;
 
     font-family:
         -apple-system,
@@ -55,20 +56,16 @@ body {
 
 
 /* =====================================================
-   IOS STATUS BAR WHITE AREA
+   STATUS BAR WHITE AREA
 
-   QUAN TRỌNG:
-
-   Chỉ phủ màu trắng lên safe-area phía trên.
+   Chỉ đổi vùng phía trên thành trắng.
 
    KHÔNG đẩy:
-   - tên nhân viên
+   - tên
    - card
    - QR
    - timer
    - note
-
-   xuống dưới.
 ===================================================== */
 
 body::before {
@@ -84,7 +81,7 @@ body::before {
 
     z-index: 10000;
 
-    background: #f5f5f5;
+    background-color: #f5f5f5;
 
     pointer-events: none;
 }
@@ -102,12 +99,8 @@ body::before {
 /* =====================================================
    EMPLOYEE APP
 
-   GIỮ top = 0.
-
-   Không dùng:
-   top: env(safe-area-inset-top)
-
-   vì cách đó sẽ đẩy toàn bộ bố cục xuống.
+   GIỮ top = 0
+   để bố cục hiện tại không bị đẩy xuống.
 ===================================================== */
 
 .app-screen {
@@ -136,18 +129,14 @@ body::before {
 
     background-repeat: no-repeat;
 
-    background-position:
-        center center;
+    background-position: center center;
 
-    background-size:
-        cover;
+    background-size: cover;
 }
 
 
 /* =====================================================
    EMPLOYEE HEADER
-
-   GIỮ NGUYÊN VỊ TRÍ HIỆN TẠI
 ===================================================== */
 
 .header {
@@ -155,8 +144,7 @@ body::before {
 
     margin-top: 30px;
 
-    padding:
-        0 10px;
+    padding: 0 10px;
 
     color: #F5D57F;
 
@@ -175,7 +163,7 @@ body::before {
 
 
 /* =====================================================
-   MAIN CARD
+   CARD
 ===================================================== */
 
 .card {
@@ -213,8 +201,7 @@ body::before {
 
     min-height: 64px;
 
-    padding:
-        12px 8px;
+    padding: 12px 8px;
 
     position: relative;
 
@@ -269,7 +256,6 @@ body::before {
     position: absolute;
 
     width: 12px;
-
     height: 12px;
 
     bottom: -6px;
@@ -322,7 +308,7 @@ body::before {
 
 
 /* =====================================================
-   CURRENT TIME
+   TIME
 ===================================================== */
 
 .time {
@@ -350,7 +336,9 @@ body::before {
 
 /* =====================================================
    QR CODE
-   GIỮ 210 × 210
+
+   GIỮ ĐÚNG 210 × 210
+   KHỚP APP.JS HIỆN TẠI
 ===================================================== */
 
 #qrcode {
@@ -359,15 +347,12 @@ body::before {
     height: 210px;
 
     min-width: 210px;
-
     min-height: 210px;
 
     max-width: 210px;
-
     max-height: 210px;
 
-    margin:
-        0 auto;
+    margin: 0 auto;
 
     padding: 0;
 
@@ -496,10 +481,7 @@ body::before {
 }
 
 
-/* =====================================================
-   GREEN ACTION ROW
-===================================================== */
-
+/* GREEN */
 .refresh.has-leave {
     justify-content: center;
 
@@ -601,7 +583,7 @@ body::before {
 
 
 /* =====================================================
-   SECURITY NOTE
+   NOTE
 ===================================================== */
 
 .note {
@@ -646,7 +628,7 @@ body::before {
 
 
 /* =====================================================
-   LOGIN SCREEN
+   LOGIN
 ===================================================== */
 
 .login-screen {
@@ -749,8 +731,7 @@ body::before {
 
     height: 46px;
 
-    padding:
-        0 10px;
+    padding: 0 10px;
 
     border:
         1px solid #dddddd;
@@ -820,7 +801,7 @@ body::before {
 
 
 /* =====================================================
-   ADMIN BODY
+   ADMIN
 ===================================================== */
 
 .admin-body {
@@ -863,10 +844,6 @@ body::before {
 }
 
 
-/* =====================================================
-   ADMIN PAGE
-===================================================== */
-
 .admin-page {
     width: 100%;
 
@@ -874,8 +851,7 @@ body::before {
 
     min-height: 100vh;
 
-    margin:
-        0 auto;
+    margin: 0 auto;
 
     padding:
         25px
@@ -938,11 +914,9 @@ body::before {
 
     height: 44px;
 
-    margin:
-        6px 0;
+    margin: 6px 0;
 
-    padding:
-        0 12px;
+    padding: 0 12px;
 
     border:
         1px solid #dddddd;
@@ -964,11 +938,9 @@ body::before {
 
 
 .admin-card button {
-    margin:
-        5px 3px;
+    margin: 5px 3px;
 
-    padding:
-        10px 15px;
+    padding: 10px 15px;
 
     border: 0;
 
@@ -983,8 +955,7 @@ body::before {
 .admin-title {
     display: flex;
 
-    justify-content:
-        space-between;
+    justify-content: space-between;
 
     align-items: center;
 
@@ -1050,15 +1021,13 @@ body::before {
 .user-row {
     display: flex;
 
-    justify-content:
-        space-between;
+    justify-content: space-between;
 
     align-items: center;
 
     gap: 15px;
 
-    padding:
-        15px 0;
+    padding: 15px 0;
 
     border-bottom:
         1px solid #eeeeee;
@@ -1088,8 +1057,7 @@ body::before {
 
     line-height: 1.6;
 
-    white-space:
-        pre-line;
+    white-space: pre-line;
 }
 
 
@@ -1098,8 +1066,7 @@ body::before {
 
     flex-wrap: wrap;
 
-    justify-content:
-        flex-end;
+    justify-content: flex-end;
 }
 
 
@@ -1117,23 +1084,20 @@ body::before {
     .admin-title {
         flex-direction: column;
 
-        align-items:
-            flex-start;
+        align-items: flex-start;
     }
 
 
     .user-row {
         flex-direction: column;
 
-        align-items:
-            flex-start;
+        align-items: flex-start;
     }
 
 
     .user-actions {
         width: 100%;
 
-        justify-content:
-            flex-start;
+        justify-content: flex-start;
     }
 }
