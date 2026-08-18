@@ -8,7 +8,7 @@
     padding: 0;
 
     /*
-     * APP NHÂN VIÊN KHÔNG CHO CUỘN
+     * APP NHÂN VIÊN KHÔNG CUỘN
      * Admin sẽ override riêng ở cuối file.
      */
     touch-action: none;
@@ -55,9 +55,6 @@ body {
         STHeiti,
         sans-serif;
 
-    /*
-     * NỀN APP
-     */
     background-image:
         url("background.png");
 
@@ -82,9 +79,6 @@ body {
     align-items:
         center;
 
-    /*
-     * ĐẨY NỘI DUNG LÊN CAO
-     */
     padding-top:
         max(
             18px,
@@ -611,7 +605,7 @@ body {
 /* =====================================================
    QR CODE
    GIỮ NGUYÊN 220 × 220
-   GÓC VUÔNG HOÀN TOÀN
+   GÓC VUÔNG, KHÔNG BO
 ===================================================== */
 
 #qrcode {
@@ -636,30 +630,100 @@ body {
     margin:
         0 auto;
 
+    padding:
+        0 !important;
+
     display:
-        flex;
+        block;
 
-    justify-content:
-        center;
-
-    align-items:
-        center;
+    position:
+        relative;
 
     overflow:
         hidden;
 
-    background:
-        #fff;
+    background-color:
+        #ffffff;
 
-    /*
-     * Góc vuông
-     */
+    border:
+        0 !important;
+
     border-radius:
         0 !important;
+
+    -webkit-border-radius:
+        0 !important;
+
+    box-shadow:
+        none !important;
+
+    transform:
+        none !important;
 }
 
 
-#qrcode img,
+/* =====================================================
+   QR IMAGE
+===================================================== */
+
+#qrcode img {
+    width:
+        220px !important;
+
+    height:
+        220px !important;
+
+    min-width:
+        220px !important;
+
+    min-height:
+        220px !important;
+
+    max-width:
+        220px !important;
+
+    max-height:
+        220px !important;
+
+    display:
+        block !important;
+
+    margin:
+        0 !important;
+
+    padding:
+        0 !important;
+
+    border:
+        0 !important;
+
+    border-radius:
+        0 !important;
+
+    -webkit-border-radius:
+        0 !important;
+
+    box-shadow:
+        none !important;
+
+    transform:
+        none !important;
+
+    filter:
+        none !important;
+
+    object-fit:
+        fill !important;
+
+    image-rendering:
+        pixelated;
+}
+
+
+/* =====================================================
+   QR CANVAS
+===================================================== */
+
 #qrcode canvas {
     width:
         220px !important;
@@ -682,10 +746,100 @@ body {
     display:
         block !important;
 
-    /*
-     * Góc vuông
-     */
+    margin:
+        0 !important;
+
+    padding:
+        0 !important;
+
+    border:
+        0 !important;
+
     border-radius:
+        0 !important;
+
+    -webkit-border-radius:
+        0 !important;
+
+    box-shadow:
+        none !important;
+
+    transform:
+        none !important;
+
+    filter:
+        none !important;
+
+    image-rendering:
+        pixelated;
+}
+
+
+/* =====================================================
+   QR TABLE
+   PHÒNG TRƯỜNG HỢP QRCode.js RENDER TABLE
+===================================================== */
+
+#qrcode table {
+    width:
+        220px !important;
+
+    height:
+        220px !important;
+
+    margin:
+        0 !important;
+
+    padding:
+        0 !important;
+
+    border:
+        0 !important;
+
+    border-spacing:
+        0 !important;
+
+    border-collapse:
+        collapse !important;
+
+    border-radius:
+        0 !important;
+
+    -webkit-border-radius:
+        0 !important;
+}
+
+
+#qrcode tbody,
+#qrcode tr {
+    margin:
+        0 !important;
+
+    padding:
+        0 !important;
+
+    border:
+        0 !important;
+
+    border-spacing:
+        0 !important;
+}
+
+
+#qrcode td {
+    margin:
+        0 !important;
+
+    padding:
+        0 !important;
+
+    border:
+        0 !important;
+
+    border-radius:
+        0 !important;
+
+    -webkit-border-radius:
         0 !important;
 }
 
@@ -1220,12 +1374,10 @@ body {
 
 /* =====================================================
    ADMIN ONLY
-   CHỈ TRANG ADMIN ĐƯỢC VUỐT DỌC
-   APP NHÂN VIÊN KHÔNG BỊ ẢNH HƯỞNG
+   CHỈ ADMIN ĐƯỢC CUỘN
 ===================================================== */
 
 .admin-body {
-
     width:
         100%;
 
@@ -1258,26 +1410,19 @@ body {
 }
 
 
-/*
- * Cho phép toàn bộ phần tử bên trong
- * trang Admin nhận thao tác vuốt dọc.
- */
+/* Cho phép vuốt dọc riêng trong Admin */
 
 .admin-body *,
 .admin-body *::before,
 .admin-body *::after {
-
     touch-action:
         pan-y !important;
 }
 
 
-/*
- * Trang Admin có thể dài.
- */
+/* Trang Admin dài được */
 
 .admin-body .admin-page {
-
     width:
         100%;
 
@@ -1298,12 +1443,9 @@ body {
 }
 
 
-/*
- * Danh sách nhân viên.
- */
+/* Danh sách Admin không bị cắt */
 
 .admin-body .users-list {
-
     width:
         100%;
 
