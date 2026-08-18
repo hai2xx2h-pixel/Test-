@@ -1,12 +1,12 @@
 /* =====================================================
-   GLOBAL
+   RESET / GLOBAL
 ===================================================== */
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -14,17 +14,13 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: #e4e5ea;
     -webkit-user-select: none;
     user-select: none;
-    -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    position: absolute;
+    position: fixed;
     inset: 0;
-    overflow: hidden;
-    overscroll-behavior: none;
 
     font-family:
         -apple-system,
@@ -32,28 +28,19 @@ body {
         "SF Pro Text",
         "PingFang SC",
         "Helvetica Neue",
-        STHeiti,
+        Arial,
         sans-serif;
 
+    background-color: #30364f;
     background-image: url("background.png");
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: center;
     background-size: cover;
 
-    color: white;
+    color: #ffffff;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    /* Đẩy layout giống ảnh gốc */
-    padding-top: max(18px, env(safe-area-inset-top));
+    overscroll-behavior: none;
 }
-
-
-/* =====================================================
-   HIDDEN
-===================================================== */
 
 .hidden {
     display: none !important;
@@ -61,161 +48,69 @@ body {
 
 
 /* =====================================================
-   LOGIN SCREEN
-===================================================== */
-
-.login-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-
-    background: #2f3347;
-    background-image: url("background.png");
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    padding: 20px;
-}
-
-.login-box {
-    width: 100%;
-    max-width: 330px;
-    padding: 28px 24px;
-    background: rgba(255, 255, 255, 0.96);
-    border-radius: 14px;
-    text-align: center;
-    color: #222;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-}
-
-.login-logo {
-    width: 65px;
-    height: 65px;
-    object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 12px;
-}
-
-.login-title {
-    font-size: 27px;
-    font-weight: 400;
-}
-
-.login-subtitle {
-    margin-top: 5px;
-    margin-bottom: 23px;
-    color: #777;
-    font-size: 14px;
-}
-
-.employee-input {
-    width: 100%;
-    height: 46px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    outline: none;
-    text-align: center;
-    font-size: 15px;
-    color: #222;
-    background: #fff;
-    -webkit-appearance: none;
-    appearance: none;
-}
-
-.employee-input:focus {
-    border-color: #38a754;
-}
-
-.login-button {
-    width: 100%;
-    height: 46px;
-    margin-top: 12px;
-    border: none;
-    border-radius: 8px;
-    background: #38a754;
-    color: #fff;
-    font-size: 15px;
-    -webkit-appearance: none;
-    appearance: none;
-}
-
-.login-button:active {
-    opacity: 0.86;
-}
-
-.login-button:disabled {
-    opacity: 0.6;
-}
-
-.login-message {
-    min-height: 20px;
-    margin-top: 12px;
-    font-size: 13px;
-    color: #d9534f;
-    line-height: 1.4;
-}
-
-
-/* =====================================================
-   APP SCREEN
+   EMPLOYEE APP
 ===================================================== */
 
 .app-screen {
     width: 100%;
     height: 100%;
-    min-height: 100%;
+
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 0;
+
+    overflow: hidden;
+
+    padding-top: max(
+        14px,
+        env(safe-area-inset-top)
+    );
 }
 
 
 /* =====================================================
-   TOP STATUS BAR
-===================================================== */
-
-.top-status-bar {
-    width: 100%;
-    height: 44px;
-    background-color: #e4e5ea;
-    flex-shrink: 0;
-}
-
-
-/* =====================================================
-   EMPLOYEE HEADER
-   Màu và cỡ theo ảnh gốc
+   EMPLOYEE NAME
 ===================================================== */
 
 .header {
     width: 100%;
-    margin-top: 18px;
+
+    margin-top: 10px;
+
+    padding: 0 10px;
+
     text-align: center;
-    font-size: 17px;
+
+    color: #ead89d;
+
+    font-size: 15px;
     font-weight: 300;
     line-height: 1.25;
-    letter-spacing: 0.15px;
-    color: #e8cf84;
+
+    letter-spacing: 0;
 }
 
 
 /* =====================================================
-   CARD
+   MAIN CARD
 ===================================================== */
 
 .card {
-    margin-top: 16px;
-    width: 84%;
-    max-width: 308px;
-    border-radius: 8px;
+    width: 68%;
+    max-width: 265px;
+    min-width: 250px;
+
+    margin-top: 13px;
+
     position: relative;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+
+    border-radius: 7px;
+
+    overflow: visible;
+
+    box-shadow:
+        0 4px 13px
+        rgba(0, 0, 0, 0.24);
 }
 
 
@@ -224,58 +119,77 @@ body {
 ===================================================== */
 
 .card-header {
-    background-color: #eac455;
-    padding: 14px 8px;
-    min-height: 48px;
+    width: 100%;
+
+    min-height: 55px;
+
+    padding: 10px 8px;
+
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     text-align: center;
-    color: #fffef8;
-    font-size: 13px;
+
+    /*
+       Màu thực tế vẫn có thể được app.js đổi
+       giữa vàng / xanh.
+    */
+    background-color: #e5bd3e;
+
+    color: #ffffff;
+
+    font-size: 12px;
     font-weight: 300;
     line-height: 1.35;
 
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-radius: 7px 7px 0 0;
 
-    position: relative;
-    transition: background-color 0.3s ease;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    transition:
+        background-color 0.25s ease;
 }
 
 #headerText {
     display: block;
     width: 100%;
-    color: #fffef8;
-    font-size: 13px;
+
+    color: #ffffff;
+
+    font-size: 12px;
     font-weight: 300;
-    letter-spacing: 0;
+    line-height: 1.35;
+
+    text-align: center;
 }
 
 
 /* =====================================================
-   SIDE CIRCLES
+   CARD SIDE CUT CIRCLES
 ===================================================== */
 
 .circle1,
 .circle2 {
+    width: 10px;
+    height: 10px;
+
     position: absolute;
-    background-color: #313651;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    bottom: -6px;
+    bottom: -5px;
+
     z-index: 10;
+
+    border-radius: 50%;
+
+    background-color: #30364f;
 }
 
 .circle1 {
-    left: -6px;
+    left: -5px;
 }
 
 .circle2 {
-    right: -6px;
+    right: -5px;
 }
 
 
@@ -284,406 +198,30 @@ body {
 ===================================================== */
 
 .card-body {
-    background-color: #ffffff;
-    padding: 16px 15px 16px 15px;
-    text-align: center;
-    color: #000;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    width: 100%;
+
+    padding:
+        13px
+        13px
+        14px;
 
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    text-align: center;
+
+    background-color: #ffffff;
+
+    color: #111111;
+
+    border-radius: 0 0 7px 7px;
 }
 
 
 /* =====================================================
-   CURRENT TIME
+   CURRENT DATE / TIME
 ===================================================== */
 
 .time {
-    width: 100%;
-    margin-bottom: 12px;
-    text-align: center;
-
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.2;
-    letter-spacing: 0.2px;
-    font-variant-numeric: tabular-nums;
-
-    color: #171717;
-}
-
-
-/* =====================================================
-   QR CODE
-   Giữ QR to như ảnh gốc
-===================================================== */
-
-#qrcode {
-    width: 220px;
-    height: 220px;
-    min-width: 220px;
-    min-height: 220px;
-    max-width: 220px;
-    max-height: 220px;
-
-    margin: 0 auto;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    overflow: hidden;
-    background: #fff;
-}
-
-#qrcode img,
-#qrcode canvas {
-    width: 220px !important;
-    height: 220px !important;
-    min-width: 220px !important;
-    min-height: 220px !important;
-    max-width: 220px !important;
-    max-height: 220px !important;
-    display: block !important;
-    image-rendering: pixelated;
-}
-
-
-/* =====================================================
-   REFRESH QR
-===================================================== */
-
-.refresh {
-    width: 100%;
-    margin-top: 10px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.refresh-title {
-    cursor: pointer;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-
-    font-size: 11.5px;
-    font-weight: 300;
-    line-height: 1.2;
-    color: #7f7f7f;
-}
-
-.refresh-title:active {
-    opacity: 0.65;
-}
-
-
-/* =====================================================
-   STATUS
-   Chữ 已生效 và timer KHÁC màu nhau
-===================================================== */
-
-.status-box {
-    margin-top: 8px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.status-label {
-    font-size: 16px;
-    font-weight: 300;
-    line-height: 1.2;
-    letter-spacing: 0;
-
-    color: #a4e8b9;
-
-    animation: pulse-green 1.2s infinite ease-in-out;
-}
-
-.status-timer {
-    margin-top: 4px;
-
-    font-size: 18px;
-    font-weight: 300;
-    line-height: 1.2;
-    letter-spacing: 0.3px;
-    font-variant-numeric: tabular-nums;
-
-    color: #2fc75d;
-    opacity: 1 !important;
-}
-
-@keyframes pulse-green {
-    0% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.25;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
-
-/* =====================================================
-   NOTE
-   Chỉnh màu + line-height giống ảnh gốc hơn
-===================================================== */
-
-.note {
-    max-width: 365px;
-    margin: 22px 10% 0 10%;
-
-    text-align: center;
-
-    font-size: 12.5px;
-    font-weight: 300;
-    line-height: 1.62;
-    letter-spacing: 0;
-
-    color: #e8d7a7;
-}
-
-
-/* =====================================================
-   LOGOUT
-   Ẩn hoàn toàn ở app nhân viên
-===================================================== */
-
-.logout-button {
-    display: none !important;
-}
-
-
-/* =====================================================
-   ADMIN PAGE
-===================================================== */
-
-.admin-page {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 25px 15px 50px;
-    color: #222;
-}
-
-.admin-card {
-    background: rgba(255, 255, 255, 0.97);
-    border-radius: 14px;
-    padding: 25px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-    margin-bottom: 20px;
-}
-
-.admin-card h1 {
-    margin-bottom: 8px;
-}
-
-.admin-card h2 {
-    margin: 18px 0 12px;
-}
-
-.admin-subtitle {
-    color: #777;
-    margin-bottom: 20px;
-}
-
-.admin-card input,
-.admin-card select {
-    width: 100%;
-    height: 44px;
-    margin: 6px 0;
-    padding: 0 12px;
-    border: 1px solid #ddd;
-    border-radius: 7px;
-    background: #fff;
-    font-size: 14px;
-    outline: none;
-}
-
-.admin-card input:focus,
-.admin-card select:focus {
-    border-color: #38a754;
-}
-
-.admin-card button {
-    border: none;
-    border-radius: 7px;
-    padding: 10px 15px;
-    margin: 5px 3px;
-    color: #fff;
-    cursor: pointer;
-}
-
-.admin-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-}
-
-.admin-form {
-    margin-top: 20px;
-    padding: 18px;
-    border: 1px solid #eee;
-    border-radius: 10px;
-}
-
-.admin-form label {
-    display: block;
-    margin-top: 8px;
-    font-size: 13px;
-    color: #555;
-}
-
-.admin-form-buttons {
-    margin-top: 10px;
-}
-
-.button-green {
-    background: #38a754 !important;
-}
-
-.button-red {
-    background: #d9534f !important;
-}
-
-.button-gray {
-    background: #666 !important;
-}
-
-.users-list {
-    margin-top: 10px;
-    width: 100%;
-}
-
-.user-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.user-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.user-name {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.user-details {
-    margin-top: 5px;
-    color: #777;
-    font-size: 13px;
-    line-height: 1.6;
-    white-space: pre-line;
-}
-
-.user-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-
-/* =====================================================
-   ADMIN ONLY
-   Chỉ admin được cuộn dọc
-===================================================== */
-
-.admin-body {
-    width: 100%;
-    min-height: 100vh;
-    height: auto;
-
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-
-    touch-action: pan-y !important;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: auto;
-
-    align-items: stretch;
-    padding-top: 0;
-}
-
-.admin-body *,
-.admin-body *::before,
-.admin-body *::after {
-    touch-action: pan-y !important;
-}
-
-.admin-body .admin-page {
-    width: 100%;
-    max-width: 900px;
-    min-height: 100vh;
-    overflow: visible;
-    padding-bottom: 50px;
-}
-
-.admin-body .users-list {
-    width: 100%;
-    overflow: visible;
-}
-
-
-/* =====================================================
-   MOBILE ADMIN
-===================================================== */
-
-@media (max-width: 600px) {
-    .admin-card {
-        padding: 18px;
-    }
-
-    .admin-title {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .user-row {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .user-actions {
-        width: 100%;
-        justify-content: flex-start;
-    }
-}
-
-
-/* =====================================================
-   SMALL HEIGHT
-===================================================== */
-
-@media (max-height: 700px) {
-    body {
-        padding-top: max(12px, env(safe-area-inset-top));
-    }
-
-    .header {
-        margin-top: 14px;
-    }
-
-    .card {
-        margin-top: 12px;
-    }
-
-    .note {
-        margin-top: 16px;
-    }
-}
+    width:
