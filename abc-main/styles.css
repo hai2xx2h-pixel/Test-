@@ -1,16 +1,4 @@
 /* =====================================================
-   ROOT
-===================================================== */
-
-:root {
-    /*
-     * Vùng sáng phía trên giống ảnh gốc.
-     */
-    --status-area-height: 62px;
-}
-
-
-/* =====================================================
    RESET
 ===================================================== */
 
@@ -21,7 +9,6 @@
 
     -webkit-tap-highlight-color: transparent;
 }
-
 
 html,
 body {
@@ -37,13 +24,13 @@ body {
 
 /* =====================================================
    BODY
-   QUAN TRỌNG:
-   Nền body sáng để vùng status bar iPhone sáng.
+
+   iPhone tự tạo vùng status bar phía trên.
+   KHÔNG cộng thêm 62px nữa.
 ===================================================== */
 
 body {
     position: fixed;
-
     inset: 0;
 
     overflow: hidden;
@@ -65,6 +52,10 @@ body {
 }
 
 
+/* =====================================================
+   HIDDEN
+===================================================== */
+
 .hidden {
     display: none !important;
 }
@@ -73,18 +64,20 @@ body {
 /* =====================================================
    EMPLOYEE APP
 
-   Background bắt đầu SAU vùng status bar.
+   top = 0
+   Không tạo thêm vùng trắng giả.
 ===================================================== */
 
 .app-screen {
     position: fixed;
 
-    top: var(--status-area-height);
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
 
     width: 100%;
+    height: 100%;
 
     overflow: hidden;
 
@@ -94,17 +87,13 @@ body {
 
     background-color: #30364f;
 
-    background-image:
-        url("background.png");
+    background-image: url("background.png");
 
-    background-repeat:
-        no-repeat;
+    background-repeat: no-repeat;
 
-    background-position:
-        center center;
+    background-position: center center;
 
-    background-size:
-        cover;
+    background-size: cover;
 }
 
 
@@ -117,8 +106,7 @@ body {
 
     margin-top: 28px;
 
-    padding:
-        0 10px;
+    padding: 0 10px;
 
     color: #F5D57F;
 
@@ -137,14 +125,15 @@ body {
 
 
 /* =====================================================
-   CARD
+   MAIN CARD
 
-   Bản trước: max-width 265px
-   Ảnh gốc: card rộng khoảng 300px.
+   ẢNH GỐC ≈ 68% chiều rộng màn hình.
+
+   Không dùng 84% nữa.
 ===================================================== */
 
 .card {
-    width: 84%;
+    width: 68%;
 
     max-width: 300px;
 
@@ -152,37 +141,30 @@ body {
 
     position: relative;
 
-    border-radius: 8px;
-
     overflow: visible;
+
+    border-radius: 8px;
 
     box-shadow:
         0 4px 14px
-        rgba(
-            0,
-            0,
-            0,
-            0.25
-        );
+        rgba(0, 0, 0, 0.25);
 }
 
 
 /* =====================================================
    CARD HEADER
 
-   Bản trước chỉ khoảng 55px.
-   Tăng chiều cao gần ảnh gốc.
+   Chiều cao 69px đang gần ảnh gốc.
+   GIỮ NGUYÊN.
 ===================================================== */
 
 .card-header {
     width: 100%;
 
     height: 69px;
-
     min-height: 69px;
 
-    padding:
-        14px 8px;
+    padding: 14px 8px;
 
     position: relative;
 
@@ -237,7 +219,6 @@ body {
     position: absolute;
 
     width: 12px;
-
     height: 12px;
 
     bottom: -6px;
@@ -278,7 +259,7 @@ body {
 
     align-items: center;
 
-    background: #ffffff;
+    background-color: #ffffff;
 
     color: #111111;
 
@@ -290,7 +271,7 @@ body {
 
 
 /* =====================================================
-   CURRENT TIME
+   DATE / TIME
 ===================================================== */
 
 .time {
@@ -317,35 +298,29 @@ body {
 
 
 /* =====================================================
-   QR
+   QR CODE
 
-   TẠM GIỮ 220px.
+   GIỮ 220px.
 
-   Không kéo thành 230px ở CSS trước khi
-   app.js cũng render 230px.
-
-   Bước sau sẽ đổi đồng thời.
+   Sau khi card trở lại 68%,
+   QR sẽ chiếm tỷ lệ gần ảnh gốc.
 ===================================================== */
 
 #qrcode {
     width: 220px;
-
     height: 220px;
 
     min-width: 220px;
-
     min-height: 220px;
 
-    margin:
-        0 auto;
+    max-width: 220px;
+    max-height: 220px;
+
+    margin: 0 auto;
 
     padding: 0;
 
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
+    display: block;
 
     overflow: hidden;
 
@@ -364,8 +339,13 @@ body {
     display: block !important;
 
     width: 220px !important;
-
     height: 220px !important;
+
+    min-width: 220px !important;
+    min-height: 220px !important;
+
+    max-width: 220px !important;
+    max-height: 220px !important;
 
     margin: 0 !important;
 
@@ -391,7 +371,6 @@ body {
 
 #qrcode table {
     width: 220px !important;
-
     height: 220px !important;
 
     margin: 0 !important;
@@ -403,6 +382,8 @@ body {
     border-spacing: 0 !important;
 
     border-collapse: collapse !important;
+
+    border-radius: 0 !important;
 }
 
 
@@ -420,7 +401,7 @@ body {
 
 
 /* =====================================================
-   ACTION ROW
+   ACTION ROW UNDER QR
 ===================================================== */
 
 .refresh {
@@ -434,14 +415,14 @@ body {
 
     display: flex;
 
-    justify-content: center;
-
     align-items: center;
+
+    justify-content: center;
 }
 
 
 /* =====================================================
-   申请离场 + 刷新二维码
+   申请离场 / 刷新二维码
 ===================================================== */
 
 .leave-action,
@@ -461,12 +442,11 @@ body {
 
 
 /*
- * Trạng thái xanh:
- *
- * 申请离场   刷新二维码
- *
- * Không dùng space-between.
- */
+   GREEN:
+
+   申请离场   刷新二维码
+*/
+
 .refresh.has-leave {
     justify-content: center;
 
@@ -570,22 +550,19 @@ body {
 /* =====================================================
    NOTE
 
-   QUAN TRỌNG:
-   Ảnh gốc không phải căn giữa từng dòng.
+   Thu lại chiều rộng để xuống đúng 3 hàng
+   gần ảnh gốc.
 
-   - Khối rộng gần bằng card.
-   - Căn trái.
-   - Dòng đầu thụt vào.
-   - Các dòng sau bắt đầu từ mép trái.
+   Dòng đầu thụt vào.
 ===================================================== */
 
 .note {
-    width: 300px;
+    width: 265px;
 
-    max-width: 84%;
+    max-width: 68%;
 
     margin:
-        30px auto 0;
+        28px auto 0;
 
     padding: 0;
 
@@ -644,14 +621,11 @@ body {
     background-image:
         url("background.png");
 
-    background-repeat:
-        no-repeat;
+    background-repeat: no-repeat;
 
-    background-position:
-        center center;
+    background-position: center center;
 
-    background-size:
-        cover;
+    background-size: cover;
 }
 
 
@@ -795,9 +769,7 @@ body {
 
 
 /* =====================================================
-   ADMIN BODY
-
-   Admin vẫn phải scroll được.
+   ADMIN
 ===================================================== */
 
 .admin-body {
@@ -840,10 +812,6 @@ body {
 }
 
 
-/* =====================================================
-   ADMIN PAGE
-===================================================== */
-
 .admin-page {
     width: 100%;
 
@@ -855,9 +823,7 @@ body {
         0 auto;
 
     padding:
-        25px
-        15px
-        50px;
+        25px 15px 50px;
 
     color: #222222;
 
@@ -915,11 +881,9 @@ body {
 
     height: 44px;
 
-    margin:
-        6px 0;
+    margin: 6px 0;
 
-    padding:
-        0 12px;
+    padding: 0 12px;
 
     border:
         1px solid #dddddd;
@@ -941,11 +905,9 @@ body {
 
 
 .admin-card button {
-    margin:
-        5px 3px;
+    margin: 5px 3px;
 
-    padding:
-        10px 15px;
+    padding: 10px 15px;
 
     border: 0;
 
@@ -1034,8 +996,7 @@ body {
 
     gap: 15px;
 
-    padding:
-        15px 0;
+    padding: 15px 0;
 
     border-bottom:
         1px solid #eeeeee;
@@ -1065,8 +1026,7 @@ body {
 
     line-height: 1.6;
 
-    white-space:
-        pre-line;
+    white-space: pre-line;
 }
 
 
