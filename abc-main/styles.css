@@ -10,7 +10,6 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-
 html,
 body {
     width: 100%;
@@ -25,8 +24,6 @@ body {
 
 /* =====================================================
    BODY
-
-   NỀN TRẮNG ĐỂ PHẦN STATUS BAR IPHONE MÀU TRẮNG
 ===================================================== */
 
 body {
@@ -57,15 +54,6 @@ body {
 
 /* =====================================================
    STATUS BAR WHITE AREA
-
-   Chỉ đổi vùng phía trên thành trắng.
-
-   KHÔNG đẩy:
-   - tên
-   - card
-   - QR
-   - timer
-   - note
 ===================================================== */
 
 body::before {
@@ -98,9 +86,6 @@ body::before {
 
 /* =====================================================
    EMPLOYEE APP
-
-   GIỮ top = 0
-   để bố cục hiện tại không bị đẩy xuống.
 ===================================================== */
 
 .app-screen {
@@ -181,12 +166,7 @@ body::before {
 
     box-shadow:
         0 4px 14px
-        rgba(
-            0,
-            0,
-            0,
-            0.25
-        );
+        rgba(0, 0, 0, 0.25);
 }
 
 
@@ -198,7 +178,6 @@ body::before {
     width: 100%;
 
     height: 64px;
-
     min-height: 64px;
 
     padding: 12px 8px;
@@ -208,7 +187,6 @@ body::before {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     text-align: center;
@@ -335,15 +313,11 @@ body::before {
 
 
 /* =====================================================
-   QR CODE
-
-   GIỮ ĐÚNG 210 × 210
-   KHỚP APP.JS HIỆN TẠI
+   QR
 ===================================================== */
 
 #qrcode {
     width: 210px;
-
     height: 210px;
 
     min-width: 210px;
@@ -375,15 +349,12 @@ body::before {
     display: block !important;
 
     width: 210px !important;
-
     height: 210px !important;
 
     min-width: 210px !important;
-
     min-height: 210px !important;
 
     max-width: 210px !important;
-
     max-height: 210px !important;
 
     margin: 0 !important;
@@ -410,7 +381,6 @@ body::before {
 
 #qrcode table {
     width: 210px !important;
-
     height: 210px !important;
 
     margin: 0 !important;
@@ -422,8 +392,6 @@ body::before {
     border-spacing: 0 !important;
 
     border-collapse: collapse !important;
-
-    border-radius: 0 !important;
 }
 
 
@@ -435,8 +403,6 @@ body::before {
     padding: 0 !important;
 
     border: 0 !important;
-
-    border-radius: 0 !important;
 }
 
 
@@ -462,7 +428,7 @@ body::before {
 
 
 /* =====================================================
-   申请离场 / 刷新二维码
+   ACTION TEXT
 ===================================================== */
 
 .leave-action,
@@ -481,13 +447,10 @@ body::before {
 }
 
 
-/* GREEN */
 .refresh.has-leave {
     justify-content: center;
 
     gap: 18px;
-
-    padding: 0;
 }
 
 
@@ -519,10 +482,6 @@ body::before {
 }
 
 
-/* =====================================================
-   已生效
-===================================================== */
-
 .status-label {
     color: #9AE7B3;
 
@@ -532,8 +491,6 @@ body::before {
 
     line-height: 1.2;
 
-    letter-spacing: 0;
-
     animation:
         pulse-green
         1.2s
@@ -541,10 +498,6 @@ body::before {
         ease-in-out;
 }
 
-
-/* =====================================================
-   TIMER
-===================================================== */
 
 .status-timer {
     margin-top: 4px;
@@ -651,14 +604,11 @@ body::before {
     background-image:
         url("background.png");
 
-    background-repeat:
-        no-repeat;
+    background-repeat: no-repeat;
 
-    background-position:
-        center center;
+    background-position: center center;
 
-    background-size:
-        cover;
+    background-size: cover;
 }
 
 
@@ -671,12 +621,7 @@ body::before {
         28px 24px;
 
     background:
-        rgba(
-            255,
-            255,
-            255,
-            0.96
-        );
+        rgba(255, 255, 255, 0.96);
 
     color: #222222;
 
@@ -686,18 +631,12 @@ body::before {
 
     box-shadow:
         0 8px 30px
-        rgba(
-            0,
-            0,
-            0,
-            0.35
-        );
+        rgba(0, 0, 0, 0.35);
 }
 
 
 .login-logo {
     width: 65px;
-
     height: 65px;
 
     margin-bottom: 12px;
@@ -749,7 +688,6 @@ body::before {
     font-size: 15px;
 
     -webkit-appearance: none;
-
     appearance: none;
 }
 
@@ -777,7 +715,6 @@ body::before {
     font-size: 15px;
 
     -webkit-appearance: none;
-
     appearance: none;
 }
 
@@ -801,50 +738,87 @@ body::before {
 
 
 /* =====================================================
-   ADMIN
+   ADMIN SCROLL FIX
+
+   QUAN TRỌNG:
+   Trang nhân viên vẫn khóa cuộn.
+   Chỉ khi BODY có class admin-body thì:
+   - HTML được cuộn
+   - BODY được cuộn
+   - touch pan-y được bật
 ===================================================== */
 
-.admin-body {
+html:has(body.admin-body) {
+    width: 100% !important;
+
+    height: auto !important;
+
+    min-height: 100% !important;
+
+    overflow-x: hidden !important;
+
+    overflow-y: auto !important;
+
+    -webkit-overflow-scrolling: touch !important;
+
+    overscroll-behavior-y: auto !important;
+}
+
+
+body.admin-body {
     position: static !important;
 
-    width: 100%;
+    inset: auto !important;
 
-    height: auto;
+    width: 100% !important;
 
-    min-height: 100vh;
+    height: auto !important;
 
-    overflow-x:
-        hidden !important;
+    min-height: 100vh !important;
 
-    overflow-y:
-        auto !important;
+    overflow-x: hidden !important;
 
-    touch-action:
-        pan-y !important;
+    overflow-y: auto !important;
 
-    -webkit-overflow-scrolling:
-        touch;
+    touch-action: pan-y !important;
 
-    overscroll-behavior-y:
-        auto;
+    -webkit-overflow-scrolling: touch !important;
+
+    overscroll-behavior-y: auto !important;
 
     background: #30364f;
 
-    padding-top: 0;
-
-    align-items: stretch;
+    color: #222222;
 }
 
 
-.admin-body *,
-.admin-body *::before,
-.admin-body *::after {
-    touch-action:
-        pan-y !important;
+/*
+   Không để pseudo-element status bar
+   chặn Admin.
+*/
+body.admin-body::before {
+    display: none !important;
 }
 
+
+/*
+   Cho phép thao tác cuộn trên toàn bộ Admin.
+*/
+body.admin-body,
+body.admin-body *,
+body.admin-body *::before,
+body.admin-body *::after {
+    touch-action: pan-y !important;
+}
+
+
+/* =====================================================
+   ADMIN PAGE
+===================================================== */
 
 .admin-page {
+    position: relative;
+
     width: 100%;
 
     max-width: 900px;
@@ -856,18 +830,22 @@ body::before {
     padding:
         25px
         15px
-        50px;
-
-    color: #222222;
+        60px;
 
     overflow: visible;
+
+    color: #222222;
 }
 
 
 .admin-card {
+    width: 100%;
+
     margin-bottom: 20px;
 
     padding: 25px;
+
+    overflow: visible;
 
     background:
         rgba(
@@ -908,6 +886,10 @@ body::before {
 }
 
 
+/* =====================================================
+   ADMIN INPUTS
+===================================================== */
+
 .admin-card input,
 .admin-card select {
     width: 100%;
@@ -937,6 +919,10 @@ body::before {
 }
 
 
+/* =====================================================
+   ADMIN BUTTONS
+===================================================== */
+
 .admin-card button {
     margin: 5px 3px;
 
@@ -952,6 +938,28 @@ body::before {
 }
 
 
+.button-green {
+    background:
+        #38a754 !important;
+}
+
+
+.button-red {
+    background:
+        #d9534f !important;
+}
+
+
+.button-gray {
+    background:
+        #666666 !important;
+}
+
+
+/* =====================================================
+   ADMIN TITLE
+===================================================== */
+
 .admin-title {
     display: flex;
 
@@ -962,6 +970,10 @@ body::before {
     gap: 10px;
 }
 
+
+/* =====================================================
+   ADMIN FORM
+===================================================== */
 
 .admin-form {
     margin-top: 20px;
@@ -991,23 +1003,9 @@ body::before {
 }
 
 
-.button-green {
-    background:
-        #38a754 !important;
-}
-
-
-.button-red {
-    background:
-        #d9534f !important;
-}
-
-
-.button-gray {
-    background:
-        #666666 !important;
-}
-
+/* =====================================================
+   USERS LIST
+===================================================== */
 
 .users-list {
     width: 100%;
@@ -1075,6 +1073,14 @@ body::before {
 ===================================================== */
 
 @media (max-width: 600px) {
+
+    .admin-page {
+        padding:
+            20px
+            12px
+            80px;
+    }
+
 
     .admin-card {
         padding: 18px;
