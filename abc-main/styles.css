@@ -9,33 +9,21 @@
     touch-action: none;
 }
 
-
 html,
 body {
     width: 100%;
     height: 100%;
-
     overflow: hidden;
-
-    background-color: #e3e4e9;
-
+    background-color: #e4e5ea;
     -webkit-user-select: none;
     user-select: none;
-
     -webkit-tap-highlight-color: transparent;
 }
 
-
 body {
     position: absolute;
-
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
+    inset: 0;
     overflow: hidden;
-
     overscroll-behavior: none;
 
     font-family:
@@ -48,26 +36,18 @@ body {
         sans-serif;
 
     background-image: url("background.png");
-
     background-repeat: no-repeat;
-
     background-position: center center;
-
     background-size: cover;
 
-    color: #ffffff;
+    color: white;
 
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
 
-    padding-top:
-        max(
-            12px,
-            env(safe-area-inset-top)
-        );
+    /* Đẩy layout giống ảnh gốc */
+    padding-top: max(18px, env(safe-area-inset-top));
 }
 
 
@@ -86,167 +66,97 @@ body {
 
 .login-screen {
     position: fixed;
-
     inset: 0;
-
     z-index: 999;
 
-    background-color: #2f3347;
-
+    background: #2f3347;
     background-image: url("background.png");
-
     background-repeat: no-repeat;
-
     background-position: center center;
-
     background-size: cover;
 
     display: flex;
-
     justify-content: center;
-
     align-items: center;
 
     padding: 20px;
 }
 
-
 .login-box {
     width: 100%;
-
     max-width: 330px;
-
     padding: 28px 24px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.96
-        );
-
+    background: rgba(255, 255, 255, 0.96);
     border-radius: 14px;
-
     text-align: center;
-
-    color: #222222;
-
-    box-shadow:
-        0 8px 30px
-        rgba(
-            0,
-            0,
-            0,
-            0.35
-        );
+    color: #222;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
 }
-
 
 .login-logo {
     width: 65px;
-
     height: 65px;
-
     object-fit: cover;
-
     border-radius: 12px;
-
     margin-bottom: 12px;
 }
 
-
 .login-title {
     font-size: 27px;
-
     font-weight: 400;
 }
 
-
 .login-subtitle {
     margin-top: 5px;
-
     margin-bottom: 23px;
-
-    color: #777777;
-
+    color: #777;
     font-size: 14px;
 }
 
-
 .employee-input {
     width: 100%;
-
     height: 46px;
-
-    border:
-        1px solid #dddddd;
-
+    border: 1px solid #ddd;
     border-radius: 8px;
-
     outline: none;
-
     text-align: center;
-
     font-size: 15px;
-
-    color: #222222;
-
-    background: #ffffff;
-
+    color: #222;
+    background: #fff;
     -webkit-appearance: none;
-
     appearance: none;
 }
-
 
 .employee-input:focus {
     border-color: #38a754;
 }
 
-
 .login-button {
     width: 100%;
-
     height: 46px;
-
     margin-top: 12px;
-
     border: none;
-
     border-radius: 8px;
-
     background: #38a754;
-
-    color: #ffffff;
-
+    color: #fff;
     font-size: 15px;
-
     -webkit-appearance: none;
-
     appearance: none;
 }
 
-
 .login-button:active {
-    opacity: 0.85;
+    opacity: 0.86;
 }
-
 
 .login-button:disabled {
     opacity: 0.6;
 }
 
-
 .login-message {
     min-height: 20px;
-
     margin-top: 12px;
-
-    color: #d9534f;
-
     font-size: 13px;
-
+    color: #d9534f;
     line-height: 1.4;
 }
 
@@ -257,17 +167,11 @@ body {
 
 .app-screen {
     width: 100%;
-
     height: 100%;
-
     min-height: 100%;
-
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
     padding-top: 0;
 }
 
@@ -278,35 +182,26 @@ body {
 
 .top-status-bar {
     width: 100%;
-
     height: 44px;
-
-    background-color: #e3e4e9;
-
+    background-color: #e4e5ea;
     flex-shrink: 0;
 }
 
 
 /* =====================================================
    EMPLOYEE HEADER
+   Màu và cỡ theo ảnh gốc
 ===================================================== */
 
 .header {
     width: 100%;
-
-    margin-top: 12px;
-
-    color: #F5D57F;
-
-    font-size: 15px;
-
-    font-weight: 300;
-
-    line-height: 1.2;
-
-    letter-spacing: 0.2px;
-
+    margin-top: 18px;
     text-align: center;
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 1.25;
+    letter-spacing: 0.15px;
+    color: #e8cf84;
 }
 
 
@@ -315,26 +210,12 @@ body {
 ===================================================== */
 
 .card {
-    width: 68%;
-
-    max-width: 265px;
-
-    min-width: 250px;
-
-    margin-top: 12px;
-
+    margin-top: 16px;
+    width: 84%;
+    max-width: 308px;
+    border-radius: 8px;
     position: relative;
-
-    border-radius: 6px;
-
-    box-shadow:
-        0 4px 14px
-        rgba(
-            0,
-            0,
-            0,
-            0.25
-        );
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
 }
 
 
@@ -343,46 +224,34 @@ body {
 ===================================================== */
 
 .card-header {
-    width: 100%;
-
-    min-height: 55px;
-
-    padding: 11px 8px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    position: relative;
-
-    background-color: #f2c75b;
-
-    color: #ffffff;
+    background-color: #eac455;
+    padding: 14px 8px;
+    min-height: 48px;
 
     text-align: center;
-
-    font-size: 12px;
-
+    color: #fffef8;
+    font-size: 13px;
     font-weight: 300;
+    line-height: 1.35;
 
-    line-height: 1.3;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 
-    border-top-left-radius: 6px;
+    position: relative;
+    transition: background-color 0.3s ease;
 
-    border-top-right-radius: 6px;
-
-    transition:
-        background-color
-        0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
 
 #headerText {
     display: block;
-
     width: 100%;
+    color: #fffef8;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0;
 }
 
 
@@ -393,28 +262,20 @@ body {
 .circle1,
 .circle2 {
     position: absolute;
-
-    width: 9px;
-
-    height: 9px;
-
-    bottom: -4.5px;
-
-    z-index: 10;
-
-    background-color: #2f3347;
-
+    background-color: #313651;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
+    bottom: -6px;
+    z-index: 10;
 }
-
 
 .circle1 {
-    left: -4.5px;
+    left: -6px;
 }
 
-
 .circle2 {
-    right: -4.5px;
+    right: -6px;
 }
 
 
@@ -423,28 +284,16 @@ body {
 ===================================================== */
 
 .card-body {
-    width: 100%;
-
-    padding:
-        13px
-        14px
-        15px;
+    background-color: #ffffff;
+    padding: 16px 15px 16px 15px;
+    text-align: center;
+    color: #000;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
-    background-color: #ffffff;
-
-    color: #000000;
-
-    text-align: center;
-
-    border-bottom-left-radius: 6px;
-
-    border-bottom-right-radius: 6px;
 }
 
 
@@ -454,137 +303,52 @@ body {
 
 .time {
     width: 100%;
-
-    margin-bottom: 7px;
-
-    color: #111111;
-
-    font-size: 13px;
-
-    font-weight: 400;
-
-    line-height: 1.15;
-
-    letter-spacing: 0;
-
+    margin-bottom: 12px;
     text-align: center;
 
-    font-variant-numeric:
-        tabular-nums;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0.2px;
+    font-variant-numeric: tabular-nums;
+
+    color: #171717;
 }
 
 
 /* =====================================================
    QR CODE
-   GIỮ NGUYÊN 212 × 212
+   Giữ QR to như ảnh gốc
 ===================================================== */
 
 #qrcode {
-    width: 212px;
-
-    height: 212px;
-
-    min-width: 212px;
-
-    min-height: 212px;
-
-    max-width: 212px;
-
-    max-height: 212px;
+    width: 220px;
+    height: 220px;
+    min-width: 220px;
+    min-height: 220px;
+    max-width: 220px;
+    max-height: 220px;
 
     margin: 0 auto;
 
-    padding: 0 !important;
-
-    display: block;
-
-    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     overflow: hidden;
-
-    background-color: #ffffff;
-
-    border: 0 !important;
-
-    border-radius: 0 !important;
-
-    -webkit-border-radius:
-        0 !important;
-
-    box-shadow: none !important;
+    background: #fff;
 }
-
 
 #qrcode img,
 #qrcode canvas {
-    width: 212px !important;
-
-    height: 212px !important;
-
-    min-width: 212px !important;
-
-    min-height: 212px !important;
-
-    max-width: 212px !important;
-
-    max-height: 212px !important;
-
+    width: 220px !important;
+    height: 220px !important;
+    min-width: 220px !important;
+    min-height: 220px !important;
+    max-width: 220px !important;
+    max-height: 220px !important;
     display: block !important;
-
-    margin: 0 !important;
-
-    padding: 0 !important;
-
-    border: 0 !important;
-
-    border-radius: 0 !important;
-
-    -webkit-border-radius:
-        0 !important;
-
-    box-shadow: none !important;
-
-    transform: none !important;
-
-    filter: none !important;
-
     image-rendering: pixelated;
-}
-
-
-/* =====================================================
-   QR TABLE FALLBACK
-===================================================== */
-
-#qrcode table {
-    width: 212px !important;
-
-    height: 212px !important;
-
-    margin: 0 !important;
-
-    padding: 0 !important;
-
-    border: 0 !important;
-
-    border-spacing: 0 !important;
-
-    border-collapse: collapse !important;
-
-    border-radius: 0 !important;
-}
-
-
-#qrcode tbody,
-#qrcode tr,
-#qrcode td {
-    margin: 0 !important;
-
-    padding: 0 !important;
-
-    border: 0 !important;
-
-    border-radius: 0 !important;
 }
 
 
@@ -594,98 +358,67 @@ body {
 
 .refresh {
     width: 100%;
-
-    margin-top: 9px;
+    margin-top: 10px;
 
     display: flex;
-
     justify-content: center;
-
     align-items: center;
 }
 
-
 .refresh-title {
-    color: #777777;
-
-    font-size: 10px;
-
-    font-weight: 300;
-
-    line-height: 1.2;
-
     cursor: pointer;
-
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
 
-    -webkit-tap-highlight-color:
-        transparent;
+    font-size: 11.5px;
+    font-weight: 300;
+    line-height: 1.2;
+    color: #7f7f7f;
 }
 
-
 .refresh-title:active {
-    opacity: 0.6;
+    opacity: 0.65;
 }
 
 
 /* =====================================================
    STATUS
+   Chữ 已生效 và timer KHÁC màu nhau
 ===================================================== */
 
 .status-box {
-    margin-top: 7px;
+    margin-top: 8px;
 
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
-    color: #2eb85c;
 }
-
 
 .status-label {
     font-size: 16px;
-
-    font-weight: 400;
-
+    font-weight: 300;
     line-height: 1.2;
+    letter-spacing: 0;
 
-    letter-spacing: 0.3px;
+    color: #a4e8b9;
 
-    animation:
-        pulse-green
-        1.2s
-        infinite
-        ease-in-out;
+    animation: pulse-green 1.2s infinite ease-in-out;
 }
-
 
 .status-timer {
-    margin-top: 2px;
+    margin-top: 4px;
 
-    font-size: 15px;
-
+    font-size: 18px;
     font-weight: 300;
-
-    line-height: 1.15;
-
+    line-height: 1.2;
     letter-spacing: 0.3px;
+    font-variant-numeric: tabular-nums;
 
+    color: #2fc75d;
     opacity: 1 !important;
-
-    font-variant-numeric:
-        tabular-nums;
 }
 
-
-/* =====================================================
-   GREEN PULSE
-===================================================== */
-
 @keyframes pulse-green {
-
     0% {
         opacity: 1;
     }
@@ -702,50 +435,27 @@ body {
 
 /* =====================================================
    NOTE
-   THEO HÀNG LỐI ẢNH GỐC
-
-   - Không căn giữa từng dòng
-   - Căn trái cả đoạn
-   - Dòng đầu thụt vào
-   - Trình duyệt tự xuống dòng
+   Chỉnh màu + line-height giống ảnh gốc hơn
 ===================================================== */
 
 .note {
-    width: 265px;
+    max-width: 365px;
+    margin: 22px 10% 0 10%;
 
-    max-width: 68%;
-
-    margin:
-        22px auto 0;
-
-    padding: 0;
-
-    color: #E6DCBD;
+    text-align: center;
 
     font-size: 12.5px;
-
     font-weight: 300;
-
     line-height: 1.62;
-
     letter-spacing: 0;
 
-    text-align: left;
-
-    text-indent: 2em;
-
-    white-space: normal;
-
-    word-break: normal;
-
-    overflow-wrap: normal;
-
-    opacity: 1;
+    color: #e8d7a7;
 }
 
 
 /* =====================================================
    LOGOUT
+   Ẩn hoàn toàn ở app nhân viên
 ===================================================== */
 
 .logout-button {
@@ -759,352 +469,221 @@ body {
 
 .admin-page {
     width: 100%;
-
     max-width: 900px;
-
     margin: 0 auto;
-
-    padding:
-        25px 15px;
-
-    color: #222222;
+    padding: 25px 15px 50px;
+    color: #222;
 }
-
 
 .admin-card {
-    margin-bottom: 20px;
-
-    padding: 25px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.97
-        );
-
+    background: rgba(255, 255, 255, 0.97);
     border-radius: 14px;
-
-    box-shadow:
-        0 8px 30px
-        rgba(
-            0,
-            0,
-            0,
-            0.25
-        );
+    padding: 25px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    margin-bottom: 20px;
 }
-
 
 .admin-card h1 {
     margin-bottom: 8px;
 }
 
-
 .admin-card h2 {
-    margin:
-        18px 0 12px;
+    margin: 18px 0 12px;
 }
-
 
 .admin-subtitle {
+    color: #777;
     margin-bottom: 20px;
-
-    color: #777777;
 }
-
 
 .admin-card input,
 .admin-card select {
     width: 100%;
-
     height: 44px;
-
-    margin:
-        6px 0;
-
-    padding:
-        0 12px;
-
-    border:
-        1px solid #dddddd;
-
+    margin: 6px 0;
+    padding: 0 12px;
+    border: 1px solid #ddd;
     border-radius: 7px;
-
-    background: #ffffff;
-
+    background: #fff;
     font-size: 14px;
-
     outline: none;
 }
-
 
 .admin-card input:focus,
 .admin-card select:focus {
     border-color: #38a754;
 }
 
-
 .admin-card button {
-    margin:
-        5px 3px;
-
-    padding:
-        10px 15px;
-
     border: none;
-
     border-radius: 7px;
-
-    color: #ffffff;
-
+    padding: 10px 15px;
+    margin: 5px 3px;
+    color: #fff;
     cursor: pointer;
 }
 
-
 .admin-title {
     display: flex;
-
-    justify-content:
-        space-between;
-
+    justify-content: space-between;
     align-items: center;
-
     gap: 10px;
 }
 
-
 .admin-form {
     margin-top: 20px;
-
     padding: 18px;
-
-    border:
-        1px solid #eeeeee;
-
+    border: 1px solid #eee;
     border-radius: 10px;
 }
 
-
 .admin-form label {
     display: block;
-
     margin-top: 8px;
-
-    color: #555555;
-
     font-size: 13px;
+    color: #555;
 }
-
 
 .admin-form-buttons {
     margin-top: 10px;
 }
 
-
 .button-green {
-    background:
-        #38a754 !important;
+    background: #38a754 !important;
 }
-
 
 .button-red {
-    background:
-        #d9534f !important;
+    background: #d9534f !important;
 }
-
 
 .button-gray {
-    background:
-        #666666 !important;
+    background: #666 !important;
 }
-
 
 .users-list {
     margin-top: 10px;
+    width: 100%;
 }
-
 
 .user-row {
     display: flex;
-
-    justify-content:
-        space-between;
-
+    justify-content: space-between;
     align-items: center;
-
     gap: 15px;
-
-    padding:
-        15px 0;
-
-    border-bottom:
-        1px solid #eeeeee;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
 }
-
 
 .user-info {
     flex: 1;
-
     min-width: 0;
 }
 
-
 .user-name {
     font-size: 16px;
-
     font-weight: 500;
 }
 
-
 .user-details {
     margin-top: 5px;
-
-    color: #777777;
-
+    color: #777;
     font-size: 13px;
-
     line-height: 1.6;
-
     white-space: pre-line;
 }
 
-
 .user-actions {
     display: flex;
-
     flex-wrap: wrap;
-
-    justify-content:
-        flex-end;
+    justify-content: flex-end;
 }
 
 
 /* =====================================================
-   ADMIN MOBILE
-===================================================== */
-
-@media (max-width: 600px) {
-
-    .admin-card {
-        padding: 18px;
-    }
-
-
-    .admin-title {
-        flex-direction: column;
-
-        align-items:
-            flex-start;
-    }
-
-
-    .user-row {
-        flex-direction: column;
-
-        align-items:
-            flex-start;
-    }
-
-
-    .user-actions {
-        width: 100%;
-
-        justify-content:
-            flex-start;
-    }
-}
-
-
-/* =====================================================
-   SMALL SCREEN
-===================================================== */
-
-@media (max-height: 700px) {
-
-    body {
-        padding-top:
-            max(
-                8px,
-                env(safe-area-inset-top)
-            );
-    }
-
-
-    .header {
-        margin-top: 8px;
-    }
-
-
-    .card {
-        margin-top: 9px;
-    }
-
-
-    .note {
-        margin-top: 16px;
-    }
-}
-
-
-/* =====================================================
-   ADMIN ONLY SCROLL
+   ADMIN ONLY
+   Chỉ admin được cuộn dọc
 ===================================================== */
 
 .admin-body {
     width: 100%;
-
     min-height: 100vh;
-
     height: auto;
 
-    overflow-y:
-        auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
 
-    overflow-x:
-        hidden !important;
-
-    touch-action:
-        pan-y !important;
-
-    -webkit-overflow-scrolling:
-        touch;
-
-    overscroll-behavior-y:
-        auto;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: auto;
 
     align-items: stretch;
-
     padding-top: 0;
 }
-
 
 .admin-body *,
 .admin-body *::before,
 .admin-body *::after {
-    touch-action:
-        pan-y !important;
+    touch-action: pan-y !important;
 }
-
 
 .admin-body .admin-page {
     width: 100%;
-
     max-width: 900px;
-
     min-height: 100vh;
-
-    height: auto;
-
     overflow: visible;
-
     padding-bottom: 50px;
 }
 
-
 .admin-body .users-list {
     width: 100%;
-
     overflow: visible;
+}
+
+
+/* =====================================================
+   MOBILE ADMIN
+===================================================== */
+
+@media (max-width: 600px) {
+    .admin-card {
+        padding: 18px;
+    }
+
+    .admin-title {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .user-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .user-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+
+/* =====================================================
+   SMALL HEIGHT
+===================================================== */
+
+@media (max-height: 700px) {
+    body {
+        padding-top: max(12px, env(safe-area-inset-top));
+    }
+
+    .header {
+        margin-top: 14px;
+    }
+
+    .card {
+        margin-top: 12px;
+    }
+
+    .note {
+        margin-top: 16px;
+    }
 }
