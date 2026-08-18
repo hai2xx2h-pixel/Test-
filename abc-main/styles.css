@@ -24,6 +24,8 @@ body {
 
 /* =====================================================
    BODY
+
+   Màu trắng dùng cho vùng status bar iPhone.
 ===================================================== */
 
 body {
@@ -35,7 +37,7 @@ body {
 
     overflow: hidden;
 
-    background: #30364f;
+    background: #f5f5f5;
 
     font-family:
         -apple-system,
@@ -53,6 +55,42 @@ body {
 
 
 /* =====================================================
+   IOS STATUS BAR WHITE AREA
+
+   QUAN TRỌNG:
+
+   Chỉ phủ màu trắng lên safe-area phía trên.
+
+   KHÔNG đẩy:
+   - tên nhân viên
+   - card
+   - QR
+   - timer
+   - note
+
+   xuống dưới.
+===================================================== */
+
+body::before {
+    content: "";
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: env(safe-area-inset-top);
+
+    z-index: 10000;
+
+    background: #f5f5f5;
+
+    pointer-events: none;
+}
+
+
+/* =====================================================
    HIDDEN
 ===================================================== */
 
@@ -64,10 +102,12 @@ body {
 /* =====================================================
    EMPLOYEE APP
 
-   QUAN TRỌNG:
-   - top = 0
-   - nền xanh chạy lên trên
-   - không còn khoảng trắng 14px do CSS tạo ra
+   GIỮ top = 0.
+
+   Không dùng:
+   top: env(safe-area-inset-top)
+
+   vì cách đó sẽ đẩy toàn bộ bố cục xuống.
 ===================================================== */
 
 .app-screen {
@@ -94,8 +134,7 @@ body {
     background-image:
         url("background.png");
 
-    background-repeat:
-        no-repeat;
+    background-repeat: no-repeat;
 
     background-position:
         center center;
@@ -108,15 +147,7 @@ body {
 /* =====================================================
    EMPLOYEE HEADER
 
-   Trước:
-       app-screen top = 14px
-       header margin = 16px
-
-   Bây giờ:
-       app-screen top = 0
-       header margin = 30px
-
-   => vị trí tên/card/QR vẫn giữ nguyên.
+   GIỮ NGUYÊN VỊ TRÍ HIỆN TẠI
 ===================================================== */
 
 .header {
