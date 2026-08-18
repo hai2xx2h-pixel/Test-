@@ -224,4 +224,669 @@ body {
 ===================================================== */
 
 .time {
-    width:
+    width: 100%;
+
+    margin: 0 0 7px;
+
+    color: #111111;
+
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.2;
+
+    text-align: center;
+
+    letter-spacing: 0;
+
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* =====================================================
+   QR CODE
+
+   ẢNH GỐC:
+   QR lớn hơn bản trước một chút.
+   CSS và JS phải cùng kích thước.
+===================================================== */
+
+#qrcode {
+    width: 220px;
+    height: 220px;
+
+    min-width: 220px;
+    min-height: 220px;
+
+    max-width: 220px;
+    max-height: 220px;
+
+    margin: 0 auto;
+
+    padding: 0;
+
+    display: block;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 0;
+    border-radius: 0;
+
+    box-shadow: none;
+}
+
+#qrcode img,
+#qrcode canvas {
+    display: block !important;
+
+    width: 220px !important;
+    height: 220px !important;
+
+    min-width: 220px !important;
+    min-height: 220px !important;
+
+    max-width: 220px !important;
+    max-height: 220px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+
+    box-shadow: none !important;
+
+    transform: none !important;
+    filter: none !important;
+
+    image-rendering: pixelated;
+}
+
+
+/* =====================================================
+   QR TABLE FALLBACK
+===================================================== */
+
+#qrcode table {
+    width: 220px !important;
+    height: 220px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+
+    border-radius: 0 !important;
+}
+
+#qrcode tbody,
+#qrcode tr,
+#qrcode td {
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+}
+
+
+/* =====================================================
+   ACTION ROW UNDER QR
+
+   Vàng:
+       chỉ 刷新二维码
+
+   Xanh:
+       申请离场      刷新二维码
+
+   Việc ẩn / hiện 申请离场 sẽ làm trong app.js sau.
+===================================================== */
+
+.refresh {
+    width: 100%;
+
+    min-height: 17px;
+
+    margin-top: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+}
+
+.refresh-title {
+    color: #777777;
+
+    font-size: 10px;
+    font-weight: 300;
+    line-height: 1.2;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   APPLY LEAVE
+   Sẽ được thêm vào index.html ở file tiếp theo
+===================================================== */
+
+.leave-action {
+    color: #777777;
+
+    font-size: 10px;
+    font-weight: 300;
+    line-height: 1.2;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+.refresh.has-leave {
+    justify-content: space-between;
+
+    padding-left: 34px;
+    padding-right: 34px;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status-box {
+    margin-top: 7px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+}
+
+
+/* 已生效 - xanh nhạt giống ảnh mẫu */
+.status-label {
+    color: #8fdca8;
+
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.2;
+
+    letter-spacing: 0;
+
+    animation:
+        pulse-green
+        1.2s
+        infinite
+        ease-in-out;
+}
+
+
+/* Timer - xanh rõ hơn 已生效 */
+.status-timer {
+    margin-top: 2px;
+
+    color: #2bc45a;
+
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.2;
+
+    letter-spacing: 0.2px;
+
+    opacity: 1 !important;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+@keyframes pulse-green {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/* =====================================================
+   NOTE UNDER CARD
+
+   Dữ liệu / tên trong ảnh mẫu KHÔNG được đưa vào code.
+===================================================== */
+
+.note {
+    width: 80%;
+    max-width: 310px;
+
+    margin: 20px auto 0;
+
+    padding: 0;
+
+    color: #e3d3a6;
+
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
+
+    letter-spacing: 0;
+
+    text-align: center;
+
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+.logout-button {
+    display: none !important;
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+.login-screen {
+    position: fixed;
+    inset: 0;
+
+    z-index: 999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background-color: #30364f;
+    background-image: url("background.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 330px;
+
+    padding: 28px 24px;
+
+    background:
+        rgba(255, 255, 255, 0.96);
+
+    color: #222222;
+
+    text-align: center;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 8px 30px
+        rgba(0, 0, 0, 0.35);
+}
+
+.login-logo {
+    width: 65px;
+    height: 65px;
+
+    margin-bottom: 12px;
+
+    object-fit: cover;
+
+    border-radius: 12px;
+}
+
+.login-title {
+    font-size: 27px;
+    font-weight: 400;
+}
+
+.login-subtitle {
+    margin-top: 5px;
+    margin-bottom: 23px;
+
+    color: #777777;
+
+    font-size: 14px;
+}
+
+.employee-input {
+    width: 100%;
+    height: 46px;
+
+    padding: 0 10px;
+
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+
+    outline: none;
+
+    background: #ffffff;
+    color: #222222;
+
+    text-align: center;
+
+    font-size: 15px;
+
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.employee-input:focus {
+    border-color: #38a754;
+}
+
+.login-button {
+    width: 100%;
+    height: 46px;
+
+    margin-top: 12px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #38a754;
+    color: #ffffff;
+
+    font-size: 15px;
+
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.login-button:disabled {
+    opacity: 0.6;
+}
+
+.login-message {
+    min-height: 20px;
+
+    margin-top: 12px;
+
+    color: #d9534f;
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+
+/* =====================================================
+   ADMIN PAGE
+===================================================== */
+
+.admin-body {
+    position: static;
+
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    touch-action: pan-y !important;
+
+    -webkit-overflow-scrolling: touch;
+
+    overscroll-behavior-y: auto;
+
+    padding-top: 0;
+
+    align-items: stretch;
+}
+
+.admin-body *,
+.admin-body *::before,
+.admin-body *::after {
+    touch-action: pan-y !important;
+}
+
+.admin-page {
+    width: 100%;
+    max-width: 900px;
+
+    min-height: 100vh;
+
+    margin: 0 auto;
+
+    padding:
+        25px
+        15px
+        50px;
+
+    color: #222222;
+
+    overflow: visible;
+}
+
+.admin-card {
+    margin-bottom: 20px;
+
+    padding: 25px;
+
+    background:
+        rgba(255, 255, 255, 0.97);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 8px 30px
+        rgba(0, 0, 0, 0.25);
+}
+
+.admin-card h1 {
+    margin-bottom: 8px;
+}
+
+.admin-card h2 {
+    margin: 18px 0 12px;
+}
+
+.admin-subtitle {
+    margin-bottom: 20px;
+
+    color: #777777;
+}
+
+.admin-card input,
+.admin-card select {
+    width: 100%;
+    height: 44px;
+
+    margin: 6px 0;
+    padding: 0 12px;
+
+    border: 1px solid #dddddd;
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.admin-card input:focus,
+.admin-card select:focus {
+    border-color: #38a754;
+}
+
+.admin-card button {
+    margin: 5px 3px;
+
+    padding: 10px 15px;
+
+    border: 0;
+    border-radius: 7px;
+
+    color: #ffffff;
+
+    cursor: pointer;
+}
+
+.admin-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.admin-form {
+    margin-top: 20px;
+
+    padding: 18px;
+
+    border: 1px solid #eeeeee;
+    border-radius: 10px;
+}
+
+.admin-form label {
+    display: block;
+
+    margin-top: 8px;
+
+    color: #555555;
+
+    font-size: 13px;
+}
+
+.admin-form-buttons {
+    margin-top: 10px;
+}
+
+.button-green {
+    background: #38a754 !important;
+}
+
+.button-red {
+    background: #d9534f !important;
+}
+
+.button-gray {
+    background: #666666 !important;
+}
+
+.users-list {
+    width: 100%;
+
+    margin-top: 10px;
+
+    overflow: visible;
+}
+
+.user-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+.user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.user-details {
+    margin-top: 5px;
+
+    color: #777777;
+
+    font-size: 13px;
+    line-height: 1.6;
+
+    white-space: pre-line;
+}
+
+.user-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+
+/* =====================================================
+   ADMIN MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .admin-card {
+        padding: 18px;
+    }
+
+    .admin-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .user-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .user-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+
+/* =====================================================
+   SHORT SCREEN
+===================================================== */
+
+@media (max-height: 700px) {
+
+    .app-screen {
+        padding-top: max(
+            8px,
+            env(safe-area-inset-top)
+        );
+    }
+
+    .header {
+        margin-top: 7px;
+    }
+
+    .card {
+        margin-top: 9px;
+    }
+
+    .note {
+        margin-top: 15px;
+    }
+}
