@@ -133,10 +133,6 @@ body {
 
     text-align: center;
 
-    /*
-       Màu thực tế vẫn có thể được app.js đổi
-       giữa vàng / xanh.
-    */
     background-color: #e5bd3e;
 
     color: #ffffff;
@@ -153,6 +149,7 @@ body {
 
 #headerText {
     display: block;
+
     width: 100%;
 
     color: #ffffff;
@@ -166,7 +163,7 @@ body {
 
 
 /* =====================================================
-   CARD SIDE CUT CIRCLES
+   CARD SIDE CIRCLES
 ===================================================== */
 
 .circle1,
@@ -175,6 +172,7 @@ body {
     height: 10px;
 
     position: absolute;
+
     bottom: -5px;
 
     z-index: 10;
@@ -244,10 +242,6 @@ body {
 
 /* =====================================================
    QR CODE
-
-   ẢNH GỐC:
-   QR lớn hơn bản trước một chút.
-   CSS và JS phải cùng kích thước.
 ===================================================== */
 
 #qrcode {
@@ -336,14 +330,6 @@ body {
 
 /* =====================================================
    ACTION ROW UNDER QR
-
-   Vàng:
-       chỉ 刷新二维码
-
-   Xanh:
-       申请离场      刷新二维码
-
-   Việc ẩn / hiện 申请离场 sẽ làm trong app.js sau.
 ===================================================== */
 
 .refresh {
@@ -357,27 +343,12 @@ body {
     align-items: center;
     justify-content: center;
 
-    position: relative;
-}
-
-.refresh-title {
-    color: #777777;
-
-    font-size: 10px;
-    font-weight: 300;
-    line-height: 1.2;
-
-    text-align: center;
-
-    cursor: pointer;
-
-    white-space: nowrap;
+    padding: 0;
 }
 
 
 /* =====================================================
-   APPLY LEAVE
-   Sẽ được thêm vào index.html ở file tiếp theo
+   申请离场
 ===================================================== */
 
 .leave-action {
@@ -392,11 +363,50 @@ body {
     cursor: pointer;
 }
 
-.refresh.has-leave {
-    justify-content: space-between;
 
-    padding-left: 34px;
-    padding-right: 34px;
+/* =====================================================
+   刷新二维码
+===================================================== */
+
+.refresh-title {
+    color: #777777;
+
+    font-size: 10px;
+    font-weight: 300;
+    line-height: 1.2;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+.refresh-title:active,
+.leave-action:active {
+    opacity: 0.65;
+}
+
+
+/* =====================================================
+   GREEN ACTION ROW
+
+   申请离场   刷新二维码
+===================================================== */
+
+.refresh.has-leave {
+    justify-content: center;
+
+    gap: 18px;
+
+    padding: 0;
+}
+
+
+/* =====================================================
+   HIDDEN LEAVE ACTION
+===================================================== */
+
+.leave-action.hidden {
+    display: none !important;
 }
 
 
@@ -415,7 +425,10 @@ body {
 }
 
 
-/* 已生效 - xanh nhạt giống ảnh mẫu */
+/* =====================================================
+   已生效
+===================================================== */
+
 .status-label {
     color: #8fdca8;
 
@@ -433,7 +446,10 @@ body {
 }
 
 
-/* Timer - xanh rõ hơn 已生效 */
+/* =====================================================
+   TIMER
+===================================================== */
+
 .status-timer {
     margin-top: 2px;
 
@@ -451,7 +467,9 @@ body {
         tabular-nums;
 }
 
+
 @keyframes pulse-green {
+
     0% {
         opacity: 1;
     }
@@ -468,15 +486,15 @@ body {
 
 /* =====================================================
    NOTE UNDER CARD
-
-   Dữ liệu / tên trong ảnh mẫu KHÔNG được đưa vào code.
 ===================================================== */
 
 .note {
     width: 80%;
+
     max-width: 310px;
 
-    margin: 20px auto 0;
+    margin:
+        20px auto 0;
 
     padding: 0;
 
@@ -491,7 +509,9 @@ body {
     text-align: center;
 
     white-space: normal;
+
     word-break: normal;
+
     overflow-wrap: normal;
 }
 
@@ -511,6 +531,7 @@ body {
 
 .login-screen {
     position: fixed;
+
     inset: 0;
 
     z-index: 999;
@@ -522,20 +543,34 @@ body {
     padding: 20px;
 
     background-color: #30364f;
-    background-image: url("background.png");
+
+    background-image:
+        url("background.png");
+
     background-repeat: no-repeat;
+
     background-position: center;
+
     background-size: cover;
 }
 
+
 .login-box {
     width: 100%;
+
     max-width: 330px;
 
-    padding: 28px 24px;
+    padding:
+        28px
+        24px;
 
     background:
-        rgba(255, 255, 255, 0.96);
+        rgba(
+            255,
+            255,
+            255,
+            0.96
+        );
 
     color: #222222;
 
@@ -545,8 +580,14 @@ body {
 
     box-shadow:
         0 8px 30px
-        rgba(0, 0, 0, 0.35);
+        rgba(
+            0,
+            0,
+            0,
+            0.35
+        );
 }
+
 
 .login-logo {
     width: 65px;
@@ -559,13 +600,16 @@ body {
     border-radius: 12px;
 }
 
+
 .login-title {
     font-size: 27px;
     font-weight: 400;
 }
 
+
 .login-subtitle {
     margin-top: 5px;
+
     margin-bottom: 23px;
 
     color: #777777;
@@ -573,18 +617,26 @@ body {
     font-size: 14px;
 }
 
+
 .employee-input {
     width: 100%;
+
     height: 46px;
 
-    padding: 0 10px;
+    padding:
+        0
+        10px;
 
-    border: 1px solid #dddddd;
+    border:
+        1px solid
+        #dddddd;
+
     border-radius: 8px;
 
     outline: none;
 
     background: #ffffff;
+
     color: #222222;
 
     text-align: center;
@@ -592,34 +644,43 @@ body {
     font-size: 15px;
 
     -webkit-appearance: none;
+
     appearance: none;
 }
+
 
 .employee-input:focus {
     border-color: #38a754;
 }
 
+
 .login-button {
     width: 100%;
+
     height: 46px;
 
     margin-top: 12px;
 
     border: 0;
+
     border-radius: 8px;
 
     background: #38a754;
+
     color: #ffffff;
 
     font-size: 15px;
 
     -webkit-appearance: none;
+
     appearance: none;
 }
+
 
 .login-button:disabled {
     opacity: 0.6;
 }
+
 
 .login-message {
     min-height: 20px;
@@ -629,7 +690,50 @@ body {
     color: #d9534f;
 
     font-size: 13px;
+
     line-height: 1.4;
+}
+
+
+/* =====================================================
+   ADMIN BODY
+===================================================== */
+
+.admin-body {
+    position: static;
+
+    width: 100%;
+
+    height: auto;
+
+    min-height: 100vh;
+
+    overflow-x:
+        hidden !important;
+
+    overflow-y:
+        auto !important;
+
+    touch-action:
+        pan-y !important;
+
+    -webkit-overflow-scrolling:
+        touch;
+
+    overscroll-behavior-y:
+        auto;
+
+    padding-top: 0;
+
+    align-items: stretch;
+}
+
+
+.admin-body *,
+.admin-body *::before,
+.admin-body *::after {
+    touch-action:
+        pan-y !important;
 }
 
 
@@ -637,40 +741,15 @@ body {
    ADMIN PAGE
 ===================================================== */
 
-.admin-body {
-    position: static;
-
-    width: 100%;
-    height: auto;
-    min-height: 100vh;
-
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-
-    touch-action: pan-y !important;
-
-    -webkit-overflow-scrolling: touch;
-
-    overscroll-behavior-y: auto;
-
-    padding-top: 0;
-
-    align-items: stretch;
-}
-
-.admin-body *,
-.admin-body *::before,
-.admin-body *::after {
-    touch-action: pan-y !important;
-}
-
 .admin-page {
     width: 100%;
+
     max-width: 900px;
 
     min-height: 100vh;
 
-    margin: 0 auto;
+    margin:
+        0 auto;
 
     padding:
         25px
@@ -682,28 +761,43 @@ body {
     overflow: visible;
 }
 
+
 .admin-card {
     margin-bottom: 20px;
 
     padding: 25px;
 
     background:
-        rgba(255, 255, 255, 0.97);
+        rgba(
+            255,
+            255,
+            255,
+            0.97
+        );
 
     border-radius: 14px;
 
     box-shadow:
         0 8px 30px
-        rgba(0, 0, 0, 0.25);
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
 }
+
 
 .admin-card h1 {
     margin-bottom: 8px;
 }
 
+
 .admin-card h2 {
-    margin: 18px 0 12px;
+    margin:
+        18px 0 12px;
 }
+
 
 .admin-subtitle {
     margin-bottom: 20px;
@@ -711,15 +805,23 @@ body {
     color: #777777;
 }
 
+
 .admin-card input,
 .admin-card select {
     width: 100%;
+
     height: 44px;
 
-    margin: 6px 0;
-    padding: 0 12px;
+    margin:
+        6px 0;
 
-    border: 1px solid #dddddd;
+    padding:
+        0 12px;
+
+    border:
+        1px solid
+        #dddddd;
+
     border-radius: 7px;
 
     background: #ffffff;
@@ -729,17 +831,22 @@ body {
     outline: none;
 }
 
+
 .admin-card input:focus,
 .admin-card select:focus {
     border-color: #38a754;
 }
 
-.admin-card button {
-    margin: 5px 3px;
 
-    padding: 10px 15px;
+.admin-card button {
+    margin:
+        5px 3px;
+
+    padding:
+        10px 15px;
 
     border: 0;
+
     border-radius: 7px;
 
     color: #ffffff;
@@ -747,22 +854,31 @@ body {
     cursor: pointer;
 }
 
+
 .admin-title {
     display: flex;
-    justify-content: space-between;
+
+    justify-content:
+        space-between;
+
     align-items: center;
 
     gap: 10px;
 }
+
 
 .admin-form {
     margin-top: 20px;
 
     padding: 18px;
 
-    border: 1px solid #eeeeee;
+    border:
+        1px solid
+        #eeeeee;
+
     border-radius: 10px;
 }
+
 
 .admin-form label {
     display: block;
@@ -774,21 +890,29 @@ body {
     font-size: 13px;
 }
 
+
 .admin-form-buttons {
     margin-top: 10px;
 }
 
+
 .button-green {
-    background: #38a754 !important;
+    background:
+        #38a754 !important;
 }
+
 
 .button-red {
-    background: #d9534f !important;
+    background:
+        #d9534f !important;
 }
 
+
 .button-gray {
-    background: #666666 !important;
+    background:
+        #666666 !important;
 }
+
 
 .users-list {
     width: 100%;
@@ -798,27 +922,39 @@ body {
     overflow: visible;
 }
 
+
 .user-row {
     display: flex;
-    justify-content: space-between;
+
+    justify-content:
+        space-between;
+
     align-items: center;
 
     gap: 15px;
 
-    padding: 15px 0;
+    padding:
+        15px 0;
 
-    border-bottom: 1px solid #eeeeee;
+    border-bottom:
+        1px solid
+        #eeeeee;
 }
+
 
 .user-info {
     flex: 1;
+
     min-width: 0;
 }
 
+
 .user-name {
     font-size: 16px;
+
     font-weight: 500;
 }
+
 
 .user-details {
     margin-top: 5px;
@@ -826,15 +962,21 @@ body {
     color: #777777;
 
     font-size: 13px;
+
     line-height: 1.6;
 
-    white-space: pre-line;
+    white-space:
+        pre-line;
 }
+
 
 .user-actions {
     display: flex;
+
     flex-wrap: wrap;
-    justify-content: flex-end;
+
+    justify-content:
+        flex-end;
 }
 
 
@@ -850,17 +992,23 @@ body {
 
     .admin-title {
         flex-direction: column;
-        align-items: flex-start;
+
+        align-items:
+            flex-start;
     }
 
     .user-row {
         flex-direction: column;
-        align-items: flex-start;
+
+        align-items:
+            flex-start;
     }
 
     .user-actions {
         width: 100%;
-        justify-content: flex-start;
+
+        justify-content:
+            flex-start;
     }
 }
 
@@ -872,10 +1020,11 @@ body {
 @media (max-height: 700px) {
 
     .app-screen {
-        padding-top: max(
-            8px,
-            env(safe-area-inset-top)
-        );
+        padding-top:
+            max(
+                8px,
+                env(safe-area-inset-top)
+            );
     }
 
     .header {
