@@ -47,19 +47,15 @@ body {
         STHeiti,
         sans-serif;
 
-    background-image:
-        url("background.png");
+    background-image: url("background.png");
 
-    background-repeat:
-        no-repeat;
+    background-repeat: no-repeat;
 
-    background-position:
-        center center;
+    background-position: center center;
 
-    background-size:
-        cover;
+    background-size: cover;
 
-    color: #fff;
+    color: #ffffff;
 
     display: flex;
 
@@ -69,7 +65,7 @@ body {
 
     padding-top:
         max(
-            10px,
+            12px,
             env(safe-area-inset-top)
         );
 }
@@ -85,7 +81,7 @@ body {
 
 
 /* =====================================================
-   LOGIN
+   LOGIN SCREEN
 ===================================================== */
 
 .login-screen {
@@ -97,17 +93,13 @@ body {
 
     background-color: #2f3347;
 
-    background-image:
-        url("background.png");
+    background-image: url("background.png");
 
-    background-repeat:
-        no-repeat;
+    background-repeat: no-repeat;
 
-    background-position:
-        center center;
+    background-position: center center;
 
-    background-size:
-        cover;
+    background-size: cover;
 
     display: flex;
 
@@ -124,8 +116,7 @@ body {
 
     max-width: 330px;
 
-    padding:
-        28px 24px;
+    padding: 28px 24px;
 
     background:
         rgba(
@@ -139,7 +130,7 @@ body {
 
     text-align: center;
 
-    color: #222;
+    color: #222222;
 
     box-shadow:
         0 8px 30px
@@ -177,7 +168,7 @@ body {
 
     margin-bottom: 23px;
 
-    color: #777;
+    color: #777777;
 
     font-size: 14px;
 }
@@ -189,7 +180,7 @@ body {
     height: 46px;
 
     border:
-        1px solid #ddd;
+        1px solid #dddddd;
 
     border-radius: 8px;
 
@@ -199,9 +190,9 @@ body {
 
     font-size: 15px;
 
-    color: #222;
+    color: #222222;
 
-    background: #fff;
+    background: #ffffff;
 
     -webkit-appearance: none;
 
@@ -227,13 +218,18 @@ body {
 
     background: #38a754;
 
-    color: #fff;
+    color: #ffffff;
 
     font-size: 15px;
 
     -webkit-appearance: none;
 
     appearance: none;
+}
+
+
+.login-button:active {
+    opacity: 0.85;
 }
 
 
@@ -247,20 +243,21 @@ body {
 
     margin-top: 12px;
 
-    font-size: 13px;
-
     color: #d9534f;
+
+    font-size: 13px;
 
     line-height: 1.4;
 }
 
 
 /* =====================================================
-   APP
+   APP SCREEN
 ===================================================== */
 
 .app-screen {
     width: 100%;
+
     height: 100%;
 
     min-height: 100%;
@@ -276,13 +273,28 @@ body {
 
 
 /* =====================================================
+   TOP STATUS BAR
+===================================================== */
+
+.top-status-bar {
+    width: 100%;
+
+    height: 44px;
+
+    background-color: #e3e4e9;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
    EMPLOYEE HEADER
 ===================================================== */
 
 .header {
     width: 100%;
 
-    margin-top: 13px;
+    margin-top: 12px;
 
     color: #F5D57F;
 
@@ -292,7 +304,7 @@ body {
 
     line-height: 1.2;
 
-    letter-spacing: 0.15px;
+    letter-spacing: 0.2px;
 
     text-align: center;
 }
@@ -300,17 +312,16 @@ body {
 
 /* =====================================================
    CARD
-   TỶ LỆ GẦN ẢNH GỐC
 ===================================================== */
 
 .card {
-    width: 66%;
+    width: 68%;
 
-    max-width: 260px;
+    max-width: 265px;
 
-    min-width: 245px;
+    min-width: 250px;
 
-    margin-top: 13px;
+    margin-top: 12px;
 
     position: relative;
 
@@ -334,10 +345,9 @@ body {
 .card-header {
     width: 100%;
 
-    min-height: 52px;
+    min-height: 55px;
 
-    padding:
-        10px 8px;
+    padding: 11px 8px;
 
     display: flex;
 
@@ -347,9 +357,9 @@ body {
 
     position: relative;
 
-    background-color: #f2c23b;
+    background-color: #f2c75b;
 
-    color: #fff;
+    color: #ffffff;
 
     text-align: center;
 
@@ -416,7 +426,9 @@ body {
     width: 100%;
 
     padding:
-        13px 13px 15px;
+        13px
+        14px
+        15px;
 
     display: flex;
 
@@ -424,9 +436,9 @@ body {
 
     align-items: center;
 
-    background: #fff;
+    background-color: #ffffff;
 
-    color: #000;
+    color: #000000;
 
     text-align: center;
 
@@ -443,9 +455,9 @@ body {
 .time {
     width: 100%;
 
-    margin-bottom: 6px;
+    margin-bottom: 7px;
 
-    color: #111;
+    color: #111111;
 
     font-size: 13px;
 
@@ -463,35 +475,34 @@ body {
 
 
 /* =====================================================
-   QR
-   GẦN TỶ LỆ ẢNH GỐC
+   QR CODE
+   GIỮ NGUYÊN 212 × 212
 ===================================================== */
 
 #qrcode {
-    width: 208px;
+    width: 212px;
 
-    height: 208px;
+    height: 212px;
 
-    min-width: 208px;
+    min-width: 212px;
 
-    min-height: 208px;
+    min-height: 212px;
 
-    max-width: 208px;
+    max-width: 212px;
 
-    max-height: 208px;
+    max-height: 212px;
 
-    margin:
-        0 auto;
+    margin: 0 auto;
 
     padding: 0 !important;
 
     display: block;
 
-    overflow: hidden;
-
     position: relative;
 
-    background: #fff;
+    overflow: hidden;
+
+    background-color: #ffffff;
 
     border: 0 !important;
 
@@ -500,24 +511,23 @@ body {
     -webkit-border-radius:
         0 !important;
 
-    box-shadow:
-        none !important;
+    box-shadow: none !important;
 }
 
 
 #qrcode img,
 #qrcode canvas {
-    width: 208px !important;
+    width: 212px !important;
 
-    height: 208px !important;
+    height: 212px !important;
 
-    min-width: 208px !important;
+    min-width: 212px !important;
 
-    min-height: 208px !important;
+    min-height: 212px !important;
 
-    max-width: 208px !important;
+    max-width: 212px !important;
 
-    max-height: 208px !important;
+    max-height: 212px !important;
 
     display: block !important;
 
@@ -547,9 +557,9 @@ body {
 ===================================================== */
 
 #qrcode table {
-    width: 208px !important;
+    width: 212px !important;
 
-    height: 208px !important;
+    height: 212px !important;
 
     margin: 0 !important;
 
@@ -557,14 +567,11 @@ body {
 
     border: 0 !important;
 
-    border-collapse:
-        collapse !important;
+    border-spacing: 0 !important;
 
-    border-spacing:
-        0 !important;
+    border-collapse: collapse !important;
 
-    border-radius:
-        0 !important;
+    border-radius: 0 !important;
 }
 
 
@@ -577,8 +584,7 @@ body {
 
     border: 0 !important;
 
-    border-radius:
-        0 !important;
+    border-radius: 0 !important;
 }
 
 
@@ -589,7 +595,7 @@ body {
 .refresh {
     width: 100%;
 
-    margin-top: 8px;
+    margin-top: 9px;
 
     display: flex;
 
@@ -600,7 +606,7 @@ body {
 
 
 .refresh-title {
-    color: #777;
+    color: #777777;
 
     font-size: 10px;
 
@@ -610,10 +616,10 @@ body {
 
     cursor: pointer;
 
+    user-select: none;
+
     -webkit-tap-highlight-color:
         transparent;
-
-    user-select: none;
 }
 
 
@@ -627,7 +633,7 @@ body {
 ===================================================== */
 
 .status-box {
-    margin-top: 8px;
+    margin-top: 7px;
 
     display: flex;
 
@@ -635,7 +641,7 @@ body {
 
     align-items: center;
 
-    color: #2ec65e;
+    color: #2eb85c;
 }
 
 
@@ -646,7 +652,7 @@ body {
 
     line-height: 1.2;
 
-    letter-spacing: 0.2px;
+    letter-spacing: 0.3px;
 
     animation:
         pulse-green
@@ -665,7 +671,7 @@ body {
 
     line-height: 1.15;
 
-    letter-spacing: 0.2px;
+    letter-spacing: 0.3px;
 
     opacity: 1 !important;
 
@@ -673,6 +679,10 @@ body {
         tabular-nums;
 }
 
+
+/* =====================================================
+   GREEN PULSE
+===================================================== */
 
 @keyframes pulse-green {
 
@@ -692,43 +702,45 @@ body {
 
 /* =====================================================
    NOTE
-   CỐ ĐỊNH ĐÚNG 3 DÒNG GIỐNG ẢNH GỐC
+   THEO HÀNG LỐI ẢNH GỐC
+
+   - Không căn giữa từng dòng
+   - Căn trái cả đoạn
+   - Dòng đầu thụt vào
+   - Trình duyệt tự xuống dòng
 ===================================================== */
 
 .note {
-    width: 270px;
+    width: 265px;
 
-    max-width: 74%;
+    max-width: 68%;
 
     margin:
-        20px auto 0;
+        22px auto 0;
 
     padding: 0;
 
     color: #E6DCBD;
 
-    font-size: 12px;
+    font-size: 12.5px;
 
     font-weight: 300;
 
-    line-height: 1.72;
+    line-height: 1.62;
 
     letter-spacing: 0;
 
-    text-align: center;
+    text-align: left;
+
+    text-indent: 2em;
+
+    white-space: normal;
+
+    word-break: normal;
+
+    overflow-wrap: normal;
 
     opacity: 1;
-}
-
-
-.note-line {
-    display: block;
-
-    width: 100%;
-
-    white-space: nowrap;
-
-    text-align: center;
 }
 
 
@@ -750,13 +762,12 @@ body {
 
     max-width: 900px;
 
-    margin:
-        0 auto;
+    margin: 0 auto;
 
     padding:
         25px 15px;
 
-    color: #222;
+    color: #222222;
 }
 
 
@@ -800,7 +811,7 @@ body {
 .admin-subtitle {
     margin-bottom: 20px;
 
-    color: #777;
+    color: #777777;
 }
 
 
@@ -817,11 +828,11 @@ body {
         0 12px;
 
     border:
-        1px solid #ddd;
+        1px solid #dddddd;
 
     border-radius: 7px;
 
-    background: #fff;
+    background: #ffffff;
 
     font-size: 14px;
 
@@ -846,7 +857,7 @@ body {
 
     border-radius: 7px;
 
-    color: #fff;
+    color: #ffffff;
 
     cursor: pointer;
 }
@@ -870,7 +881,7 @@ body {
     padding: 18px;
 
     border:
-        1px solid #eee;
+        1px solid #eeeeee;
 
     border-radius: 10px;
 }
@@ -881,7 +892,7 @@ body {
 
     margin-top: 8px;
 
-    color: #555;
+    color: #555555;
 
     font-size: 13px;
 }
@@ -906,7 +917,7 @@ body {
 
 .button-gray {
     background:
-        #666 !important;
+        #666666 !important;
 }
 
 
@@ -929,7 +940,7 @@ body {
         15px 0;
 
     border-bottom:
-        1px solid #eee;
+        1px solid #eeeeee;
 }
 
 
@@ -950,7 +961,7 @@ body {
 .user-details {
     margin-top: 5px;
 
-    color: #777;
+    color: #777777;
 
     font-size: 13px;
 
@@ -1015,19 +1026,19 @@ body {
     body {
         padding-top:
             max(
-                7px,
+                8px,
                 env(safe-area-inset-top)
             );
     }
 
 
     .header {
-        margin-top: 9px;
+        margin-top: 8px;
     }
 
 
     .card {
-        margin-top: 10px;
+        margin-top: 9px;
     }
 
 
@@ -1038,7 +1049,7 @@ body {
 
 
 /* =====================================================
-   ADMIN SCROLL
+   ADMIN ONLY SCROLL
 ===================================================== */
 
 .admin-body {
@@ -1063,8 +1074,7 @@ body {
     overscroll-behavior-y:
         auto;
 
-    align-items:
-        stretch;
+    align-items: stretch;
 
     padding-top: 0;
 }
