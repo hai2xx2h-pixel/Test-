@@ -4,10 +4,6 @@
 <head>
     <meta charset="UTF-8">
 
-    <!-- =================================================
-         VIEWPORT
-         viewport-fit=cover cần cho safe area trên iPhone
-    ================================================== -->
     <meta
         name="viewport"
         content="width=device-width,
@@ -17,10 +13,7 @@
                  viewport-fit=cover"
     >
 
-
-    <!-- =================================================
-         IOS PWA
-    ================================================== -->
+    <!-- iPhone PWA -->
     <meta
         name="apple-mobile-web-app-capable"
         content="yes"
@@ -31,34 +24,18 @@
         content="yes"
     >
 
-
-    <!--
-        QUAN TRỌNG:
-
-        default =
-        status bar sáng/trắng
-        chữ + giờ + wifi + pin màu đen
-
-        KHÔNG dùng black-translucent.
-    -->
+    <!-- STATUS BAR: NỀN SÁNG + ICON ĐEN -->
     <meta
         name="apple-mobile-web-app-status-bar-style"
         content="default"
     >
 
-
-    <!--
-        Màu vùng giao diện hệ thống phía trên
-    -->
+    <!-- MÀU HỆ THỐNG PHÍA TRÊN -->
     <meta
         name="theme-color"
         content="#f5f5f5"
     >
 
-
-    <!-- =================================================
-         APP NAME
-    ================================================== -->
     <meta
         name="apple-mobile-web-app-title"
         content="员工码"
@@ -66,28 +43,16 @@
 
     <title>员工码</title>
 
-
-    <!-- =================================================
-         ICON
-    ================================================== -->
     <link
         rel="apple-touch-icon"
         href="icon.png"
     >
 
-
-    <!-- =================================================
-         CSS
-    ================================================== -->
     <link
         rel="stylesheet"
         href="styles.css"
     >
 
-
-    <!-- =================================================
-         QR CODE LIBRARY
-    ================================================== -->
     <script
         src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"
     ></script>
@@ -96,9 +61,8 @@
 
 <body>
 
-
     <!-- =================================================
-         LOGIN SCREEN
+         LOGIN
     ================================================== -->
 
     <div
@@ -114,16 +78,13 @@
                 class="login-logo"
             >
 
-
             <div class="login-title">
                 员工码
             </div>
 
-
             <div class="login-subtitle">
                 请输入员工编号
             </div>
-
 
             <input
                 id="employeeCodeInput"
@@ -135,7 +96,6 @@
                 spellcheck="false"
             >
 
-
             <button
                 id="loginButton"
                 class="login-button"
@@ -143,7 +103,6 @@
             >
                 登录
             </button>
-
 
             <div
                 id="loginMessage"
@@ -155,7 +114,6 @@
     </div>
 
 
-
     <!-- =================================================
          EMPLOYEE APP
     ================================================== -->
@@ -165,33 +123,18 @@
         class="app-screen hidden"
     >
 
-
-        <!-- =============================================
-             EMPLOYEE NAME
-
-             JS sẽ tự đưa:
-             Vxxxxxxx(Tên nhân viên)
-
-             KHÔNG hard-code dữ liệu ảnh mẫu.
-        ============================================== -->
-
+        <!-- EMPLOYEE NAME -->
         <div
             id="employeeHeader"
             class="header"
         ></div>
 
 
-
-        <!-- =============================================
-             QR CARD
-        ============================================== -->
+        <!-- =================================================
+             CARD
+        ================================================== -->
 
         <div class="card">
-
-
-            <!-- =========================================
-                 CARD HEADER
-            ========================================== -->
 
             <div
                 id="cardHeader"
@@ -202,49 +145,28 @@
                     将二维码对准扫描器刷码出场
                 </span>
 
-
                 <div class="circle1"></div>
-
                 <div class="circle2"></div>
 
             </div>
 
 
-
-            <!-- =========================================
-                 CARD BODY
-            ========================================== -->
-
             <div class="card-body">
 
-
-                <!-- CURRENT TIME -->
-
+                <!-- TIME -->
                 <div
                     id="currentTime"
                     class="time"
                 >
-                    -- 
+                    --
                 </div>
 
 
-
                 <!-- QR -->
-
                 <div id="qrcode"></div>
 
 
-
-                <!-- =====================================
-                     QR ACTIONS
-
-                     YELLOW:
-                         刷新二维码
-
-                     GREEN:
-                         申请离场   刷新二维码
-                ====================================== -->
-
+                <!-- QR ACTIONS -->
                 <div
                     id="qrActions"
                     class="refresh"
@@ -257,7 +179,6 @@
                         申请离场
                     </span>
 
-
                     <span
                         id="refreshQRCode"
                         class="refresh-title"
@@ -268,17 +189,12 @@
                 </div>
 
 
-
-                <!-- =====================================
-                     STATUS
-                ====================================== -->
-
+                <!-- STATUS -->
                 <div class="status-box">
 
                     <div class="status-label">
                         已生效
                     </div>
-
 
                     <div
                         id="statusTimer"
@@ -294,24 +210,16 @@
         </div>
 
 
-
-        <!-- =============================================
-             SECURITY NOTE
-        ============================================== -->
+        <!-- =================================================
+             NOTE
+        ================================================== -->
 
         <div class="note">
             尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
         </div>
 
 
-
-        <!-- =============================================
-             LOGOUT
-
-             Giữ element để app.js cũ không lỗi.
-             CSS + JS đều ẩn nó.
-        ============================================== -->
-
+        <!-- GIỮ ELEMENT NÀY ĐỂ APP.JS KHÔNG LỖI -->
         <button
             id="logoutButton"
             class="logout-button"
@@ -323,9 +231,8 @@
     </main>
 
 
-
     <!-- =================================================
-         APP JAVASCRIPT
+         JAVASCRIPT
     ================================================== -->
 
     <script
