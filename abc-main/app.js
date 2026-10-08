@@ -75,9 +75,9 @@ const QR_SIZE = 210;
 
 
 /*
- * Giữ 5 giây
+ * Giữ 3 giây
  */
-const HOLD_DURATION = 5000;
+const HOLD_DURATION = 3000;
 
 
 /* =====================================================
