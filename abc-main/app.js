@@ -1743,12 +1743,12 @@ function renderUser(user) {
    TOGGLE STATE
 
    YELLOW
-       giữ 5s
+       giữ 3s
        ↓
    GREEN
 
    GREEN
-       giữ 5s
+       giữ 3s
        ↓
    YELLOW
 
